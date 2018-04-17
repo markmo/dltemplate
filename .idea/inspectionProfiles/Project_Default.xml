@@ -6,6 +6,7 @@
         <list>
           <option value="tensorflow.placeholder" />
           <option value="tensorflow.float32" />
+          <option value="cv2.imdecode" />
         </list>
       </option>
     </inspection_tool>

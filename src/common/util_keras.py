@@ -1,7 +1,9 @@
 from collections import defaultdict
 import keras
+import keras.backend as ke
 from keras.models import save_model
 import numpy as np
+import tensorflow as tf
 import tqdm
 
 
@@ -65,3 +67,12 @@ class ModelSaveCallback(keras.callbacks.Callback):
         model_filename = self.file_name.format(epoch)
         save_model(self.model, model_filename)
         print("Model saved in {}".format(model_filename))
+
+
+# remember to clear session/graph if you rebuild your graph to
+# avoid out-of-memory errors
+def reset_tf_session():
+    ke.clear_session()
+    tf.reset_default_graph()
+    sess = ke.get_session()
+    return sess

@@ -7,20 +7,20 @@ Naming conventions
 Hyperparameters
 ^^^^^^^^^^^^^^^
 
-n_epochs
-learning_rate, lr
-epsilon
+* n_epochs
+* learning_rate, lr
+* epsilon
 
 
 Parameters
 ^^^^^^^^^^
 
-features, inp, x, x_train, x_val, x_test
-labels, y, y_train, y_val, y_test
-weights, w, w1, w2, w3
-bias, b, b1, b2, b3
-z, z1, z2, z3
-a, a1, a2, a3
+* features, inp, x, x_train, x_val, x_test
+* labels, y, y_train, y_val, y_test
+* weights, w, w1, w2, w3
+* bias, b, b1, b2, b3
+* z, z1, z2, z3
+* a, a1, a2, a3
 
 
 Common tests

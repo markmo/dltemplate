@@ -48,7 +48,7 @@ def run(constant_overwrites):
 
 if __name__ == "__main__":
     # read args
-    parser = ArgumentParser(description='Run homemade model')
+    parser = ArgumentParser(description='Run TF Enhanced NN model')
     parser.add_argument('--epochs', dest='n_epochs', help='number epochs')
     parser.add_argument('--batch-size', dest='batch_size', help='batch size')
     parser.add_argument('--learning-rate', dest='learning_rate', help='learning rate')

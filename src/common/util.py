@@ -4,6 +4,17 @@ import numpy as np
 
 # Common utility functions
 
+def apply_gaussian_noise(x, sigma=0.1):
+    """
+    Adds noise from standard normal distribution with standard deviation sigma
+
+    :param x:
+    :param sigma:
+    :return:
+    """
+    return x + np.random.normal(0, sigma, x.shape)
+
+
 def merge_dict(dict1, dict2):
     merged = dict1.copy()
     for key, value in dict2.items():
