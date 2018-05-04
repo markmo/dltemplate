@@ -7,15 +7,17 @@ from sklearn.model_selection import train_test_split
 import tarfile
 import tqdm
 
+DATA_DIR = '../../data/'
+
 # http://www.cs.columbia.edu/CAVE/databases/pubfig/download/lfw_attributes.txt
-ATTRS_NAME = '../../data/lfw/lfw_attributes.txt'
+ATTRS_NAME = DATA_DIR + 'lfw/lfw_attributes.txt'
 
 # http://vis-www.cs.umass.edu/lfw/lfw-deepfunneled.tgz
 # noinspection SpellCheckingInspection
-IMAGES_NAME = '../../data/lfw/lfw-deepfunneled.tgz'
+IMAGES_NAME = DATA_DIR + 'lfw/lfw-deepfunneled.tgz'
 
 # http://vis-www.cs.umass.edu/lfw/lfw.tgz
-RAW_IMAGES_NAME = '../../data/lfw/lfw.tgz'
+RAW_IMAGES_NAME = DATA_DIR + 'lfw/lfw.tgz'
 
 
 # noinspection PyUnresolvedReferences
@@ -124,3 +126,15 @@ def load_mnist_dataset(flatten=False):
         x_test = x_test.reshape([x_test.shape[0], -1])
 
     return x_train, y_train, x_val, y_val, x_test, y_test
+
+
+def load_names():
+    """
+    The dataset contains around 8,000 names from different cultures,
+    all in latin transcript.
+
+    :return:
+    """
+    with open('../../../data/names.txt') as f:
+        names = f.read()[:-1].split('\n')
+        return [' ' + name for name in names]

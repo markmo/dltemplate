@@ -155,3 +155,6 @@ crashlytics-build.properties
 fabric.properties
 
 data
+output
+**/weights*
+**/checkpoint
