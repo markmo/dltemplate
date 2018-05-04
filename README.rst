@@ -1,6 +1,31 @@
 Boilerplate for Deep Learning Projects
 ======================================
 
+Model Templates
+---------------
+
+1. `Multi-layer Perceptron <src/homemade/__init__.py>`_ - MNIST (Homemade framework)
+2. `Logistic Regression <src/tf_model/logreg/__init__.py>`_ - MNIST (TensorFlow)
+3. `Simple Multi-layer Perceptron <src/tf_model/simple/__init__.py>`_ - MNIST (TensorFlow)
+4. `Enhanced Multi-layer Perceptron using Batch Normalization <src/tf_model/enhanced/__init__.py>`_ - MNIST (TensorFlow)
+5. `Enhanced Multi-layer Perceptron using TensorFlow Estimator API <src/tf_model/with_estimator/__init__.py>`_ for training - MNIST
+6. `Simple CNN <src/tf_model/simple_cnn/__init__.py>`_ - MNIST (TensorFlow)
+7. `Enhanced CNN <src/keras_model/cnn/__init__.py>`_ - Image Classifier (Keras)
+8. `Autoencoder <src/keras_model/autoencoder/__init__.py>`_ - Denoising images, Facial Recognition, Face Generation (Keras)
+9. `RNN <src/keras_model/rnn/__init__.py>`_ - Name Generator (Keras)
+10. `Image Captioning <src/keras_model/image_captioning/__init__.py>`_ (Keras)
+
+
+Datasets
+--------
+
+1. MNIST - handwritten digits (Keras)
+2. CIFAR-10 - labelled images with 10 classes
+3. LFW (Labeled Faces in the Wild) - photographs of faces from the web
+4. Names - list of human names
+5. Captioned Images
+
+
 Naming conventions
 ------------------
 

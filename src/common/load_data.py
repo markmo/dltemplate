@@ -28,6 +28,27 @@ def decode_image_from_raw_bytes(raw_bytes):
 
 
 def load_cifar10_dataset():
+    """
+    The CIFAR-10 dataset consists of 60,000 32x32 colour images in 10 classes,
+    with 6,000 images per class. There are 50,000 training images and 10,000
+    test images.
+
+    The dataset is divided into five training batches and one test batch,
+    each with 10,000 images. The test batch contains exactly 1,000
+    randomly-selected images from each class. The training batches contain
+    the remaining images in random order, but some training batches may contain
+    more images from one class than another. Between them, the training batches
+    contain exactly 5,000 images from each class.
+
+    The 10 classes are: airplane, automobile, bird, cat, deer, dog, frog, horse,
+    ship, and truck.
+
+    The classes are completely mutually exclusive. There is no overlap between
+    automobiles and trucks. "Automobile" includes sedans, SUVs, things of that sort.
+    "Truck" includes only big trucks. Neither includes pickup trucks.
+
+    :return:
+    """
     (x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
 
     x_train = x_train / 255. - 0.5
