@@ -38,10 +38,10 @@ def run(constant_overwrites):
 if __name__ == "__main__":
     # read args
     parser = ArgumentParser(description='Run TF with Estimator model')
-    parser.add_argument('--epochs', dest='n_epochs', help='number epochs')
-    parser.add_argument('--batch-size', dest='batch_size', help='batch size')
-    parser.add_argument('--learning-rate', dest='learning_rate', help='learning rate')
-    parser.add_argument('--hidden-layers', dest='n_hidden', help='number hidden layers')
+    parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')
+    parser.add_argument('--batch-size', dest='batch_size', type=int, help='batch size')
+    parser.add_argument('--learning-rate', dest='learning_rate', type=float, help='learning rate')
+    parser.add_argument('--hidden-layers', dest='n_hidden', type=int, help='number hidden layers')
     args = parser.parse_args()
 
     run(vars(args))

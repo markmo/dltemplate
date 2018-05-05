@@ -47,9 +47,9 @@ def run(constant_overwrites):
 if __name__ == "__main__":
     # read args
     parser = ArgumentParser(description='Run TF Logistic Regression model')
-    parser.add_argument('--epochs', dest='n_epochs', help='number epochs')
-    parser.add_argument('--batch-size', dest='batch_size', help='batch size')
-    parser.add_argument('--learning-rate', dest='learning_rate', help='learning rate')
+    parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')
+    parser.add_argument('--batch-size', dest='batch_size', type=int, help='batch size')
+    parser.add_argument('--learning-rate', dest='learning_rate', type=float, help='learning rate')
     args = parser.parse_args()
 
     run(vars(args))

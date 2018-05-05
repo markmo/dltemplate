@@ -13,7 +13,24 @@ Model Templates
 7. `Enhanced CNN <src/keras_model/cnn/__init__.py>`_ - Image Classifier (Keras)
 8. `Autoencoder <src/keras_model/autoencoder/__init__.py>`_ - Denoising images, Facial Recognition, Face Generation (Keras)
 9. `RNN <src/keras_model/rnn/__init__.py>`_ - Name Generator (Keras)
-10. `Image Captioning <src/keras_model/image_captioning/__init__.py>`_ (Keras)
+10. `Part of speech (POS) tagging <src/keras_model/pos_tagger/__init__.py>`_ using an RNN (Keras)
+11. `Image Captioning <src/keras_model/image_captioning/__init__.py>`_ (Keras)
+
+Demonstrates
+^^^^^^^^^^^^
+
+1. Basic principles of a neural net framework with methods for forward and backward steps
+2. Basics of TensorFlow
+3. Basic setup for a deep network
+4. More complex network using batch normalization
+5. Training with the TensorFlow Estimator API
+6. Basic principles of a convolutional neural network
+7. CNN using Keras
+8. Autoencoders
+9. Basic principles of a recurrent neural network for character-level text generation
+10. Using an RNN for POS tagging, using the high-level Keras API for building an RNN,
+    creating a bidirectional RNN
+11. Combining a CNN (encoder) and RNN (decoder) to caption images
 
 
 Datasets
@@ -24,6 +41,7 @@ Datasets
 3. LFW (Labeled Faces in the Wild) - photographs of faces from the web
 4. Names - list of human names
 5. Captioned Images
+6. Tagged sentences from the NLTK Brown Corpus
 
 
 Naming conventions

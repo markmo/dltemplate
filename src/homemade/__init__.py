@@ -58,8 +58,8 @@ def run(constant_overwrites):
 if __name__ == "__main__":
     # read args
     parser = ArgumentParser(description='Run homemade model')
-    parser.add_argument('--epochs', dest='n_epochs', help='number epochs')
-    parser.add_argument('--batch-size', dest='batch_size', help='batch size')
+    parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')
+    parser.add_argument('--batch-size', dest='batch_size', type=int, help='batch size')
     args = parser.parse_args()
 
     run(vars(args))

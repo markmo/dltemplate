@@ -3,7 +3,7 @@ from common.load_data import load_names
 from common.util import get_char_tokens, map_token_to_id, merge_dict, to_token_id_matrix
 from IPython.display import clear_output
 from keras_model.rnn.hyperparams import get_constants
-from keras_model.rnn.model_setup import Layers, rnn_one_step
+from keras_model.rnn.model_setup import model_builder, rnn_one_step
 from keras import backend as ke
 from keras.objectives import categorical_crossentropy
 import matplotlib.pyplot as plt
@@ -45,16 +45,45 @@ def generate_sample(sess, x_t, h_t, next_h, next_probs, tokens, max_len, seed_ph
 
 def run(constant_overwrites):
     names = load_names()
+
+    print('\nn_samples:', len(names))
+    for name in names[::1000]:
+        print(name)
+
     constants = merge_dict(get_constants(), constant_overwrites)
+
+    # call once and pass around reference as different order will be returned each time
     tokens = get_char_tokens(names)
     max_length = max(map(len, names))
+
+    print('\nmax_length:', max_length)
+    plt.title('Sequence length distribution')
+    plt.hist(list(map(len, names)), bins=25)
+    plt.show()
+
     n_tokens = len(tokens)
+
+    print('\nn_tokens:', n_tokens)
+
+    token_to_id = map_token_to_id(tokens)
+    assert len(tokens) == len(token_to_id), 'dictionaries must have the same size'
+    for i in range(n_tokens):
+        assert token_to_id[tokens[i]] == i, 'token id must match index in tokens list'
+
+    print('\nGood so far!')
+
+    # example: convert 4 random names to matrices, pad with zeros
+    sample_names = names[::2000]
+    print('')
+    print('\n'.join(sample_names))
+    print(to_token_id_matrix(sample_names, token_to_id).T)
+
     data = {
         'max_length': max_length,
         'n_tokens': n_tokens
     }
-    model = Layers(data, constants)
-    input_sequence = model.input_sequence()
+    model = model_builder(data, constants)
+    input_sequence = model.input_sequence
     batch_size = tf.shape(input_sequence)[1]
     predicted_probs = []
     h_prev = tf.zeros([batch_size, constants['rnn_units']])  # initial hidden state
@@ -76,7 +105,7 @@ def run(constant_overwrites):
     sess.run(tf.global_variables_initializer())
     history = []
     for i in range(constants['n_epochs']):
-        batch = to_token_id_matrix(sample(names, 32), max_len=max_length)
+        batch = to_token_id_matrix(sample(names, 32), token_to_id, max_len=max_length)
         loss_i, _ = sess.run([loss, optimizer], {input_sequence: batch})
         history.append(loss_i)
         if (i + 1) % constants['n_report_steps'] == 0:
@@ -89,9 +118,11 @@ def run(constant_overwrites):
     h_t = tf.Variable(np.zeros([1, constants['rnn_units']], 'float32'))
     next_probs, next_h = rnn_one_step(x_t, h_t, model)
 
+    print('')
     for i in range(10):
         print(generate_sample(sess, x_t, h_t, next_h, next_probs, tokens, max_length))
 
+    print('')
     for i in range(10):
         print(generate_sample(sess, x_t, h_t, next_h, next_probs, tokens, max_length, seed_phrase='mark'))
 
@@ -99,7 +130,7 @@ def run(constant_overwrites):
 if __name__ == "__main__":
     # read args
     parser = ArgumentParser(description='Run Keras RNN')
-    parser.add_argument('--epochs', dest='n_epochs', help='number epochs')
+    parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')
     parser.add_argument('--model-filename', dest='model_filename', help='model filename')
     parser.add_argument('--retrain', dest='retrain', help='retrain flag', action='store_true')
     parser.set_defaults(retrain=False)

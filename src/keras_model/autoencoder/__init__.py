@@ -169,7 +169,7 @@ if __name__ == "__main__":
     model_type_choices = ['default', 'denoising', 'morphing', 'retrieval']
     # read args
     parser = ArgumentParser(description='Run Keras Autoencoder')
-    parser.add_argument('--epochs', dest='n_epochs', help='number epochs')
+    parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')
     parser.add_argument('--model-filename', dest='model_filename', help='model filename')
     # noinspection SpellCheckingInspection
     parser.add_argument('--ncoder-filename', dest='encoder_filename', help='encoder filename')

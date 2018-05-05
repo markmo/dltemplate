@@ -1,5 +1,6 @@
 import cv2
 import keras
+import nltk
 import numpy as np
 import os
 import pandas as pd
@@ -154,8 +155,19 @@ def load_names():
     The dataset contains around 8,000 names from different cultures,
     all in latin transcript.
 
+    https://raw.githubusercontent.com/hse-aml/intro-to-dl/master/week5/names
+
     :return:
     """
     with open('../../../data/names.txt') as f:
         names = f.read()[:-1].split('\n')
         return [' ' + name for name in names]
+
+
+def load_tagged_sentences():
+    nltk.download('brown')
+    nltk.download('universal_tagset')
+    data = nltk.corpus.brown.tagged_sents(tagset='universal')
+    all_tags = ['#EOS#', '#UNK#', 'ADV', 'NOUN', 'ADP', 'PRON', 'DET', '.', 'PRT', 'VERB', 'X', 'NUM', 'CONJ', 'ADJ']
+    data = np.array([[(word.lower(), tag) for word, tag in sentence] for sentence in data])
+    return data, all_tags

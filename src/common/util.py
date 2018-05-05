@@ -202,11 +202,12 @@ def save_pickle(obj, fn):
         pickle.dump(obj, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-def to_token_id_matrix(names, max_len=None, pad=0, dtype='int32'):
+def to_token_id_matrix(names, token_to_id, max_len=None, pad=0, dtype='int32'):
     """
-    Casts a list of names into an RNN-digestible matrix
+    Converts a list of names into an RNN-digestible matrix
 
     :param names:
+    :param token_to_id:
     :param max_len:
     :param pad:
     :param dtype:
@@ -214,8 +215,6 @@ def to_token_id_matrix(names, max_len=None, pad=0, dtype='int32'):
     """
     max_len = max_len or max(map(len, names))
     n = len(names)
-    tokens = get_char_tokens(names)
-    token_to_id = map_token_to_id(tokens)
     matrix = np.zeros([n, max_len], dtype) + pad
     for i in range(n):
         idx = list(map(token_to_id.get, names[i]))
