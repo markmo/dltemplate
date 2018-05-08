@@ -16,7 +16,8 @@ Model Templates
 10. `RNN <src/keras_model/rnn/__init__.py>`_ - Name Generator (Keras)
 11. `Part of speech (POS) tagging <src/keras_model/pos_tagger/__init__.py>`_ using an RNN (Keras)
 12. `Image Captioning <src/keras_model/image_captioning/__init__.py>`_ (Keras)
-13. `Image Classifier using Fast.ai and resnet <src/pytorch_model/cnn/__init__.py>`_ (PyTorch)
+13. `Image Classifier using ResNet and Fast.ai <src/pytorch_model/cnn/__init__.py>`_ (PyTorch)
+14. `Deep Q Network <src/keras_model/dqn/__init__.py>`_ (Keras)
 
 Demonstrates
 ^^^^^^^^^^^^
@@ -35,6 +36,7 @@ Demonstrates
     creating a bidirectional RNN
 12. Combining a CNN (encoder) and RNN (decoder) to caption images
 13. A higher level framework (3 lines of code for an image classifier)
+14. Deep Reinforcement Learning using CartPole environment in the OpenAI Gym
 
 
 Datasets
