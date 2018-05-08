@@ -11,10 +11,12 @@ Model Templates
 5. `Enhanced Multi-layer Perceptron using TensorFlow Estimator API <src/tf_model/with_estimator/__init__.py>`_ for training - MNIST
 6. `Simple CNN <src/tf_model/simple_cnn/__init__.py>`_ - MNIST (TensorFlow)
 7. `Enhanced CNN <src/keras_model/cnn/__init__.py>`_ - Image Classifier (Keras)
-8. `Autoencoder <src/keras_model/autoencoder/__init__.py>`_ - Denoising images, Facial Recognition, Face Generation (Keras)
-9. `RNN <src/keras_model/rnn/__init__.py>`_ - Name Generator (Keras)
-10. `Part of speech (POS) tagging <src/keras_model/pos_tagger/__init__.py>`_ using an RNN (Keras)
-11. `Image Captioning <src/keras_model/image_captioning/__init__.py>`_ (Keras)
+8. `Image classifier <src/keras_model/image_classifier/__init__.py>`_ (Keras)
+9. `Autoencoder <src/keras_model/autoencoder/__init__.py>`_ - Denoising images, Facial Recognition, Face Generation (Keras)
+10. `RNN <src/keras_model/rnn/__init__.py>`_ - Name Generator (Keras)
+11. `Part of speech (POS) tagging <src/keras_model/pos_tagger/__init__.py>`_ using an RNN (Keras)
+12. `Image Captioning <src/keras_model/image_captioning/__init__.py>`_ (Keras)
+13. `Image Classifier using Fast.ai and resnet <src/pytorch_model/cnn/__init__.py>`_ (PyTorch)
 
 Demonstrates
 ^^^^^^^^^^^^
@@ -26,11 +28,13 @@ Demonstrates
 5. Training with the TensorFlow Estimator API
 6. Basic principles of a convolutional neural network
 7. CNN using Keras
-8. Autoencoders
-9. Basic principles of a recurrent neural network for character-level text generation
-10. Using an RNN for POS tagging, using the high-level Keras API for building an RNN,
+8. Fine-tuning InceptionV3 for image classification
+9. Autoencoders
+10. Basic principles of a recurrent neural network for character-level text generation
+11. Using an RNN for POS tagging, using the high-level Keras API for building an RNN,
     creating a bidirectional RNN
-11. Combining a CNN (encoder) and RNN (decoder) to caption images
+12. Combining a CNN (encoder) and RNN (decoder) to caption images
+13. A higher level framework (3 lines of code for an image classifier)
 
 
 Datasets
@@ -38,10 +42,11 @@ Datasets
 
 1. MNIST - handwritten digits (Keras)
 2. CIFAR-10 - labelled images with 10 classes
-3. LFW (Labeled Faces in the Wild) - photographs of faces from the web
-4. Names - list of human names
-5. Captioned Images
-6. Tagged sentences from the NLTK Brown Corpus
+3. `Flowers classification dataset`_
+4. LFW (Labeled Faces in the Wild) - photographs of faces from the web
+5. Names - list of human names
+6. Captioned Images
+7. Tagged sentences from the NLTK Brown Corpus
 
 
 Naming conventions
@@ -89,6 +94,7 @@ Good practices for tests:
 Useful references
 ^^^^^^^^^^^^^^^^^
 
-1. how-to-test-gradient-implementations_
+1. `How to test gradient implementations`_
 
-.. _how-to-test-gradient-implementations: https://timvieira.github.io/blog/post/2017/04/21/how-to-test-gradient-implementations/
+.. _`Flowers classification dataset`: http://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html
+.. _`How to test gradient implementations`: https://timvieira.github.io/blog/post/2017/04/21/how-to-test-gradient-implementations/

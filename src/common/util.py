@@ -1,9 +1,11 @@
 import cv2
+import keras
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pickle
 from queue import Empty, Full, Queue
+import tarfile
 import threading
 import tqdm
 from zipfile import ZipFile
@@ -40,7 +42,7 @@ def apply_model(zip_filename, model, preprocess_for_model, extensions=('.jpg',),
 
             if os.path.splitext(fname)[-1] in extensions:
                 buf = zf.read(fname)  # read raw bytes from zip for fn
-                img = decode_image_from_buf(buf)  # decode raw bytes
+                img = decode_image_from_raw_bytes(buf)  # decode raw bytes
                 img = crop_and_preprocess(img, input_shape, preprocess_for_model)
                 while True:
                     try:
@@ -97,6 +99,34 @@ def apply_model(zip_filename, model, preprocess_for_model, extensions=('.jpg',),
     return img_embeddings, img_filenames
 
 
+def batch_generator(items, batch_size):
+    """
+    Implement batch generator that yields items in batches of size batch_size.
+
+    There's no need to shuffle input items, just chop them into batches.
+
+    Remember about the last batch that can be smaller than batch_size!
+
+    :param items: any iterable (list, generator, ...).
+                  You should do `for item in items: ...`
+                  In case of generator you can pass through your items only once!
+    :param batch_size:
+    :return: In output yield each batch as a list of items.
+    """
+    if not items:
+        yield items
+
+    batch = []
+    for i, item in enumerate(items):
+        batch.append(item)
+        if (i + 1) % batch_size == 0:
+            yield batch
+            batch = []
+
+    if batch:
+        yield batch
+
+
 def crop_and_preprocess(img, input_shape, preprocess_for_model):
     img = image_center_crop(img)  # take center crop
     img = cv2.resize(img, input_shape)  # resize for our model
@@ -105,10 +135,21 @@ def crop_and_preprocess(img, input_shape, preprocess_for_model):
     return img
 
 
-def decode_image_from_buf(buf):
-    img = cv2.imdecode(np.asarray(bytearray(buf), dtype=np.uint8), 1)
+def decode_image_from_raw_bytes(raw_bytes):
+    img = cv2.imdecode(np.asarray(bytearray(raw_bytes), dtype=np.uint8), 1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return img
+
+
+def get_all_filenames(tar_filename):
+    """
+    read filenames directly from tar
+
+    :param tar_filename:
+    :return:
+    """
+    with tarfile.open(tar_filename) as f:
+        return [m.name for m in f.getmembers() if m.isfile()]
 
 
 def get_char_tokens(names):
@@ -116,7 +157,17 @@ def get_char_tokens(names):
 
 
 def image_center_crop(img):
-    h, w = img.shape[0:2]
+    """
+    Makes a square center crop of an img, which is a [h, w, 3] numpy array.
+
+    Returns [min(h, w), min(h, w), 3] output with same width and height.
+
+    For cropping use numpy slicing.
+
+    :param img:
+    :return:
+    """
+    h, w = img.shape[:2]
     pad_left = 0
     pad_right = 0
     pad_top = 0
@@ -131,6 +182,15 @@ def image_center_crop(img):
         pad_right = diff // 2
 
     return img[pad_top:h-pad_bottom, pad_left:w-pad_right, :]
+
+
+def image_center_crop2(img):
+    height, width = img.shape[:2]
+    s = min(height, width)
+    cropped_width = int((width - s) / 2)
+    cropped_height = int((height - s) / 2)
+    cropped_img = img[cropped_height:(cropped_height + s), cropped_width:(cropped_width + s), :]
+    return cropped_img
 
 
 def map_token_to_id(tokens):
@@ -180,9 +240,46 @@ def plot_accuracy(n_epochs, train_costs, val_costs):
     plt.show()
 
 
+def prepare_raw_bytes_for_model(raw_bytes, img_size, normalize_for_model=True):
+    img = decode_image_from_raw_bytes(raw_bytes)  # decode image raw bytes to matrix
+    img = image_center_crop(img)  # take squared center crop
+    img = cv2.resize(img, (img_size, img_size))  # resize for our model
+    if normalize_for_model:
+        img = img.astype('float32')  # prepare for normalization
+        img = keras.applications.inception_v3.preprocess_input(img)  # normalize for model
+
+    return img
+
+
+def raw_generator_with_label_from_tar(tar_filename, files, labels):
+    label_by_filename = dict(zip(files, labels))
+    with tarfile.open(tar_filename) as f:
+        while True:
+            m = f.next()
+            if m is None:
+                break
+
+            if m.name in label_by_filename:
+                yield f.extractfile(m).read(), label_by_filename[m.name]
+
+
 def read_pickle(filename):
     with open(filename, 'rb') as f:
         return pickle.load(f)
+
+
+def read_raw_from_tar(tar_filename, filename):
+    """
+    reads bytes directly from tar by filename
+    (slow, but ok for testing, takes ~6 sec)
+
+    :param tar_filename:
+    :param filename:
+    :return:
+    """
+    with tarfile.open(tar_filename) as f:
+        m = f.getmember(filename)
+        return f.extractfile(m).read()
 
 
 def reshape(x, n, dtype='float32'):

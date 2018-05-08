@@ -1,5 +1,5 @@
 from collections import Counter, defaultdict
-from common.util import apply_model, crop_and_preprocess, decode_image_from_buf, image_center_crop
+from common.util import apply_model, crop_and_preprocess, decode_image_from_raw_bytes, image_center_crop
 from common.util import read_pickle, save_pickle
 import json
 from keras_model.image_captioning.model_setup import cnn_encoder_builder
@@ -22,12 +22,12 @@ UNK = "#UNK#"
 START = "#START#"
 END = "#END#"
 
-DATA_DIR = '../../../data/'
+DATA_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/data/')
 
 
 def apply_model_to_image_raw_bytes(sess, raw, model, data, constants):
     img_size = constants['img_size']
-    img = decode_image_from_buf(raw)
+    img = decode_image_from_raw_bytes(raw)
     plt.figure(figsize=(7, 7))
     plt.grid('off')
     plt.axis('off')
@@ -339,7 +339,7 @@ def show_training_example(image_filenames_train, captions_train, example_idx=0):
     all_files = set(image_filenames_train)
     found_files = list(filter(lambda x: x.filename.rsplit('/')[-1] in all_files, zf.filelist))
     example = found_files[example_idx]
-    img = decode_image_from_buf(zf.read(example))
+    img = decode_image_from_raw_bytes(zf.read(example))
     plt.imshow(image_center_crop(img))
     plt.title('\n'.join(captions_by_file[example.filename.rsplit('/')[-1]]))
     plt.show()

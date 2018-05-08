@@ -17,9 +17,9 @@ from zipfile import ZipFile
 K = keras.backend
 L = keras.layers
 
-DATA_DIR = '../../../data/'
+DATA_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/data/')
 
-OUTPUT_DIR = '../../../output'
+OUTPUT_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/output/')
 
 # Model architecture: CNN encoder and RNN decoder.
 #   https://research.googleblog.com/2014/11/a-picture-is-worth-thousand-coherent.html

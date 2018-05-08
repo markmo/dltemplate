@@ -1,14 +1,19 @@
+from common import util_download
+from common.util import get_all_filenames
 import cv2
 import keras
 import nltk
 import numpy as np
 import os
 import pandas as pd
+import scipy
 from sklearn.model_selection import train_test_split
 import tarfile
 import tqdm
 
-DATA_DIR = '../../data/'
+DATA_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/data/')
+
+READONLY_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/readonly/')
 
 # http://www.cs.columbia.edu/CAVE/databases/pubfig/download/lfw_attributes.txt
 ATTRS_NAME = DATA_DIR + 'lfw/lfw_attributes.txt'
@@ -71,6 +76,58 @@ def load_faces_dataset():
     # split
     x_train, x_test = train_test_split(x, test_size=0.1, random_state=42)
     return img_shape, attr, x_train, x_test
+
+
+# noinspection SpellCheckingInspection
+def load_flowers(target_path):
+    """
+    Flowers classification dataset consists of 102 flower categories commonly occurring
+    in the United Kingdom. Each class contains between 40 and 258 images.
+
+    http://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html
+
+    :return:
+    """
+    util_download.link_all_keras_resources()
+    if not os.path.exists(READONLY_DIR + 'keras/models/'):
+        # original:
+        # https://github.com/fchollet/deep-learning-models/releases/download/v0.5/inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5
+        util_download.sequential_downloader(
+            'v0.2',
+            [
+                'inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5'
+            ],
+            'readonly/keras/models'
+        )
+
+    if not os.path.exists(READONLY_DIR + 'week3/102flowers.tgz'):
+        # originals:
+        # http://www.robots.ox.ac.uk/~vgg/data/flowers/102/102flowers.tgz
+        # http://www.robots.ox.ac.uk/~vgg/data/flowers/102/imagelabels.mat
+        util_download.sequential_downloader(
+            'v0.3',
+            [
+                '102flowers.tgz',
+                'imagelabels.mat'
+            ],
+            'readonly/week3'
+        )
+
+    util_download.link_all_files_from_dir(READONLY_DIR + 'week3/', target_path)
+
+    # list all files in tar sorted by name
+    all_files = sorted(get_all_filenames(os.path.join(target_path, '102flowers.tgz')))
+
+    # read class labels (0, 1, 2, ...)
+    all_labels = scipy.io.loadmat(os.path.join(target_path, 'imagelabels.mat'))['labels'][0] - 1
+
+    n_classes = len(np.unique(all_labels))
+
+    # split into train/test
+    train_files, test_files, train_labels, test_labels = \
+        train_test_split(all_files, all_labels, test_size=0.2, random_state=42, stratify=all_labels)
+
+    return train_files, test_files, train_labels, test_labels, n_classes
 
 
 # noinspection SpellCheckingInspection,PyUnresolvedReferences
