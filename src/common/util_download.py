@@ -6,6 +6,7 @@ import time
 import traceback
 import tqdm
 
+
 READONLY_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/readonly/')
 
 tqdm.monitor_interval = 0  # workaround for https://github.com/tqdm/tqdm/issues/481
@@ -40,7 +41,7 @@ def retry(exception_to_check, tries=4, delay=3, backoff=2):
 def download_file(url, file_path):
     if not os.path.exists(file_path):
         r = requests.get(url, stream=True)
-        total_size = int(r.headers.get('content-length'))
+        total_size = int(r.headers.get('content-length') or 0)  # in case content-length isn't set
         bar = tqdm.tqdm_notebook(total=total_size, unit='B', unit_scale=True)
         bar.set_description(os.path.split(file_path)[-1])
         incomplete_download = False
@@ -53,7 +54,7 @@ def download_file(url, file_path):
             raise e
         finally:
             bar.close()
-            if os.path.exists(file_path) and os.path.getsize(file_path) != total_size:
+            if os.path.exists(file_path) and 0 < total_size != os.path.getsize(file_path):
                 incomplete_download = True
                 os.remove(file_path)
 

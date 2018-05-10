@@ -10,6 +10,8 @@ import scipy
 from sklearn.model_selection import train_test_split
 import tarfile
 import tqdm
+from urllib.parse import quote as url_quote
+
 
 DATA_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/data/')
 
@@ -228,3 +230,27 @@ def load_tagged_sentences():
     all_tags = ['#EOS#', '#UNK#', 'ADV', 'NOUN', 'ADP', 'PRON', 'DET', '.', 'PRT', 'VERB', 'X', 'NUM', 'CONJ', 'ADJ']
     data = np.array([[(word.lower(), tag) for word, tag in sentence] for sentence in data])
     return data, all_tags
+
+
+def load_quickdraw_dataset(category, target_dir, fmt='npy'):
+    """
+    The Quick Draw Dataset is a collection of 50 million drawings across 345 categories,
+    contributed by players of the game Quick, Draw!.
+
+    https://github.com/googlecreativelab/quickdraw-dataset
+
+    :param category:
+    :param target_dir:
+    :param fmt:
+    :return: path to downloaded file
+    """
+    filename = '{}.{}'.format(category.replace(' ', '_'), fmt)
+    file_path = os.path.join(target_dir, filename)
+    folder = None
+    if fmt == 'npy':
+        folder = 'numpy_bitmap'
+
+    url_template = 'https://storage.googleapis.com/quickdraw_dataset/full/{}/{}.{}'
+    url = url_template.format(folder, url_quote(category), fmt)
+    util_download.download_file(url, file_path)
+    return file_path

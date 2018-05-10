@@ -18,6 +18,7 @@ Model Templates
 12. `Image Captioning <src/keras_model/image_captioning/__init__.py>`_ (Keras)
 13. `Image Classifier using ResNet and Fast.ai <src/pytorch_model/cnn/__init__.py>`_ (PyTorch)
 14. `Deep Q Network <src/keras_model/dqn/__init__.py>`_ (Keras)
+15. `Generative Adversarial Network (GAN) <src/keras_model/gan/__init__.py>`_ (Keras)
 
 Demonstrates
 ^^^^^^^^^^^^
@@ -37,6 +38,7 @@ Demonstrates
 12. Combining a CNN (encoder) and RNN (decoder) to caption images
 13. A higher level framework (3 lines of code for an image classifier)
 14. Deep Reinforcement Learning using CartPole environment in the OpenAI Gym
+15. Basic principles of a GAN to generate doodle images trained on the 'Quick, Draw!' dataset.
 
 
 Datasets
@@ -49,6 +51,7 @@ Datasets
 5. Names - list of human names
 6. Captioned Images
 7. Tagged sentences from the NLTK Brown Corpus
+8. `Quick, Draw! dataset`_
 
 
 Naming conventions
@@ -99,4 +102,5 @@ Useful references
 1. `How to test gradient implementations`_
 
 .. _`Flowers classification dataset`: http://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html
+.. _`Quick, Draw! dataset`: https://github.com/googlecreativelab/quickdraw-dataset
 .. _`How to test gradient implementations`: https://timvieira.github.io/blog/post/2017/04/21/how-to-test-gradient-implementations/
