@@ -21,7 +21,7 @@ forces the generator to efficiently capture the most salient aspects of the true
 
 See `"An applied introduction to generative adversarial networks"`_.
 
-Train an adversarial model on images from the `Quick, Draw!`_ dataset.
+Train an adversarial model on images from the `Quick, Draw! dataset`_.
 
 The Quick Draw Dataset is a collection of 50 million drawings across `345 categories`_,
 contributed by players of the game `Quick, Draw!`_. The drawings were captured as
@@ -29,7 +29,8 @@ timestamped vectors, tagged with metadata including what the player was asked to
 and in which country the player was located.
 
 
-.. _`"An applied introduction to generative adversarial networks"`: 
-.. _`Quick, Draw!`: https://quickdraw.withgoogle.com/data
+.. _`"An applied introduction to generative adversarial networks"`:
+    https://www.oreilly.com/ideas/an-applied-introduction-to-generative-adversarial-networks
+.. _`Quick, Draw! dataset`: https://quickdraw.withgoogle.com/data
 .. _`345 categories`: https://github.com/googlecreativelab/quickdraw-dataset/blob/master/categories.txt
 .. _`Quick, Draw!`: https://quickdraw.withgoogle.com/
