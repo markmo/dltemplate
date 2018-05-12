@@ -5,40 +5,42 @@ Model Templates
 ---------------
 
 1. `Multi-layer Perceptron <src/homemade/__init__.py>`_ - MNIST (Homemade framework)
-2. `Logistic Regression <src/tf_model/logreg/__init__.py>`_ - MNIST (TensorFlow)
-3. `Simple Multi-layer Perceptron <src/tf_model/simple/__init__.py>`_ - MNIST (TensorFlow)
-4. `Enhanced Multi-layer Perceptron using Batch Normalization <src/tf_model/enhanced/__init__.py>`_ - MNIST (TensorFlow)
-5. `Enhanced Multi-layer Perceptron using TensorFlow Estimator API <src/tf_model/with_estimator/__init__.py>`_ for training - MNIST
-6. `Simple CNN <src/tf_model/simple_cnn/__init__.py>`_ - MNIST (TensorFlow)
-7. `Enhanced CNN <src/keras_model/cnn/__init__.py>`_ - Image Classifier (Keras)
-8. `Image classifier <src/keras_model/image_classifier/__init__.py>`_ (Keras)
-9. `Autoencoder <src/keras_model/autoencoder/__init__.py>`_ - Denoising images, Facial Recognition, Face Generation (Keras)
-10. `RNN <src/keras_model/rnn/__init__.py>`_ - Name Generator (Keras)
-11. `Part of speech (POS) tagging <src/keras_model/pos_tagger/__init__.py>`_ using an RNN (Keras)
-12. `Image Captioning <src/keras_model/image_captioning/__init__.py>`_ (Keras)
-13. `Image Classifier using ResNet and Fast.ai <src/pytorch_model/cnn/__init__.py>`_ (PyTorch)
-14. `Deep Q Network <src/keras_model/dqn/__init__.py>`_ (Keras)
-15. `Generative Adversarial Network (GAN) <src/keras_model/gan/__init__.py>`_ (Keras)
+2. `CNN from scratch <src/cnn_from_scratch/>`_ (Homemade framework)
+3. `Logistic Regression <src/tf_model/logreg/__init__.py>`_ - MNIST (TensorFlow)
+4. `Simple Multi-layer Perceptron <src/tf_model/simple/__init__.py>`_ - MNIST (TensorFlow)
+5. `Enhanced Multi-layer Perceptron using Batch Normalization <src/tf_model/enhanced/__init__.py>`_ - MNIST (TensorFlow)
+6. `Enhanced Multi-layer Perceptron using TensorFlow Estimator API <src/tf_model/with_estimator/__init__.py>`_ for training - MNIST
+7. `Simple CNN <src/tf_model/simple_cnn/__init__.py>`_ - MNIST (TensorFlow)
+8. `Enhanced CNN <src/keras_model/cnn/__init__.py>`_ - Image Classifier (Keras)
+9. `Image classifier <src/keras_model/image_classifier/__init__.py>`_ (Keras)
+10. `Autoencoder <src/keras_model/autoencoder/__init__.py>`_ - Denoising images, Facial Recognition, Face Generation (Keras)
+11. `RNN <src/keras_model/rnn/__init__.py>`_ - Name Generator (Keras)
+12. `Part of speech (POS) tagging <src/keras_model/pos_tagger/__init__.py>`_ using an RNN (Keras)
+13. `Image Captioning <src/keras_model/image_captioning/__init__.py>`_ (Keras)
+14. `Image Classifier using ResNet and Fast.ai <src/pytorch_model/cnn/__init__.py>`_ (PyTorch)
+15. `Deep Q Network <src/keras_model/dqn/__init__.py>`_ (Keras)
+16. `Generative Adversarial Network (GAN) <src/keras_model/gan/>`_ (Keras)
 
 Demonstrates
 ^^^^^^^^^^^^
 
 1. Basic principles of a neural net framework with methods for forward and backward steps
-2. Basics of TensorFlow
-3. Basic setup for a deep network
-4. More complex network using batch normalization
-5. Training with the TensorFlow Estimator API
-6. Basic principles of a convolutional neural network
-7. CNN using Keras
-8. Fine-tuning InceptionV3 for image classification
-9. Autoencoders
-10. Basic principles of a recurrent neural network for character-level text generation
-11. Using an RNN for POS tagging, using the high-level Keras API for building an RNN,
+2. Basic principles of convolutional neural network
+3. Basics of TensorFlow
+4. Basic setup for a deep network
+5. More complex network using batch normalization
+6. Training with the TensorFlow Estimator API
+7. Basic principles of a convolutional neural network
+8. CNN using Keras
+9. Fine-tuning InceptionV3 for image classification
+10. Autoencoders
+11. Basic principles of a recurrent neural network for character-level text generation
+12. Using an RNN for POS tagging, using the high-level Keras API for building an RNN,
     creating a bidirectional RNN
-12. Combining a CNN (encoder) and RNN (decoder) to caption images
-13. A higher level framework (3 lines of code for an image classifier)
-14. Deep Reinforcement Learning using CartPole environment in the OpenAI Gym
-15. Basic principles of a GAN to generate doodle images trained on the 'Quick, Draw!' dataset.
+13. Combining a CNN (encoder) and RNN (decoder) to caption images
+14. A higher level framework (3 lines of code for an image classifier)
+15. Deep Reinforcement Learning using CartPole environment in the OpenAI Gym
+16. Basic principles of a GAN to generate doodle images trained on the 'Quick, Draw!' dataset.
 
 
 Datasets
