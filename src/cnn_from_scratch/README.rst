@@ -19,11 +19,11 @@ Pooling functions, including:
 
 A convolution layer transforms an input volume into an output volume of different size, as shown below.
 
-.. image:: ../../../images/conv_nn.png
+.. image:: ../../images/conv_nn.png
 
 Zero-padding adds zeros around the border of an image:
 
-.. image:: ../../../images/padding.png
+.. image:: ../../images/padding.png
 
 The main benefits of padding are:
 

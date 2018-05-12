@@ -4,21 +4,21 @@ Boilerplate for Deep Learning Projects
 Model Templates
 ---------------
 
-1. `Multi-layer Perceptron <src/homemade/__init__.py>`_ - MNIST (Homemade framework)
+1. `Multi-layer Perceptron <src/homemade/>`_ - MNIST (Homemade framework)
 2. `CNN from scratch <src/cnn_from_scratch/>`_ (Homemade framework)
-3. `Logistic Regression <src/tf_model/logreg/__init__.py>`_ - MNIST (TensorFlow)
-4. `Simple Multi-layer Perceptron <src/tf_model/simple/__init__.py>`_ - MNIST (TensorFlow)
-5. `Enhanced Multi-layer Perceptron using Batch Normalization <src/tf_model/enhanced/__init__.py>`_ - MNIST (TensorFlow)
-6. `Enhanced Multi-layer Perceptron using TensorFlow Estimator API <src/tf_model/with_estimator/__init__.py>`_ for training - MNIST
-7. `Simple CNN <src/tf_model/simple_cnn/__init__.py>`_ - MNIST (TensorFlow)
-8. `Enhanced CNN <src/keras_model/cnn/__init__.py>`_ - Image Classifier (Keras)
-9. `Image classifier <src/keras_model/image_classifier/__init__.py>`_ (Keras)
-10. `Autoencoder <src/keras_model/autoencoder/__init__.py>`_ - Denoising images, Facial Recognition, Face Generation (Keras)
-11. `RNN <src/keras_model/rnn/__init__.py>`_ - Name Generator (Keras)
-12. `Part of speech (POS) tagging <src/keras_model/pos_tagger/__init__.py>`_ using an RNN (Keras)
-13. `Image Captioning <src/keras_model/image_captioning/__init__.py>`_ (Keras)
-14. `Image Classifier using ResNet and Fast.ai <src/pytorch_model/cnn/__init__.py>`_ (PyTorch)
-15. `Deep Q Network <src/keras_model/dqn/__init__.py>`_ (Keras)
+3. `Logistic Regression <src/tf_model/logreg/>`_ - MNIST (TensorFlow)
+4. `Simple Multi-layer Perceptron <src/tf_model/simple/>`_ - MNIST (TensorFlow)
+5. `Enhanced Multi-layer Perceptron using Batch Normalization <src/tf_model/enhanced/>`_ - MNIST (TensorFlow)
+6. `Enhanced Multi-layer Perceptron using TensorFlow Estimator API <src/tf_model/with_estimator/>`_ for training - MNIST
+7. `Simple CNN <src/tf_model/simple_cnn/>`_ - MNIST (TensorFlow)
+8. `Enhanced CNN <src/keras_model/cnn/>`_ - Image Classifier (Keras)
+9. `Image classifier <src/keras_model/image_classifier/>`_ (Keras)
+10. `Autoencoder <src/keras_model/autoencoder/>`_ - Denoising images, Facial Recognition, Face Generation (Keras)
+11. `RNN <src/keras_model/rnn/>`_ - Name Generator (Keras)
+12. `Part of speech (POS) tagging <src/keras_model/pos_tagger/>`_ using an RNN (Keras)
+13. `Image Captioning <src/keras_model/image_captioning/>`_ (Keras)
+14. `Image Classifier using ResNet and Fast.ai <src/pytorch_model/cnn/>`_ (PyTorch)
+15. `Deep Q Network <src/keras_model/dqn/>`_ (Keras)
 16. `Generative Adversarial Network (GAN) <src/keras_model/gan/>`_ (Keras)
 
 Demonstrates
