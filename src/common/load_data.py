@@ -1,3 +1,4 @@
+from ast import literal_eval
 from common import util_download
 from common.util import get_all_filenames
 import cv2
@@ -95,11 +96,12 @@ def load_flowers(target_path):
         # original:
         # https://github.com/fchollet/deep-learning-models/releases/download/v0.5/inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5
         util_download.sequential_downloader(
+            'https://github.com/hse-aml/intro-to-dl',
             'v0.2',
             [
                 'inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5'
             ],
-            'readonly/keras/models'
+            READONLY_DIR + 'keras/models'
         )
 
     if not os.path.exists(READONLY_DIR + 'week3/102flowers.tgz'):
@@ -107,12 +109,13 @@ def load_flowers(target_path):
         # http://www.robots.ox.ac.uk/~vgg/data/flowers/102/102flowers.tgz
         # http://www.robots.ox.ac.uk/~vgg/data/flowers/102/imagelabels.mat
         util_download.sequential_downloader(
+            'https://github.com/hse-aml/intro-to-dl',
             'v0.3',
             [
                 '102flowers.tgz',
                 'imagelabels.mat'
             ],
-            'readonly/week3'
+            READONLY_DIR + 'week3'
         )
 
     util_download.link_all_files_from_dir(READONLY_DIR + 'week3/', target_path)
@@ -218,7 +221,7 @@ def load_names():
 
     :return:
     """
-    with open('../../../data/names.txt') as f:
+    with open(DATA_DIR + 'names.txt') as f:
         names = f.read()[:-1].split('\n')
         return [' ' + name for name in names]
 
@@ -254,3 +257,41 @@ def load_quickdraw_dataset(category, target_dir, fmt='npy'):
     url = url_template.format(folder, url_quote(category), fmt)
     util_download.download_file(url, file_path)
     return file_path
+
+
+def load_stack_overflow_dataset():
+    """
+    Posted titles from StackOverflow. All corpora (except for test) contain titles
+    of the posts and corresponding tags (100 tags are available).
+
+    :return:
+    """
+    if not os.path.exists(DATA_DIR + 'stackoverflow/train.tsv'):
+        util_download.sequential_downloader(
+            'https://github.com/hse-aml/natural-language-processing',
+            'week1',
+            [
+                'train.tsv',
+                'validation.tsv',
+                'test.tsv',
+                'text_prepare_tests.tsv'
+            ],
+            DATA_DIR + 'stackoverflow'
+        )
+
+    def read_data(filename):
+        data = pd.read_csv(filename, sep='\t')
+        data['tags'] = data['tags'].apply(literal_eval)
+        return data
+
+    train = read_data(DATA_DIR + 'stackoverflow/train.tsv')
+    val = read_data(DATA_DIR + 'stackoverflow/validation.tsv')
+    test = pd.read_csv(DATA_DIR + 'stackoverflow/test.tsv', sep='\t')
+
+    x_train = train['title'].values
+    y_train = train['tags'].values
+    x_val = val['title'].values
+    y_val = val['tags'].values
+    x_test = test['title'].values
+
+    return x_train, y_train, x_val, y_val, x_test

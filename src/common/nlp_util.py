@@ -6,8 +6,8 @@ import re
 from scipy import sparse as sp_sparse
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-REPLACE_BY_SPACE_RE = re.compile('[/(){}\[\]|@,;]')
-BAD_SYMBOLS_RE = re.compile('[^0-9a-z #+_]')
+REPLACE_BY_SPACE_RE = re.compile(r'[/(){}\[\]|@,;]')
+BAD_SYMBOLS_RE = re.compile(r'[^0-9a-z #+_]')
 STOPWORDS = set(stopwords.words('english'))
 
 
@@ -15,7 +15,7 @@ def clean_text(text):
     text = text.lower()
     text = re.sub(REPLACE_BY_SPACE_RE, ' ', text)
     text = re.sub(BAD_SYMBOLS_RE, '', text)
-    text = ' '.join(filter(lambda x: x not in stopwords, re.split(r'\s+', text)))
+    text = ' '.join(filter(lambda x: x not in STOPWORDS, re.split(r'\s+', text)))
     return text
 
 
@@ -25,8 +25,8 @@ def get_counts(rows):
     :param rows: list of lists or list of text
     :return: dict of items and counts
     """
-    if rows and isinstance(rows, list):
-        if isinstance(rows[0], (list, tuple)):
+    if isinstance(rows, (list, np.ndarray)):
+        if isinstance(rows[0], (list, np.ndarray, tuple)):
             return dict(Counter(x for row in rows for x in row))
         elif isinstance(rows[0], str):
             return dict(Counter(x for row in rows for x in row.split()))
@@ -101,8 +101,8 @@ def tfidf_features(x_train, x_val, x_test, min_df=5, max_df=0.9, ngram_range=Non
         ngram_range = (1, 2)
 
     vectorizer = TfidfVectorizer(min_df=min_df, max_df=max_df, ngram_range=ngram_range)
-    x_train = vectorizer.fit_transform(x_train).todense()
-    x_val = vectorizer.transform(x_val).todense()
-    x_test = vectorizer.transform(x_test).todense()
+    x_train = vectorizer.fit_transform(x_train)
+    x_val = vectorizer.transform(x_val)
+    x_test = vectorizer.transform(x_test)
 
     return x_train, x_val, x_test, vectorizer.vocabulary_

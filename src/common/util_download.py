@@ -64,16 +64,16 @@ def download_file(url, file_path):
         print(file_path, 'already exists')
 
 
-def download_from_github(version, filename, target_dir):
-    url = 'https://github.com/hse-aml/intro-to-dl/releases/download/{0}/{1}'.format(version, filename)
+def download_from_github(repo_path, version, filename, target_dir):
+    url = '{}/releases/download/{}/{}'.format(repo_path, version, filename)
     file_path = os.path.join(target_dir, filename)
     download_file(url, file_path)
 
 
-def sequential_downloader(version, filenames, target_dir):
+def sequential_downloader(repo_path, version, filenames, target_dir):
     os.makedirs(target_dir, exist_ok=True)
     for filename in filenames:
-        download_from_github(version, filename, target_dir)
+        download_from_github(repo_path, version, filename, target_dir)
 
 
 def link_all_files_from_dir(src_dir, dst_dir):

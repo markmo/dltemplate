@@ -20,6 +20,7 @@ Model Templates
 14. `Image Classifier using ResNet and Fast.ai <src/pytorch_model/cnn/>`_ (PyTorch)
 15. `Deep Q Network <src/keras_model/dqn/>`_ (Keras)
 16. `Generative Adversarial Network (GAN) <src/keras_model/gan/>`_ (Keras)
+17. `Predicting StackOverflow Tags using Classical NLP <src/nlp/multilabel_classification/>`_
 
 Demonstrates
 ^^^^^^^^^^^^
@@ -41,6 +42,7 @@ Demonstrates
 14. A higher level framework (3 lines of code for an image classifier)
 15. Deep Reinforcement Learning using CartPole environment in the OpenAI Gym
 16. Basic principles of a GAN to generate doodle images trained on the 'Quick, Draw!' dataset.
+17. Exploring classical NLP techniques for multi-label classification.
 
 
 Datasets
@@ -54,6 +56,26 @@ Datasets
 6. Captioned Images
 7. Tagged sentences from the NLTK Brown Corpus
 8. `Quick, Draw! dataset`_
+9. StackOverflow posts and corresponding tags
+
+
+Notation
+--------
+
+* Superscript :math:`[l]` denotes an object of the :math:`l^{th}` layer.
+    * Example: :math:`a^{[4]}` is the :math:`4^{th}` layer activation. :math:`W^{[5]}` and :math:`b^{[5]}`
+      are the :math:`5^{th}` layer parameters.
+* Superscript :math:`(i)` denotes an object from the :math:`i^{th}` example.
+    * Example: :math:`x^{(i)}` is the :math:`i^{th}` training example input.
+* Subscript :math:`i` denotes the :math:`i^{th}` entry of a vector.
+    * Example: :math:`a^{[l]}_i` denotes the :math:`i^{th}` entry of the activations in layer :math:`l`,
+      assuming this is a fully connected (FC) layer.
+* :math:`n_H`, :math:`n_W` and :math:`n_C` denote respectively the height, width and number of channels
+  of a given layer. If you want to reference a specific layer :math:`l`, you can also write
+  :math:`n_H^{[l]}`, :math:`n_W^{[l]}`, :math:`n_C^{[l]}`.
+* :math:`n_{H_{prev}}`, :math:`n_{W_{prev}}` and :math:`n_{C_{prev}}` denote respectively the height,
+  width and number of channels of the previous layer. If referencing a specific layer
+  :math:`l`, this could also be denoted :math:`n_H^{[l-1]}`, :math:`n_W^{[l-1]}`, :math:`n_C^{[l-1]}`.
 
 
 Naming conventions
