@@ -1,6 +1,7 @@
 import cv2
 from itertools import cycle
 import keras
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -128,6 +129,10 @@ def batch_generator(items, batch_size):
 
     if batch:
         yield batch
+
+
+def convert_to_one_hot(y, c):
+    return np.eye(c)[y.reshape(-1)].T
 
 
 def crop_and_preprocess(img, input_shape, preprocess_for_model):
@@ -307,6 +312,50 @@ def prepare_raw_bytes_for_model(raw_bytes, img_size, normalize_for_model=True):
         img = keras.applications.inception_v3.preprocess_input(img)  # normalize for model
 
     return img
+
+
+def random_minibatches(x, y, batch_size=64, seed=0):
+    """
+    Creates a list of random minibatches from (x, y)
+
+    :param x: input data of shape (number of examples, image height, image width, number of channels)
+    :param y: true "label" vector of shape (number of examples, number of classes)
+    :param batch_size: integer, minibatch size
+    :param seed: random seed
+    :return: list of synchronous (minibatch_x, minibatch_y)
+    """
+    # print('x shape:', x.shape)
+    # print('y shape:', y.shape)
+
+    np.random.seed(seed)
+    m = x.shape[0]  # number of training examples
+    minibatches = []
+
+    # Step 1: Shuffle (x, y)
+    permutation = list(np.random.permutation(m))
+    shuffled_x = x[permutation, :, :, :]
+    shuffled_y = y[permutation, :]
+
+    # Step 2: Partition (shuffled_X, shuffled_y), minus the end case
+    n_complete_minibatches = int(math.floor(m / batch_size))
+    for k in range(0, n_complete_minibatches):
+        minibatch_x = shuffled_x[k * batch_size:(k + 1) * batch_size, :, :, :]
+        minibatch_y = shuffled_y[k * batch_size:(k + 1) * batch_size, :]
+        minibatch = (minibatch_x, minibatch_y)
+        minibatches.append(minibatch)
+
+    # Handling the end case (last minibatch < batch_size)
+    if m % batch_size != 0:
+        minibatch_x = shuffled_x[n_complete_minibatches * batch_size:, :, :, :]
+        minibatch_y = shuffled_y[n_complete_minibatches * batch_size:, :]
+        minibatch = (minibatch_x, minibatch_y)
+        minibatches.append(minibatch)
+
+    # (minibatch_x, minibatch_y) = minibatches[0]
+    # print('minibatch_x shape:', minibatch_x.shape)
+    # print('minibatch_y shape:', minibatch_y.shape)
+
+    return minibatches
 
 
 def raw_generator_with_label_from_tar(tar_filename, files, labels):

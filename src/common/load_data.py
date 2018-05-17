@@ -2,6 +2,7 @@ from ast import literal_eval
 from common import util_download
 from common.util import get_all_filenames
 import cv2
+import h5py
 import keras
 import nltk
 import numpy as np
@@ -224,6 +225,17 @@ def load_names():
     with open(DATA_DIR + 'names.txt') as f:
         names = f.read()[:-1].split('\n')
         return [' ' + name for name in names]
+
+
+def load_signs_dataset():
+    train = h5py.File(DATA_DIR + 'signs/train_signs.h5', 'r')
+    test = h5py.File(DATA_DIR + 'signs/test_signs.h5', 'r')
+    x_train = np.array(train['train_set_x']).astype('float32')
+    y_train = np.array(train['train_set_y'])
+    x_test = np.array(test['test_set_x']).astype('float32')
+    y_test = np.array(test['test_set_y'])
+    classes = np.array(test['list_classes'])
+    return x_train, y_train, x_test, y_test, classes
 
 
 def load_tagged_sentences():

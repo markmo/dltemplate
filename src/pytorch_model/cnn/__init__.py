@@ -72,7 +72,7 @@ if __name__ == "__main__":
     # read args
     parser = ArgumentParser(description='Run Fast.ai CNN')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')
-    parser.add_argument('--learning_rate', dest='learning_rate', type=float, help='learning_rate')
+    parser.add_argument('--learning-rate', dest='learning_rate', type=float, help='learning_rate')
     parser.add_argument('--model-filename', dest='model_filename', help='model filename')
     parser.add_argument('--retrain', dest='retrain', help='retrain flag', action='store_true')
     parser.set_defaults(retrain=False)

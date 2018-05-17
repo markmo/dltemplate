@@ -21,6 +21,7 @@ Model Templates
 15. `Deep Q Network <src/keras_model/dqn/>`_ (Keras)
 16. `Generative Adversarial Network (GAN) <src/keras_model/gan/>`_ (Keras)
 17. `Predicting StackOverflow Tags using Classical NLP <src/nlp/multilabel_classification/>`_
+18. `CNN using Sonnet <src/sonnet_model/cnn>`_ - Signs dataset
 
 Demonstrates
 ^^^^^^^^^^^^
@@ -43,6 +44,7 @@ Demonstrates
 15. Deep Reinforcement Learning using CartPole environment in the OpenAI Gym
 16. Basic principles of a GAN to generate doodle images trained on the 'Quick, Draw!' dataset.
 17. Exploring classical NLP techniques for multi-label classification.
+18. Basic usage of Sonnet to organize a TensorFlow model
 
 
 Datasets
@@ -57,6 +59,7 @@ Datasets
 7. Tagged sentences from the NLTK Brown Corpus
 8. `Quick, Draw! dataset`_
 9. StackOverflow posts and corresponding tags
+10. Sign language - numbers 0 - 5
 
 
 Notation
