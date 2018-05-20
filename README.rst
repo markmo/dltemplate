@@ -23,6 +23,7 @@ Model Templates
 17. `Predicting StackOverflow Tags using Classical NLP <src/nlp/multilabel_classification/>`_
 18. `CNN using Sonnet <src/sonnet_model/cnn>`_ - Signs dataset
 19. `Recognize named entities on Twitter using a Bidirectional LSTM <src/tf_model/ner/>`_ (TensorFlow)
+20. `Recognize named entities on Twitter using CRF <src/nlp/crf_ner/>`_ (sklearn-crfsuite)
 
 Demonstrates
 ^^^^^^^^^^^^
@@ -47,6 +48,7 @@ Demonstrates
 17. Exploring classical NLP techniques for multi-label classification.
 18. Basic usage of Sonnet to organize a TensorFlow model
 19. Basic principles of a Bidirectional LSTM for named entity recognition
+20. Basic principles of Conditional Random Fields (CRF) and comparison with Bi-LSTM on the same task
 
 
 Datasets

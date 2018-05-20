@@ -104,7 +104,7 @@ def _print_tag_metrics(tag, tag_results):
           (': precision: {tot_prec:6.2f}%, ' +
            'recall: {tot_recall:6.2f}%, ' +
            'F1: {tot_f1:6.2f}, ' +
-           'predicted: {tot_pred:4d}\n').format(tot_pre=tag_results['precision'],
+           'predicted: {tot_pred:4d}\n').format(tot_prec=tag_results['precision'],
                                                 tot_recall=tag_results['recall'],
                                                 tot_f1=tag_results['f1'],
                                                 tot_pred=tag_results['n_predicted_entities']))

@@ -321,6 +321,7 @@ def load_twitter_entities_dataset():
 
     :return:
     """
+    # nltk.download('averaged_perceptron_tagger')
     if not os.path.exists(DATA_DIR + 'twitter/train.tsv'):
         util_download.sequential_downloader(
             'https://github.com/hse-aml/natural-language-processing',
