@@ -22,6 +22,7 @@ Model Templates
 16. `Generative Adversarial Network (GAN) <src/keras_model/gan/>`_ (Keras)
 17. `Predicting StackOverflow Tags using Classical NLP <src/nlp/multilabel_classification/>`_
 18. `CNN using Sonnet <src/sonnet_model/cnn>`_ - Signs dataset
+19. `Recognize named entities on Twitter using a Bidirectional LSTM <src/tf_model/ner/>`_ (TensorFlow)
 
 Demonstrates
 ^^^^^^^^^^^^
@@ -45,6 +46,7 @@ Demonstrates
 16. Basic principles of a GAN to generate doodle images trained on the 'Quick, Draw!' dataset.
 17. Exploring classical NLP techniques for multi-label classification.
 18. Basic usage of Sonnet to organize a TensorFlow model
+19. Basic principles of a Bidirectional LSTM for named entity recognition
 
 
 Datasets
@@ -60,6 +62,7 @@ Datasets
 8. `Quick, Draw! dataset`_
 9. StackOverflow posts and corresponding tags
 10. Sign language - numbers 0 - 5
+11. Tweets tagged with named entities
 
 
 Notation

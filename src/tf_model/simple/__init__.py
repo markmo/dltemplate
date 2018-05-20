@@ -2,22 +2,10 @@ from argparse import ArgumentParser
 from common.load_data import load_mnist_dataset
 from common.util import merge_dict, one_hot_encode
 import matplotlib.pyplot as plt
+from tf_model.simple.hyperparams import get_constants
 from tf_model.simple.model_setup import get_parameters, model_builder, network_builder
 from tf_model.setup import get_inputs
 from tf_model.util import train
-
-
-def get_constants():
-    return {
-        'n_input': 28 * 28,  # number of input parameters
-        'n_classes': 10,  # number of output classes
-        'n_hidden': 50,
-        'learning_rate': 0.001,
-        'early_stop_threshold': 0.98,
-        'n_epochs': 50,  # number of training iterations
-        'batch_size': 128,
-        'n_report_steps': 1  # number of steps between reporting
-    }
 
 
 def run(constant_overwrites):

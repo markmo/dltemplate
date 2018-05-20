@@ -307,3 +307,60 @@ def load_stack_overflow_dataset():
     x_test = test['title'].values
 
     return x_train, y_train, x_val, y_val, x_test
+
+
+URL_TOKEN = '<URL>'
+USR_TOKEN = '<USR>'
+
+
+def load_twitter_entities_dataset():
+    """
+    Contains tweets with named-entity tags. Every line of a file contains
+    a pair of a token (word/punctuation symbol) and a tag, separated by
+    whitespace. Different tweets are separated by an empty line.
+
+    :return:
+    """
+    if not os.path.exists(DATA_DIR + 'twitter/train.tsv'):
+        util_download.sequential_downloader(
+            'https://github.com/hse-aml/natural-language-processing',
+            'week2',
+            [
+                'train.txt',
+                'validation.txt',
+                'test.txt'
+            ],
+            DATA_DIR + 'twitter'
+        )
+
+    def read_data(filename):
+        tokens = []
+        tags = []
+        tweet_tokens = []
+        tweet_tags = []
+        for line in open(filename, encoding='utf-8'):
+            line = line.strip()
+            if not line:
+                if tweet_tokens:
+                    tokens.append(tweet_tokens)
+                    tags.append(tweet_tags)
+
+                tweet_tokens = []
+                tweet_tags = []
+            else:
+                token, tag = line.split()
+                if token.startswith('http://') or token.startswith('https://'):
+                    token = URL_TOKEN
+                elif token.startswith('@'):
+                    token = USR_TOKEN
+
+                tweet_tokens.append(token)
+                tweet_tags.append(tag)
+
+        return tokens, tags
+
+    tokens_train, tags_train = read_data(DATA_DIR + 'twitter/train.txt')
+    tokens_val, tags_val = read_data(DATA_DIR + 'twitter/validation.txt')
+    tokens_test, tags_test = read_data(DATA_DIR + 'twitter/test.txt')
+
+    return tokens_train, tags_train, tokens_val, tags_val, tokens_test, tags_test
