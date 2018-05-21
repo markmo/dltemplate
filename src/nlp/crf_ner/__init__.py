@@ -1,9 +1,9 @@
 from argparse import ArgumentParser
 from common.load_data import load_twitter_entities_dataset
 from common.util import merge_dict
-from sklearn_crfsuite import CRF
 from nlp.crf_ner.hyperparams import get_constants
 from nlp.crf_ner.util import build_sentences, evaluate, sentence_features, sentence_labels
+from sklearn_crfsuite import CRF
 
 
 def run(constant_overwrites):
@@ -33,6 +33,7 @@ def run(constant_overwrites):
     print('max_iterations:', max_iterations)
     print('all_possible_transitions:', all_possible_transitions)
 
+    # Build the CRF Model
     model = CRF(algorithm=algorithm,
                 c1=c1,
                 c2=c2,

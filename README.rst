@@ -24,6 +24,7 @@ Model Templates
 18. `CNN using Sonnet <src/sonnet_model/cnn>`_ - Signs dataset
 19. `Recognize named entities on Twitter using a Bidirectional LSTM <src/tf_model/ner/>`_ (TensorFlow)
 20. `Recognize named entities on Twitter using CRF <src/nlp/crf_ner/>`_ (sklearn-crfsuite)
+21. `Recognize named entities on Twitter using Bi-LSTM + CRF <src/tf_model/bi_lstm_crf_ner/>`_ (TensorFlow)
 
 Demonstrates
 ^^^^^^^^^^^^
@@ -49,6 +50,7 @@ Demonstrates
 18. Basic usage of Sonnet to organize a TensorFlow model
 19. Basic principles of a Bidirectional LSTM for named entity recognition
 20. Basic principles of Conditional Random Fields (CRF) and comparison with Bi-LSTM on the same task
+21. Combining a Bi-LSTM with CRF to get learned features + constraints
 
 
 Datasets

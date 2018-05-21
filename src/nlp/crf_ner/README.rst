@@ -21,7 +21,7 @@ function could emphasize adjective and assign the number one when an adjective i
 zero otherwise. The feature function could look at the previous word or the next-next-word
 as well.
 
-For a thorough overview, read `An introduction to conditional random fields`_ by Charles
+For a thorough overview, read `"An introduction to conditional random fields"`_ by Charles
 Sutton and Andrew McCallum in Machine Learning Vol. 4, No. 4 (2011) 267–373.
 
-.. _`An introduction to conditional random fields`: http://homepages.inf.ed.ac.uk/csutton/publications/crftut-fnt.pdf
+.. _`"An introduction to conditional random fields"`: http://homepages.inf.ed.ac.uk/csutton/publications/crftut-fnt.pdf

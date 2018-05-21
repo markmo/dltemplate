@@ -2,16 +2,15 @@ import numpy as np
 import tensorflow as tf
 
 
-class BiLSTMModel(object):
+class BiLSTMCRFModel(object):
     """
     This is more Lego-like than it used to be!
     """
 
-    def __init__(self, vocab_size, n_tags, embedding_dim, n_hidden_rnn, pad_idx):
+    def __init__(self, vocab_size, n_tags, embedding_dim, n_hidden_rnn):
         self.__declare_placeholders()
         self.__build_layers(vocab_size, embedding_dim, n_hidden_rnn, n_tags)
-        self.__compute_predictions()
-        self.__compute_loss(n_tags, pad_idx)
+        self.__compute_loss()
         self.__optimize()
 
     def __declare_placeholders(self):
@@ -71,42 +70,16 @@ class BiLSTMModel(object):
         # Shape: [batch_size, sequence_len, n_tags].
         self.logits = tf.layers.dense(output, n_tags, activation=None)
 
-    def __compute_predictions(self):
+    def __compute_loss(self):
         """
-        Transforms logits to probabilities and finds the most probable tags.
 
         :return:
         """
-        # Create softmax function
-        softmax_output = tf.nn.softmax(self.logits)
+        log_likelihood, transition_params = \
+            tf.contrib.crf.crf_log_likelihood(self.logits, self.ground_truth_tags, self.lengths)
 
-        # Use argmax to get the most probable tags
-        self.predictions = tf.argmax(softmax_output, axis=-1)
-
-    def __compute_loss(self, n_tags, pad_idx):
-        """
-        Computes masked cross-entropy loss with logits to ignore padding
-        in loss calculations.
-
-        :return:
-        """
-        ground_truth_tags_one_hot = tf.one_hot(self.ground_truth_tags, n_tags)
-        losses = tf.nn.softmax_cross_entropy_with_logits(logits=self.logits,
-                                                         labels=ground_truth_tags_one_hot)
-
-        # mask = tf.cast(tf.not_equal(self.input_batch, pad_idx), tf.float32)
-
-        # Create loss function which doesn't operate with <PAD> tokens
-        # self.loss = tf.reduce_sum(losses * mask, axis=-1) / tf.reduce_sum(mask, axis=-1)
-
-        # Alternatively:
-        # shape = (batch, sentence, n_tags)
-        mask = tf.sequence_mask(self.lengths)
-
-        # apply mask
-        losses = tf.boolean_mask(losses, mask)
-
-        self.loss = tf.reduce_mean(losses)
+        self.transition_params = transition_params
+        self.loss = tf.reduce_mean(-log_likelihood)
 
     def __optimize(self):
         """
@@ -135,8 +108,36 @@ class BiLSTMModel(object):
         session.run(self.train_op, feed_dict=feed_dict)
 
     def predict_for_batch(self, session, x_batch, lengths):
+        """
+        Instead of using softmax to decode scores into predictions, we're going
+        to use a linear-chain CRF instead. The first method makes local choices.
+        In other words, even if we capture some information from the context in
+        our output thanks to the bi-LSTM, the tagging decision is still local.
+
+        For instance, in "New York", the fact that we are tagging "York" as a
+        location should help us to decide that "New" corresponds to the beginning
+        of a location.
+
+        To make the final predictions with the CRF, we have to use dynamic
+        programming. Fortunately, there is a contributed package in TensorFlow
+        that will do this for us. This function is pure Python at present.
+
+        :param session:
+        :param x_batch:
+        :param lengths:
+        :return:
+        """
         feed_dict = {
             self.input_batch: x_batch,
             self.lengths: lengths
         }
-        return session.run(self.predictions, feed_dict=feed_dict)
+        viterbi_sequences = []
+        logits, transition_params = session.run([self.logits, self.transition_params], feed_dict=feed_dict)
+
+        # iterate over the sentences because no batching in `viterbi_decode`
+        for logit, length in zip(logits, lengths):
+            logit = logit[:length]  # keep only the valid steps
+            viterbi_sequence, viterbi_score = tf.contrib.crf.viterbi_decode(logit, transition_params)
+            viterbi_sequences += [viterbi_sequence]
+
+        return viterbi_sequences
