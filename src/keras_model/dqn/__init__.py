@@ -45,7 +45,7 @@ def run(constant_overwrites):
                 agent.save(OUTPUT_DIR + 'weights_' + '{:04d}'.format(e) + '.hdf5')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run CartPole DQN')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')

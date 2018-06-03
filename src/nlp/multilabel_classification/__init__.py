@@ -70,7 +70,7 @@ def run(constant_overwrites):
     print_words_for_tag(classifier_tfidf, 'linux', binarizer.classes, tfidf_vocab_reverse, n=5)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run Multi-label Classification')
     parser.add_argument('--size', dest='dict_size', type=int, help='size of dictionary')

@@ -25,6 +25,10 @@ Model Templates
 19. `Recognize named entities on Twitter using a Bidirectional LSTM <src/tf_model/ner/>`_ (TensorFlow)
 20. `Recognize named entities on Twitter using CRF <src/nlp/crf_ner/>`_ (sklearn-crfsuite)
 21. `Recognize named entities on Twitter using Bi-LSTM + CRF <src/tf_model/bi_lstm_crf_ner/>`_ (TensorFlow)
+22. `Detect Duplicate Questions on StackOverflow using Embeddings <src/nlp/duplicate_questions/>`_
+23. `Train an image captioning system <src/keras_model/image_captioning/>`_ (Keras)
+24. `Building a Simple Calculator using a Sequence-to-Sequence Model <src/tf_model/seq2seq/>`_ (TensorFlow)
+
 
 Demonstrates
 ^^^^^^^^^^^^
@@ -51,6 +55,9 @@ Demonstrates
 19. Basic principles of a Bidirectional LSTM for named entity recognition
 20. Basic principles of Conditional Random Fields (CRF) and comparison with Bi-LSTM on the same task
 21. Combining a Bi-LSTM with CRF to get learned features + constraints
+22. Use of embeddings at a sentence level, testing `StarSpace`_ from Facebook Research.
+23. Combining a CNN encoder with an RNN decoder.
+24. Solving sequence-to-sequence prediction tasks.
 
 
 Datasets
@@ -67,6 +74,7 @@ Datasets
 9. StackOverflow posts and corresponding tags
 10. Sign language - numbers 0 - 5
 11. Tweets tagged with named entities
+12. Duplicate questions set, with positive and negative examples, from StackOverflow
 
 
 Notation
@@ -138,3 +146,12 @@ Useful references
 .. _`Flowers classification dataset`: http://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html
 .. _`Quick, Draw! dataset`: https://github.com/googlecreativelab/quickdraw-dataset
 .. _`How to test gradient implementations`: https://timvieira.github.io/blog/post/2017/04/21/how-to-test-gradient-implementations/
+
+
+Ideas
+-----
+
+* Turn trainers into generators, one epoch at a time
+
+
+.. _`StarSpace`: https://github.com/facebookresearch/StarSpace

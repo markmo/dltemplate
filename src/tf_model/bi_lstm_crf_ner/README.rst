@@ -21,3 +21,23 @@ A NER model needs to provide the following sequence of tags:
 
 Where B- and I- prefixes stand for the beginning and inside of the entity, while O stands
 for out-of-tag or no tag. Markup with this prefix scheme is called BIO markup.
+
+For a given sequence, we look up the embedding of each word and process this vector
+with the LSTM layers for the high level representation. After having finished the
+whole sequence, we take the representations of all time steps as the input features
+for CRF to perform the sequence tagging task. The traditional viterbi decoding is used
+for inference. The gradient of the log-likelihood of the tag sequence with respect to
+the input of the CRF is calculated and back-propagated to all the LSTM layers to get
+the gradient of the parameters.
+
+    On one hand, the LSTM network is capable of capturing long distance dependencies,
+    especially in its deep form. On the other hand, traditional feature templates are
+    only good at describing the properties in neighborhood, and a small mistake in the
+    syntactic tree will result in a large deviation in tagging. Moreover, from the
+    analysis of the internal states of the deep network, we see that the model implicitly
+    learns to capture some syntactic structure similar to the dependency parsing tree.
+
+| `End-to-end Learning of Semantic Role Labeling Using Recurrent Neural Networks`_,
+| Jie Zhou and Wei Xu, Baidu Research
+
+.. _`End-to-end Learning of Semantic Role Labeling Using Recurrent Neural Networks`: http://www.aclweb.org/anthology/P15-1109

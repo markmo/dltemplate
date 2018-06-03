@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from common.load_data import load_cifar10_dataset
 from common.util import merge_dict
-from common.util_keras import ModelSaveCallback, reset_tf_session, TqdmProgressCallback
+from common.util_keras import ModelSaveCallback, reset_tf_session, TQDMProgressCallback
 from keras_model.cnn.hyperparams import get_constants
 from keras_model.cnn.model_setup import network_builder, model_builder
 from keras import backend as ke
@@ -63,7 +63,7 @@ def run(constant_overwrites):
                   epochs=constants['n_epochs'],
                   callbacks=[LearningRateScheduler(lr_scheduler),
                              LrHistory(),
-                             TqdmProgressCallback(),
+                             TQDMProgressCallback(),
                              ModelSaveCallback(model_filename)],
                   validation_data=(x_test, y_test),
                   shuffle=True,
@@ -73,7 +73,7 @@ def run(constant_overwrites):
         model.save_weights('weights.h5')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run Keras CNN')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')

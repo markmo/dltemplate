@@ -2,16 +2,17 @@ from ast import literal_eval
 from common import util_download
 from common.util import get_all_filenames
 import cv2
+import gensim
 import h5py
 import keras
 import nltk
 import numpy as np
 import os
 import pandas as pd
-import scipy
+import scipy.io as spio
 from sklearn.model_selection import train_test_split
 import tarfile
-import tqdm
+from tqdm import tqdm
 from urllib.parse import quote as url_quote
 
 
@@ -125,7 +126,7 @@ def load_flowers(target_path):
     all_files = sorted(get_all_filenames(os.path.join(target_path, '102flowers.tgz')))
 
     # read class labels (0, 1, 2, ...)
-    all_labels = scipy.io.loadmat(os.path.join(target_path, 'imagelabels.mat'))['labels'][0] - 1
+    all_labels = spio.loadmat(os.path.join(target_path, 'imagelabels.mat'))['labels'][0] - 1
 
     n_classes = len(np.unique(all_labels))
 
@@ -161,7 +162,7 @@ def load_lfw_dataset(use_raw=False, dx=80, dy=80, dimx=45, dimy=45):
     photo_ids = []
 
     with tarfile.open(RAW_IMAGES_NAME if use_raw else IMAGES_NAME) as f:
-        for m in tqdm.tqdm_notebook(f.getmembers()):
+        for m in tqdm(f.getmembers()):
             if m.isfile() and m.name.endswith('.jpg'):
                 # prepare image
                 img = decode_image_from_raw_bytes(f.extractfile(m).read())
@@ -309,6 +310,44 @@ def load_stack_overflow_dataset():
     return x_train, y_train, x_val, y_val, x_test
 
 
+def load_stack_overflow_questions_dataset():
+    """
+    Predefined corpora. All files are tab-separated, but have different
+    formats:
+
+    * train - contains similar sentences at the same row
+    * validation - contains the following columns: question, similar
+      question (positive example), negative example 1, negative example 2, ...
+    * test - contains the following columns: question, example 1, example 2, ...
+    :return:
+    """
+    if not os.path.exists(DATA_DIR + 'questions/train.tsv'):
+        util_download.sequential_downloader(
+            'https://github.com/hse-aml/natural-language-processing',
+            'week3',
+            [
+                'train.tsv',
+                'validation.tsv',
+                'test.tsv',
+                'test_embeddings.tsv'
+            ],
+            DATA_DIR + 'questions'
+        )
+
+    def read_corpus(filename):
+        data = []
+        for line in open(filename, encoding='utf-8'):
+            data.append(line.strip().split('\t'))
+
+        return data
+
+    train = read_corpus(DATA_DIR + 'questions/train.tsv')
+    val = read_corpus(DATA_DIR + 'questions/validation.tsv')
+    test = read_corpus(DATA_DIR + 'questions/test.tsv')
+
+    return train, val, test
+
+
 URL_TOKEN = '<URL>'
 USR_TOKEN = '<USR>'
 
@@ -322,7 +361,7 @@ def load_twitter_entities_dataset():
     :return:
     """
     # nltk.download('averaged_perceptron_tagger')
-    if not os.path.exists(DATA_DIR + 'twitter/train.tsv'):
+    if not os.path.exists(DATA_DIR + 'twitter/train.txt'):
         util_download.sequential_downloader(
             'https://github.com/hse-aml/natural-language-processing',
             'week2',
@@ -365,3 +404,20 @@ def load_twitter_entities_dataset():
     tokens_test, tags_test = read_data(DATA_DIR + 'twitter/test.txt')
 
     return tokens_train, tags_train, tokens_val, tags_val, tokens_test, tags_test
+
+
+def load_word2vec_embeddings(limit=500000):
+    """
+    Pre-trained word vectors from Google, trained on a part of Google News
+    dataset (about 100 billion words). The model contains 300-dimensional
+    vectors for 3 million words and phrases.
+
+    https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing
+
+    :param limit:
+    :return:
+    """
+    url = 'https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing'
+    file_path = DATA_DIR + 'word2vec/GoogleNews-vectors-negative300.bin'
+    util_download.download_file(url, file_path)
+    return gensim.models.KeyedVectors.load_word2vec_format(file_path, binary=True, limit=limit)

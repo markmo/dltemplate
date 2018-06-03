@@ -4,17 +4,17 @@ import keras.backend as ke
 from keras.models import save_model
 import numpy as np
 import tensorflow as tf
-import tqdm
+from tqdm import tqdm
 
 
-class TqdmProgressCallback(keras.callbacks.Callback):
+class TQDMProgressCallback(keras.callbacks.Callback):
 
     def __init__(self):
         super().__init__()
         self.epochs = 0
         self.use_steps = False
         self.target = None
-        self.prog_bar = None
+        self.progress_bar = None
         self.log_values_by_metric = None
 
     def on_train_begin(self, logs=None):
@@ -28,33 +28,33 @@ class TqdmProgressCallback(keras.callbacks.Callback):
         else:
             self.use_steps = False
             self.target = self.params['samples']
-        self.prog_bar = tqdm.tqdm_notebook(total=self.target)
+        self.progress_bar = tqdm(total=self.target)
         self.log_values_by_metric = defaultdict(list)
 
-    def _set_prog_bar_desc(self, logs):
+    def _set_progress_bar_desc(self, logs):
         for k in self.params['metrics']:
             if k in logs:
                 self.log_values_by_metric[k].append(logs[k])
         desc = "; ".join("{0}: {1:.4f}".format(k, np.mean(values)) for k, values in self.log_values_by_metric.items())
-        if hasattr(self.prog_bar, "set_description_str"):  # for new tqdm versions
-            self.prog_bar.set_description_str(desc)
+        if hasattr(self.progress_bar, "set_description_str"):  # for new tqdm versions
+            self.progress_bar.set_description_str(desc)
         else:
-            self.prog_bar.set_description(desc)
+            self.progress_bar.set_description(desc)
 
     def on_batch_end(self, batch, logs=None):
         logs = logs or {}
         if self.use_steps:
-            self.prog_bar.update(1)
+            self.progress_bar.update(1)
         else:
             batch_size = logs.get('size', 0)
-            self.prog_bar.update(batch_size)
-        self._set_prog_bar_desc(logs)
+            self.progress_bar.update(batch_size)
+        self._set_progress_bar_desc(logs)
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
-        self._set_prog_bar_desc(logs)
-        self.prog_bar.update(1)  # workaround to show description
-        self.prog_bar.close()
+        self._set_progress_bar_desc(logs)
+        self.progress_bar.update(1)  # workaround to show description
+        self.progress_bar.close()
 
 
 class ModelSaveCallback(keras.callbacks.Callback):

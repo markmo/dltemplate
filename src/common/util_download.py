@@ -4,7 +4,7 @@ import requests
 import shutil
 import time
 import traceback
-import tqdm
+from tqdm import tqdm
 
 
 READONLY_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/readonly/')
@@ -42,7 +42,7 @@ def download_file(url, file_path):
     if not os.path.exists(file_path):
         r = requests.get(url, stream=True)
         total_size = int(r.headers.get('content-length') or 0)  # in case content-length isn't set
-        bar = tqdm.tqdm_notebook(total=total_size, unit='B', unit_scale=True)
+        bar = tqdm(total=total_size, unit='B', unit_scale=True)
         bar.set_description(os.path.split(file_path)[-1])
         incomplete_download = False
         try:

@@ -3,7 +3,8 @@ from sklearn.metrics import roc_auc_score
 import tensorflow as tf
 
 
-def train(data, constants, input_placeholders, optimizer, loss_op, model, y_, minibatch=True):
+def train(data, constants, input_placeholders, optimizer, loss_op, model, y_,
+          minibatch=True, saver=None):
     batch_size = constants['batch_size']
     n_epochs = constants['n_epochs']
     n_report_steps = constants['n_report_steps']
@@ -57,6 +58,9 @@ def train(data, constants, input_placeholders, optimizer, loss_op, model, y_, mi
         print('Train accuracy:', accuracy.eval({input_x: x_train, input_y: y_train}))
         print('Test accuracy:', accuracy.eval({input_x: x_test, input_y: y_test}))
         print('Test AUC:', roc_auc_score(y_test, sess.run(y_, {input_x: x_test})))
+
+        if saver:
+            saver.save(sess, 'data/model')
 
 
 def train_using_estimator(data, model_builder, constants):

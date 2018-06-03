@@ -68,7 +68,7 @@ def run(constant_overwrites):
     print('Finished')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run Fast.ai CNN')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')

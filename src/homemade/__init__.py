@@ -55,7 +55,7 @@ def run(constant_overwrites):
             plt.show()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run homemade model')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')

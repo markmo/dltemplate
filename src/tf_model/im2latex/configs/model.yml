@@ -1,0 +1,14 @@
+export_name: model.yml
+encoder_cnn: vanilla
+positional_embeddings: true
+attn_cell_config:
+  cell_type: lstm
+  n_hidden_units: 512
+  dim_e: 512
+  dim_o: 512
+  dim_embeddings: 80
+decoding: beam_search
+bean_size: 5
+div_gamma: 1
+div_prob: 0
+max_length_formula: 150

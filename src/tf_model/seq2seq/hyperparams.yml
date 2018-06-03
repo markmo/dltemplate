@@ -1,0 +1,8 @@
+embeddings_size: 20  # dimension of embeddings
+max_iter: 7  # maximum number of steps in decoder
+n_hidden: 512  # size of hidden layers for RNN
+batch_size: 128  #
+n_epochs: 10
+learning_rate: 0.001
+dropout_keep_prob: 0.5
+max_len: 20

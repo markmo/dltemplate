@@ -160,3 +160,4 @@ readonly
 **/weights*
 **/checkpoint
 **/.DS_Store
+**/starspace_embedding*

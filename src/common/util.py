@@ -11,7 +11,8 @@ from scipy import interp
 from sklearn.metrics import auc, roc_curve
 import tarfile
 import threading
-import tqdm
+from tqdm import tqdm
+import yaml
 from zipfile import ZipFile
 
 
@@ -40,7 +41,7 @@ def apply_model(zip_filename, model, preprocess_for_model, extensions=('.jpg',),
 
     def reading_thread(zip_fname):
         zf = ZipFile(zip_fname)
-        for fname in tqdm.tqdm_notebook(zf.namelist()):
+        for fname in tqdm(zf.namelist()):
             if kill_read_thread.is_set():
                 break
 
@@ -199,6 +200,26 @@ def image_center_crop2(img):
     cropped_height = int((height - s) / 2)
     cropped_img = img[cropped_height:(cropped_height + s), cropped_width:(cropped_width + s), :]
     return cropped_img
+
+
+def is_number(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        pass
+
+    try:
+        import unicodedata
+        unicodedata.numeric(value)
+        return True
+    except (TypeError, ValueError):
+        return False
+
+
+def load_hyperparams(file_path):
+    with open(file_path) as f:
+        return yaml.load(f)
 
 
 def map_token_to_id(tokens):

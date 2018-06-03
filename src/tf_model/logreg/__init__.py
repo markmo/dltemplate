@@ -44,7 +44,7 @@ def run(constant_overwrites):
     train(data, constants, (input_x, input_y), optimizer, loss_op, model, y_, minibatch=False)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run TF Logistic Regression model')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')

@@ -41,7 +41,7 @@ def run(constant_overwrites):
     eval_conll(model, sess, tokens_test, tags_test, tok2idx, tag2idx, idx2tok, idx2tag)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run TF Bi-LSTM NER model')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')

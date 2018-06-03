@@ -32,7 +32,7 @@ def run(constants):
     train(x_train, y_train, x_test, y_test, learning_rate=learning_rate, n_epochs=n_epochs)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run Keras CNN')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')

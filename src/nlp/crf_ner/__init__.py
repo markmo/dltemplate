@@ -52,7 +52,7 @@ def run(constant_overwrites):
     evaluate(model, x_test, y_test, short_report=False)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run CRF NER model')
     parser.add_argument('--algorithm', dest='algorithm', help='training algorithm')

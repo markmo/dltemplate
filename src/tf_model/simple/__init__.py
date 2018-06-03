@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from common.load_data import load_mnist_dataset
 from common.util import merge_dict, one_hot_encode
 import matplotlib.pyplot as plt
+import tensorflow as tf
 from tf_model.simple.hyperparams import get_constants
 from tf_model.simple.model_setup import get_parameters, model_builder, network_builder
 from tf_model.setup import get_inputs
@@ -29,11 +30,13 @@ def run(constant_overwrites):
     }
     input_x, input_y = get_inputs(constants)
     parameters = get_parameters(constants)
-    optimizer, loss_op, model, y_ = model_builder(network_builder, input_x, input_y, parameters, constants)
-    train(data, constants, (input_x, input_y), optimizer, loss_op, model, y_, minibatch=True)
+    optimizer, loss_op, predict_op, model, y_ = model_builder(network_builder, input_x, input_y, parameters, constants)
+    saver = tf.train.Saver()
+    tf.add_to_collection('predict_op', predict_op)
+    train(data, constants, (input_x, input_y), optimizer, loss_op, model, y_, minibatch=True, saver=saver)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run TF Simple NN model')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')

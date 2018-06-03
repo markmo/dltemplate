@@ -7,6 +7,19 @@
           <option value="tensorflow.placeholder" />
           <option value="tensorflow.float32" />
           <option value="cv2.imdecode" />
+          <option value="tf_model.im2latex.utils.general.Config.export_name" />
+          <option value="tf_model.im2latex.utils.general.Config.path_formulas_train" />
+          <option value="tf_model.im2latex.utils.general.Config.path_matching_train" />
+          <option value="tf_model.im2latex.utils.general.Config.dir_images_train" />
+          <option value="tf_model.im2latex.utils.general.Config.dir_images_val" />
+          <option value="tf_model.im2latex.utils.general.Config.path_formulas_test" />
+          <option value="tf_model.im2latex.utils.general.Config.path_matching_test" />
+          <option value="tf_model.im2latex.utils.general.Config.path_matching_val" />
+          <option value="tf_model.im2latex.utils.general.Config.path_formulas_val" />
+          <option value="tf_model.im2latex.utils.general.Config.dir_images_test" />
+          <option value="tf_model.im2latex.utils.general.Config.buckets" />
+          <option value="tf_model.im2latex.utils.general.Config.path_vocab" />
+          <option value="tf_model.im2latex.utils.general.Config.min_count_tok" />
         </list>
       </option>
     </inspection_tool>

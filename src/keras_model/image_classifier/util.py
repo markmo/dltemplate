@@ -1,5 +1,5 @@
 from common.util import batch_generator, prepare_raw_bytes_for_model, raw_generator_with_label_from_tar
-from common.util_keras import ModelSaveCallback, TqdmProgressCallback
+from common.util_keras import ModelSaveCallback, TQDMProgressCallback
 import keras
 import numpy as np
 
@@ -69,7 +69,7 @@ def train(model, data, constants):
         epochs=constants['n_epochs'],
         validation_data=train_generator(tar_filename, test_files, test_labels, n_classes, constants),
         validation_steps=len(test_files) // batch_size // 4,
-        callbacks=[TqdmProgressCallback(),
+        callbacks=[TQDMProgressCallback(),
                    ModelSaveCallback(constants['model_filename'])],
         verbose=0,
         initial_epoch=constants['last_finished_epoch'] or 0

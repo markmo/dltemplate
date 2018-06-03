@@ -78,7 +78,7 @@ def run(constant_overwrites):
     print('\nTest accuracy: %.5f' % test_accuracy)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run Keras Image Classifier')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')

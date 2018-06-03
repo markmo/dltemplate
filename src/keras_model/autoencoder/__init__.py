@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from common.load_data import load_faces_dataset
 from common.util import apply_gaussian_noise, merge_dict
-from common.util_keras import reset_tf_session, TqdmProgressCallback
+from common.util_keras import reset_tf_session, TQDMProgressCallback
 from keras_model.autoencoder.hyperparams import get_constants
 from keras_model.autoencoder.model_setup import network_builder, model_builder
 from keras_model.autoencoder.util import show_image, show_similar, visualize
@@ -29,7 +29,7 @@ def denoising_autoencoder(constant_overwrites):
         # continue to train model with new noise-augmented data
         autoencoder.fit(x=x_train_noise, y=x_train, epochs=1,
                         validation_data=[x_test_noise, x_test],
-                        callbacks=[TqdmProgressCallback()],
+                        callbacks=[TQDMProgressCallback()],
                         verbose=0)
 
     x_test_noise = apply_gaussian_noise(x_test)
@@ -165,7 +165,7 @@ def run(constant_overwrites):
     print(reconstruction_mse)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     model_type_choices = ['default', 'denoising', 'morphing', 'retrieval']
     # read args
     parser = ArgumentParser(description='Run Keras Autoencoder')

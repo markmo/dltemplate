@@ -59,7 +59,7 @@ def run(constant_overwrites):
     ax1.set_ylabel('Loss')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run Keras GAN')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')

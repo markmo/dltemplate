@@ -3,7 +3,7 @@ from keras_model.image_captioning.util import get_captions, load_embeddings
 from keras_model.image_captioning.util import PAD, UNK, START, END
 import numpy as np
 import random
-import tqdm
+from tqdm import tqdm
 
 
 def _test_vocab():
@@ -80,7 +80,7 @@ def test_validation_loss(decoder, sess, generate_batch, img_embeds_val, captions
     np.random.seed(300)
     random.seed(300)
     val_loss = 0
-    for _ in tqdm.tqdm_notebook(range(1000)):
+    for _ in tqdm(range(1000)):
         val_loss += sess.run(decoder.loss, generate_batch(img_embeds_val, captions_indexed_val, 32, 20))
 
     val_loss /= 1000.

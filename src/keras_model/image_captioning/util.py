@@ -11,7 +11,7 @@ import re
 from sklearn.metrics import accuracy_score
 import tensorflow as tf
 from tensorflow.contrib import keras
-import tqdm
+from tqdm import tqdm
 from zipfile import ZipFile
 
 K = keras.backend
@@ -420,7 +420,7 @@ def train(sess, train_step, decoder, data, constants, saver, reproducible=False)
 
     for epoch in range(constants['n_epochs']):
         train_loss = 0
-        progress_bar = tqdm.tqdm_notebook(range(n_batches_per_epoch))
+        progress_bar = tqdm(range(n_batches_per_epoch))
         counter = 0
         for _ in progress_bar:
             img_embeds_train = data['img_embeds_train']
