@@ -9,7 +9,7 @@ Model Templates
 3. `Logistic Regression <src/tf_model/logreg/>`_ - MNIST (TensorFlow)
 4. `Simple Multi-layer Perceptron <src/tf_model/simple/>`_ - MNIST (TensorFlow)
 5. `Enhanced Multi-layer Perceptron using Batch Normalization <src/tf_model/enhanced/>`_ - MNIST (TensorFlow)
-6. `Enhanced Multi-layer Perceptron using TensorFlow Estimator API <src/tf_model/with_estimator/>`_ for training - MNIST
+6. `Enhanced Multi-layer Perceptron using TensorFlow Estimator API <src/tf_model/with_estimator/>`_ - MNIST
 7. `Simple CNN <src/tf_model/simple_cnn/>`_ - MNIST (TensorFlow)
 8. `Enhanced CNN <src/keras_model/cnn/>`_ - Image Classifier (Keras)
 9. `Image classifier <src/keras_model/image_classifier/>`_ (Keras)
@@ -26,8 +26,9 @@ Model Templates
 20. `Recognize named entities on Twitter using CRF <src/nlp/crf_ner/>`_ (sklearn-crfsuite)
 21. `Recognize named entities on Twitter using Bi-LSTM + CRF <src/tf_model/bi_lstm_crf_ner/>`_ (TensorFlow)
 22. `Detect Duplicate Questions on StackOverflow using Embeddings <src/nlp/duplicate_questions/>`_
-23. `Train an image captioning system <src/keras_model/image_captioning/>`_ (Keras)
-24. `Building a Simple Calculator using a Sequence-to-Sequence Model <src/tf_model/seq2seq/>`_ (TensorFlow)
+23. `Building a Simple Calculator using a Sequence-to-Sequence Model <src/tf_model/seq2seq/>`_ (TensorFlow)
+24. `Reinforcement Learning using crossentropy method <src/rl/crossentropy/>`_
+25. `Reinforcement Learning using a neural net <src/rl/crossentropy/>`_ (sklearn)
 
 
 Demonstrates
@@ -56,8 +57,9 @@ Demonstrates
 20. Basic principles of Conditional Random Fields (CRF) and comparison with Bi-LSTM on the same task
 21. Combining a Bi-LSTM with CRF to get learned features + constraints
 22. Use of embeddings at a sentence level, testing `StarSpace`_ from Facebook Research.
-23. Combining a CNN encoder with an RNN decoder.
-24. Solving sequence-to-sequence prediction tasks.
+23. Solving sequence-to-sequence prediction tasks.
+24. Basic principles of reinforcement learning
+25. Approximating crossentropy with neural nets in an RL model
 
 
 Datasets

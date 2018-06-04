@@ -1,0 +1,4 @@
+n_hidden: 100
+n_sessions: 100
+percentile: 70
+env_id: Taxi-v2

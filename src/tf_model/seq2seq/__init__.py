@@ -19,12 +19,12 @@ def run(constant_overwrites):
     end_symbol = '$'  # indicate the end of a string, both for input and output sequences
     # padding_symbol = '#'  # a padding character to make lengths of all strings equal within one training batch
 
-    config_path = os.path.join(os.path.realpath(__file__), 'hyperparams.yml')
+    config_path = os.path.join(os.path.dirname(__file__), 'hyperparams.yml')
     constants = merge_dict(load_hyperparams(config_path), constant_overwrites)
     model = Seq2SeqModel(vocab_size=len(word2id),
                          embeddings_size=constants['embeddings_size'],
                          hidden_size=constants['n_hidden'],
-                         n_epochs=constants['n_epochs'],
+                         max_iter=constants['max_iter'],
                          start_symbol_id=word2id[start_symbol],
                          end_symbol_id=word2id[end_symbol])
 

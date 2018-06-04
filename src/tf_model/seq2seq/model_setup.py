@@ -4,11 +4,11 @@ import tensorflow as tf
 class Seq2SeqModel(object):
 
     def __init__(self, vocab_size, embeddings_size, hidden_size,
-                 n_epochs, start_symbol_id, end_symbol_id):
+                 max_iter, start_symbol_id, end_symbol_id):
         self.__declare_placeholders()
         self.__create_embeddings(vocab_size, embeddings_size)
         self.__build_encoder(hidden_size)
-        self.__build_decoder(hidden_size, vocab_size, n_epochs, start_symbol_id, end_symbol_id)
+        self.__build_decoder(hidden_size, vocab_size, max_iter, start_symbol_id, end_symbol_id)
 
         # Compute loss and back-propagate.
         self.__compute_loss()
@@ -68,7 +68,7 @@ class Seq2SeqModel(object):
                                                         sequence_length=self.input_batch_lengths,
                                                         dtype=tf.float32)
 
-    def __build_decoder(self, hidden_size, vocab_size, n_epochs, start_symbol_id, end_symbol_id):
+    def __build_decoder(self, hidden_size, vocab_size, max_iter, start_symbol_id, end_symbol_id):
         """
         Specifies decoder architecture and computes the output.
 
@@ -95,7 +95,7 @@ class Seq2SeqModel(object):
 
         :param hidden_size:
         :param vocab_size:
-        :param n_epochs:
+        :param max_iter:
         :param start_symbol_id:
         :param end_symbol_id:
         :return:
@@ -144,7 +144,7 @@ class Seq2SeqModel(object):
                 #   * rnn_output (predicted logits)
                 #   * sample_id (predictions)
                 outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(decoder=decoder,
-                                                                  maximum_iterations=n_epochs,
+                                                                  maximum_iterations=max_iter,
                                                                   output_time_major=False,
                                                                   impute_finished=True)
 
