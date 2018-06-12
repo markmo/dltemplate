@@ -29,6 +29,7 @@ Model Templates
 23. `Building a Simple Calculator using a Sequence-to-Sequence Model <src/tf_model/seq2seq/>`_ (TensorFlow)
 24. `Reinforcement Learning using crossentropy method <src/rl/crossentropy/>`_
 25. `Reinforcement Learning using a neural net <src/rl/crossentropy/>`_ (sklearn)
+26. `Navigate a Frozen Lake using a Markov Decision Process (MDP) <src/rl/frozen_lake/>`_
 
 
 Demonstrates
@@ -60,6 +61,7 @@ Demonstrates
 23. Solving sequence-to-sequence prediction tasks.
 24. Basic principles of reinforcement learning
 25. Approximating crossentropy with neural nets in an RL model
+26. Using a Markov Decision Process to solve an RL problem.
 
 
 Datasets

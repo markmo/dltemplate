@@ -50,7 +50,7 @@ class Seq2SeqModel(object):
         Specifies encoder architecture and computes its output.
 
         It encodes an input sequence to a real-valued vector. Input of this RNN is an embedded
-        input batch. Since sentences in the same batch could have different actual lengths, we
+        input batch. Since sentences in the same batch may have different actual lengths, we
         also provide input lengths to avoid unnecessary computations. The final encoder state
         will be passed to the second RNN (decoder).
 
@@ -105,7 +105,7 @@ class Seq2SeqModel(object):
         start_tokens = tf.fill([batch_size], start_symbol_id)
         ground_truth_as_input = tf.concat([tf.expand_dims(start_tokens, 1), self.ground_truth], 1)
 
-        # Use the embedding layer defined before to lookup embeddings for ground _truth_as_input
+        # Use the embedding layer defined before to lookup embeddings for ground_truth_as_input
         self.ground_truth_embedded = tf.nn.embedding_lookup(self.embeddings, ground_truth_as_input)
 
         # Create TrainingHelper for the train stage

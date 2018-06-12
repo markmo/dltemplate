@@ -1,5 +1,5 @@
 embeddings_size: 20  # dimension of embeddings
-max_iter: 7  # maximum number of steps in decoder
+max_iter: 7  # maximum number of steps in decoder, must be increased where larger sequences expected!
 n_hidden: 512  # size of hidden layers for RNN
 batch_size: 128  #
 n_epochs: 10
