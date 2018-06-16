@@ -32,7 +32,7 @@ def run(constant_overwrites):
     parameters = get_parameters(constants)
     optimizer, loss_op, predict_op, model, y_ = model_builder(network_builder, input_x, input_y, parameters, constants)
     saver = tf.train.Saver()
-    tf.add_to_collection('predict_op', predict_op)
+    # tf.add_to_collection('predict_op', predict_op)
     train(data, constants, (input_x, input_y), optimizer, loss_op, model, y_, minibatch=True, saver=saver)
 
 

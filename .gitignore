@@ -161,3 +161,4 @@ readonly
 **/checkpoint
 **/.DS_Store
 **/starspace_embedding*
+*.pb

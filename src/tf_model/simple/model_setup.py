@@ -27,6 +27,6 @@ def model_builder(network, input_x, input_y, params, constants):
     loss_op = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
         logits=model, labels=input_y
         ))
-    predict_op = tf.argmax(y_, 1)
+    predict_op = tf.argmax(y_, 1, name='predict_op')
     optimizer = tf.train.AdamOptimizer(constants['learning_rate']).minimize(loss_op)
     return optimizer, loss_op, predict_op, model, y_
