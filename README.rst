@@ -30,6 +30,7 @@ Model Templates
 24. `Reinforcement Learning using crossentropy method <src/rl/crossentropy/>`_
 25. `Reinforcement Learning using a neural net <src/rl/crossentropy/>`_ (sklearn)
 26. `Navigate a Frozen Lake using a Markov Decision Process (MDP) <src/rl/frozen_lake/>`_
+27. `A Sequence-to-Sequence Chatbot <src/tf_model/chatbot1/>`_ (TensorFlow)
 
 
 Demonstrates
@@ -62,6 +63,7 @@ Demonstrates
 24. Basic principles of reinforcement learning
 25. Approximating crossentropy with neural nets in an RL model
 26. Using a Markov Decision Process to solve an RL problem.
+27. Building a chatbot using a sequence-to-sequence model approach.
 
 
 Datasets
@@ -79,6 +81,8 @@ Datasets
 10. Sign language - numbers 0 - 5
 11. Tweets tagged with named entities
 12. Duplicate questions set, with positive and negative examples, from StackOverflow
+13. Cornell movie dialog corpus.
+14. Open Subtitles movie dialog corpus.
 
 
 Notation

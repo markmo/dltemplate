@@ -1,26 +1,29 @@
 from argparse import ArgumentParser
 from common.util import load_hyperparams, merge_dict
 from common.load_data import load_word2vec_embeddings
-from common.load_opensubs_data import readOpensubsData
+from common.load_opensubs_data import read_opensubs_data
 import os
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tf_model.chatbot1.model_setup import Seq2SeqModel
 from tf_model.chatbot1.utils import evaluate_results, get_symbol_to_id_mappings, get_word_embeddings
-from tf_model.chatbot1.utils import  get_vocab, train, START_SYMBOL, END_SYMBOL
+from tf_model.chatbot1.utils import get_vocab, train, START_SYMBOL, END_SYMBOL
 
 
 def run(constant_overwrites):
     config_path = os.path.join(os.path.dirname(__file__), 'hyperparams.yml')
     constants = merge_dict(load_hyperparams(config_path), constant_overwrites)
-    data = readOpensubsData('data/opensubs/OpenSubtitles')
+
+    data = read_opensubs_data('data/opensubs/OpenSubtitles')
     conversation_steps = [(u.split(), r.split()) for u, r in data]
     embeddings = load_word2vec_embeddings(limit=10000)
     _, vocab, vocab_size = get_vocab(conversation_steps)
     x_train, x_test = train_test_split(conversation_steps, test_size=0.2, random_state=42)
+
     word2id, id2word = get_symbol_to_id_mappings(vocab)
-    embeddings_size = 300
+    embeddings_size = constants['embeddings_size']
     word_embeddings = get_word_embeddings(embeddings, id2word, vocab_size, embeddings_size)
+
     tf.reset_default_graph()
     model = Seq2SeqModel(hidden_size=constants['n_hidden'],
                          vocab_size=vocab_size,
@@ -32,6 +35,7 @@ def run(constant_overwrites):
                          word_embeddings=word_embeddings,
                          word2id=word2id,
                          id2word=id2word)
+
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
