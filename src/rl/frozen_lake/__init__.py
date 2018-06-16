@@ -3,8 +3,8 @@ from common.util import load_hyperparams, merge_dict
 from IPython.display import clear_output
 import numpy as np
 import os
-from rl.frozen_lake.utils import FrozenLakeEnv
-from rl.utils import draw_policy, get_action_value, get_optimal_action, MDP
+from rl.frozen_lake.util import FrozenLakeEnv
+from rl.util import draw_policy, get_action_value, get_optimal_action, MDP
 from time import sleep
 
 

@@ -1,0 +1,4 @@
+alpha: 0.5
+epsilon: 0.25
+discount: 0.99
+n_epochs: 1000
