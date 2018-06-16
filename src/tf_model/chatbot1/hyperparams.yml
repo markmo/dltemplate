@@ -1,0 +1,10 @@
+hidden_size: 1024
+n_encoding_layers: 2
+n_decoding_layers: 2
+max_iter: 20
+embeddings_size: 300
+learning_rate: 0.001
+drop_keep_prob: 0.5
+n_epochs: 100
+batch_size: 256
+max_len: 200
