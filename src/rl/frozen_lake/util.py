@@ -1,5 +1,5 @@
 import numpy as np
-from rl.utils import MDP
+from rl.util import MDP
 
 
 # noinspection SpellCheckingInspection
