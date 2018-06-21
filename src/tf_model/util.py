@@ -59,8 +59,10 @@ def train(data, constants, input_placeholders, optimizer, loss_op, model, y_,
         print('Test accuracy:', accuracy.eval({input_x: x_test, input_y: y_test}))
         print('Test AUC:', roc_auc_score(y_test, sess.run(y_, {input_x: x_test})))
 
+        model_dir = constants.get('model_dir', 'data')
+        model_name = constants.get('model_name', 'model')
         if saver:
-            saver.save(sess, 'data/model')
+            saver.save(sess, '{}/{}'.format(model_dir, model_name))
 
 
 def train_using_estimator(data, model_builder, constants):

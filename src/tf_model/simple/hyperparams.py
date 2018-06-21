@@ -1,5 +1,9 @@
 def get_constants():
     return {
+        'app_name': 'simple',
+        'model_dir': 'data',
+        'model_name': 'model',
+        'version': '1',
         'n_input': 28 * 28,  # number of input parameters
         'n_classes': 10,  # number of output classes
         'n_hidden': 50,
