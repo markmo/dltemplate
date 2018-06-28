@@ -32,6 +32,7 @@ Model Templates
 26. `Navigate a Frozen Lake using a Markov Decision Process (MDP) <src/rl/frozen_lake/>`_
 27. `A Sequence-to-Sequence Chatbot <src/tf_model/chatbot1/>`_ (TensorFlow)
 28. `Solve the Taxi Challenge using Q-Learning <src/rl/qlearning/>`_
+29. `Training a Deep Q-Learning Network to play Atari Breakout <src/rl/dqn_breakout>`_ (Keras)
 
 
 Demonstrates
@@ -66,6 +67,7 @@ Demonstrates
 26. Using a Markov Decision Process to solve an RL problem.
 27. Building a chatbot using a sequence-to-sequence model approach.
 28. Basic principles of Q-Learning
+29. Tips and tricks to train a Deep Q-Learning Network - Frame Buffer, Experience Replay
 
 
 Datasets
