@@ -33,6 +33,7 @@ Model Templates
 27. `A Sequence-to-Sequence Chatbot <src/tf_model/chatbot1/>`_ (TensorFlow)
 28. `Solve the Taxi Challenge using Q-Learning <src/rl/qlearning/>`_
 29. `Training a Deep Q-Learning Network to play Atari Breakout <src/rl/dqn_breakout>`_ (Keras)
+30. `Playing CartPole using REINFORCE <src/rl/reinforce_cartpole>`_ (Keras)
 
 
 Demonstrates
@@ -68,6 +69,7 @@ Demonstrates
 27. Building a chatbot using a sequence-to-sequence model approach.
 28. Basic principles of Q-Learning
 29. Tips and tricks to train a Deep Q-Learning Network - Frame Buffer, Experience Replay
+30. Basic principles of using the REINFORCE algorithm
 
 
 Datasets
