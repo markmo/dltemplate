@@ -3,8 +3,8 @@ from common.util import load_hyperparams, merge_dict
 from gym.wrappers import Monitor
 import matplotlib.pyplot as plt
 import os
-from rl.aac_kungfumaster.model_setup import Agent
-from rl.aac_kungfumaster.util import evaluate, make_env
+from rl.aac_kungfumaster.model_setup import ActorCritic, Agent
+from rl.aac_kungfumaster.util import EnvBatch, evaluate, make_env, sample_actions, train
 import tensorflow as tf
 
 
@@ -42,6 +42,21 @@ def run(constant_overwrites):
     game_rewards = evaluate(agent, env, sess, n_games=constants['n_sessions'])
     env_monitor.close()
     print('Game rewards:', game_rewards)
+
+    # Train on parallel games - test
+    env_batch = EnvBatch(10)
+    batch_states = env_batch.reset()
+    batch_actions = sample_actions(agent.step(sess, batch_states))
+    batch_next_states, batch_rewards, batch_done, _ = env_batch.step(batch_actions)
+
+    print('State shape:', batch_states.shape)
+    print('Actions:', batch_actions[:3])
+    print('Rewards:', batch_rewards[:3])
+    print('Done:', batch_done[:3])
+
+    # Train for real
+    model = ActorCritic(obs_shape, n_actions, agent)
+    train(agent, model, env, sess)
 
 
 if __name__ == '__main__':

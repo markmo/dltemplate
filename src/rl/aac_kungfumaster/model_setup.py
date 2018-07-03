@@ -45,3 +45,44 @@ class Agent(object):
     def step(self, sess, state_t):
         """ Same as symbolic_step except operates on numpy arrays """
         return sess.run(self.agent_outputs, {self.state_t: state_t})
+
+
+class ActorCritic(object):
+
+    def __init__(self, obs_shape, n_actions, agent, gamma=0.99, learning_rate=1e-4):
+        self.states_ph = tf.placeholder('float32', [None, ] + list(obs_shape))
+        self.next_states_ph = tf.placeholder('float32', [None, ] + list(obs_shape))
+        self.actions_ph = tf.placeholder('int32', (None,))
+        self.rewards_ph = tf.placeholder('float32', (None,))
+        self.is_done_ph = tf.placeholder('float32', (None,))
+
+        # logits[n_envs, n_actions] and state_values[n_envs, n_actions]
+        logits, state_values = agent.symbolic_step(self.states_ph)
+        next_logits, next_state_values = agent.symbolic_step(self.next_states_ph)
+        next_state_values = next_state_values * (1 - self.is_done_ph)
+
+        # probabilities and log-probabilities for all actions
+        probs = tf.nn.softmax(logits)  # [n_envs, n_actions]
+        log_probs = tf.nn.log_softmax(logits)  # [n_envs, n_actions]
+
+        # log-probabilities only for agent's chosen actions
+        logp_actions = tf.reduce_mean(log_probs * tf.one_hot(self.actions_ph, n_actions), axis=-1)  # [n_envs]
+
+        # compute advantage using rewards_ph, state_values, and next_state_values
+        self.advantage = self.rewards_ph + gamma * (next_state_values - state_values)
+
+        assert self.advantage.shape.ndims == 1, 'please compute advantage for each sample, vector of shape [n_envs,]'
+
+        self.entropy = -tf.reduce_sum(probs * log_probs, 1)
+
+        assert self.entropy.shape.ndims == 1, 'please compute pointwise entropy vector of shape [n_envs,]'
+
+        self.actor_loss = -tf.reduce_mean(logp_actions * tf.stop_gradient(self.advantage)) \
+                          - 0.001 * tf.reduce_mean(self.entropy)
+
+        # compute target state values using temporal difference formula
+        target_state_values = self.rewards_ph + gamma * next_state_values
+
+        self.critic_loss = tf.reduce_mean((state_values - tf.stop_gradient(target_state_values))**2)
+
+        self.train_step = tf.train.AdamOptimizer(learning_rate).minimize(self.actor_loss + self.critic_loss)
