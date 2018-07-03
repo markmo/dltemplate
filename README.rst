@@ -34,6 +34,7 @@ Model Templates
 28. `Solve the Taxi Challenge using Q-Learning <src/rl/qlearning/>`_
 29. `Training a Deep Q-Learning Network to play Atari Breakout <src/rl/dqn_breakout>`_ (Keras)
 30. `Playing CartPole using REINFORCE <src/rl/reinforce_cartpole>`_ (Keras)
+31. `Playing Kung Fu Master using Advantage Actor Critic (AAC) <src/rl/aac_kungfumaster>`_ (Keras)
 
 
 Demonstrates
@@ -70,6 +71,7 @@ Demonstrates
 28. Basic principles of Q-Learning
 29. Tips and tricks to train a Deep Q-Learning Network - Frame Buffer, Experience Replay
 30. Basic principles of using the REINFORCE algorithm
+31. Basic principles of using the Advantage Actor Critic (AAC) algorithm
 
 
 Datasets
