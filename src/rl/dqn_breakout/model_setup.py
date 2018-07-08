@@ -8,6 +8,18 @@ import tensorflow as tf
 
 
 class DQNAgent(object):
+    """
+    This is a classical convolutional neural network with three convolutional layers,
+    followed by two fully connected layers. People familiar with object recognition
+    networks may notice that there are no pooling layers. But if you really think
+    about that, then pooling layers buy you a translation invariance – the network
+    becomes insensitive to the location of an object in the image. That makes
+    perfect sense for a classification task like ImageNet, but for games, the location
+    of the ball is crucial in determining the potential reward and we wouldn't want
+    to discard this information!
+
+    http://neuro.cs.ut.ee/demystifying-deep-reinforcement-learning/
+    """
 
     def __init__(self, name, state_shape, n_actions, epsilon=0, reuse=False):
         with tf.variable_scope(name, reuse=reuse):

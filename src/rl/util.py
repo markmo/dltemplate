@@ -1,7 +1,10 @@
+
+from collections import namedtuple
 from gym.core import Wrapper
 from gym.spaces.box import Box
 import matplotlib.pyplot as plt
 import numpy as np
+from pickle import dumps, loads
 import random
 import tensorflow as tf
 
@@ -254,6 +257,87 @@ class ReplayBuffer(object):
         """
         idxs = [random.randint(0, len(self.storage) - 1) for _ in range(batch_size)]
         return self._encode_sample(idxs)
+
+
+ActionResult = namedtuple('action_result', ('snapshot', 'observation', 'reward', 'is_done', 'info'))
+
+
+class WithSnapshots(Wrapper):
+    """
+    Creates a wrapper that supports loading and saving of environment states.
+
+    Required for planning algorithms.
+
+    This class has access to the core environment as `self.env`, e.g.
+
+    * `self.env.reset()` - reset env
+    * `self.env.ale.cloneState() - make snapshot for Atari. Load using `.restoreState()`
+
+    You can also use reset, step and render directly for convenience.
+
+    * `s, r, done, _ = self.step(action)` - same as `self.env.step(action)`
+    * `self.render()` - close window, same as `self.env.render()`
+    """
+
+    def get_snapshot(self):
+        """
+        Snapshots guarantee same env behaviour every time they are loaded.
+
+        Warning! Snapshots can be arbitrary things (strings, integers, json, tuples).
+        Don't count on them being pickle strings when implementing MCTS.
+
+        Developer Note: Make sure the object you return will not be affected by
+        anything that happens to the environment after it's saved. You shouldn't,
+        for example, return self.env. In case of doubt, use `pickle.dumps` or `deepcopy`.
+
+        :return: env state that can be loaded using `load_snapshot`
+        """
+        # self.render()
+        if self.unwrapped.viewer is not None:
+            self.unwrapped.viewer.close()
+            self.unwrapped.viewer = None
+
+        return dumps(self.env)
+
+    def load_snapshot(self, snapshot):
+        """
+        Loads snapshot as current env state.
+
+        Should not change snapshot inplace (in case of doubt, deepcopy).
+
+        :param snapshot:
+        :return:
+        """
+        assert not hasattr(self, '_monitor') or hasattr(self.env, '_monitor'), \
+            "You can't backtrack while recording"
+
+        # self.render()
+        self.env = loads(snapshot)
+
+    def get_result(self, snapshot, action):
+        """
+        A convenience method that:
+
+        1. Loads snapshot
+        2. Commits actions via `self.step`
+        3. and takes snapshot again
+
+        Returns next snapshot and everything that `env.step` would have returned.
+
+        :param snapshot:
+        :param action:
+        :return: next_snapshot, next_observation, reward, is_done, info
+        """
+        self.load_snapshot(snapshot)
+        s, r, done, info = self.step(action)
+        next_snapshot = self.get_snapshot()
+        return ActionResult(next_snapshot, s, r, done, info)
+
+    def reset(self):
+        self.env.reset()
+
+    def step(self, action):
+        return self.env.step(action)
 
 
 def draw_policy(mdp, state_values, gamma=0.9):

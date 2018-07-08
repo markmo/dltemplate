@@ -35,6 +35,7 @@ Model Templates
 29. `Training a Deep Q-Learning Network to play Atari Breakout <src/rl/dqn_breakout>`_ (Keras)
 30. `Playing CartPole using REINFORCE <src/rl/reinforce_cartpole>`_ (Keras)
 31. `Playing Kung Fu Master using Advantage Actor Critic (AAC) <src/rl/aac_kungfumaster>`_ (Keras)
+32. `Playing CartPole using Monte Carlo Tree Search <src/rl/mcts_planning>`_
 
 
 Demonstrates
@@ -72,6 +73,7 @@ Demonstrates
 29. Tips and tricks to train a Deep Q-Learning Network - Frame Buffer, Experience Replay
 30. Basic principles of using the REINFORCE algorithm
 31. Basic principles of using the Advantage Actor Critic (AAC) algorithm
+32. Introduction to Planning Algorithms using Monte Carlo Tree Search.
 
 
 Datasets
