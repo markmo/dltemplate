@@ -29,12 +29,18 @@ Apply MCTS to play Atari games. In particular, start with 'MsPacman-ramDetermini
 This requires two things:
 
 1. Slightly modify the `WithSnapshots` Wrapper to work with Atari.
+
    * Atari has a special interface for snapshots:
-     snapshot = self.env.ale.cloneState()
-     ...
-     self.env.ale.restoreState(snapshot)
+     ::
+
+         snapshot = self.env.ale.cloneState()
+         ...
+         self.env.ale.restoreState(snapshot)
+
    * Try it on the env above to make sure it does what you told it to.
+
 2. Run MCTS on the game above.
+
    * Start with a small tree size to speed-up computations
    * You will probably want to rollout for 10-100 steps (t_max) for starters
    * Consider using discounted rewards (see notes at the end)
