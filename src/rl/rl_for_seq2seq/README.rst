@@ -3,6 +3,8 @@ Reinforcement Learning for Seq2Seq
 
 Transcribe Hebrew words to English, which involves translating graphemes to phonemes.
 
+::
+
     word (sequence of letters in source language) -> translation (sequence of letters in target language)
 
 We'll attempt to train to maximize likelihood of correct translation, and also employ reinforcement
@@ -35,6 +37,7 @@ Variations
 Try easy_mode=False, start with the following architecture:
 
 ::
+
     encoder---decoder
                P(y|h)
                  ^
