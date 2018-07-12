@@ -32,10 +32,11 @@ Model Templates
 26. `Navigate a Frozen Lake using a Markov Decision Process (MDP) <src/rl/frozen_lake/>`_
 27. `A Sequence-to-Sequence Chatbot <src/tf_model/chatbot1/>`_ (TensorFlow)
 28. `Solve the Taxi Challenge using Q-Learning <src/rl/qlearning/>`_
-29. `Training a Deep Q-Learning Network to play Atari Breakout <src/rl/dqn_breakout>`_ (Keras)
-30. `Playing CartPole using REINFORCE <src/rl/reinforce_cartpole>`_ (Keras)
-31. `Playing Kung Fu Master using Advantage Actor Critic (AAC) <src/rl/aac_kungfumaster>`_ (Keras)
-32. `Playing CartPole using Monte Carlo Tree Search <src/rl/mcts_planning>`_
+29. `Training a Deep Q-Learning Network to play Atari Breakout <src/rl/dqn_breakout/>`_ (Keras)
+30. `Playing CartPole using REINFORCE <src/rl/reinforce_cartpole/>`_ (Keras)
+31. `Playing Kung Fu Master using Advantage Actor Critic (AAC) <src/rl/aac_kungfumaster/>`_ (Keras)
+32. `Playing CartPole using Monte Carlo Tree Search <src/rl/mcts_planning/>`_
+33. `Translating Hebrew to English using RL for Seq2Seq Models <src/rl/rl_for_seq2seq/>`_ (TensorFlow)
 
 
 Demonstrates
@@ -74,6 +75,7 @@ Demonstrates
 30. Basic principles of using the REINFORCE algorithm
 31. Basic principles of using the Advantage Actor Critic (AAC) algorithm
 32. Introduction to Planning Algorithms using Monte Carlo Tree Search.
+33. Reinforcement learning for sequence-to-sequence models.
 
 
 Datasets

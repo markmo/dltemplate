@@ -74,7 +74,7 @@ Integrate planning into learning
 
 Incorporate planning into the agent architecture.
 
-The goal is to implement `Value Iteration Networks <https://arxiv.org/abs/1602.02867>`_
+The goal is to implement `Value Iteration Networks <https://arxiv.org/abs/1602.02867>`_.
 
 Try `this example <https://github.com/yandexdataschool/AgentNet/blob/master/examples/Deep%20Kung-Fu%20with%20GRUs%20and%20A2c%20algorithm%20(OpenAI%20Gym).ipynb>`_
 for starters.

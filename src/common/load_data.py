@@ -1,4 +1,5 @@
 from ast import literal_eval
+from collections import defaultdict
 from common import util_download
 from common.util import get_all_filenames
 import cv2
@@ -135,6 +136,35 @@ def load_flowers(target_path):
         train_test_split(all_files, all_labels, test_size=0.2, random_state=42, stratify=all_labels)
 
     return train_files, test_files, train_labels, test_labels, n_classes
+
+
+def load_hebrew_to_english_dataset(mode='he-to-en', easy_mode=True):
+    """
+    Create dataset as a dict {word1: [trans1, trans2, ...], word2: [...], ...}
+
+    Many words have several correct translations.
+
+    :param mode:
+    :param easy_mode:
+    :return:
+    """
+    word_to_translation = defaultdict(list)
+    bos = '_'
+    eos = ';'
+    with open(DATA_DIR + 'hebrew_translation/main_dataset.txt') as f:
+        for line in f:
+            en, he = line[:-1].lower().replace(bos, ' ').replace(eos, ' ').split('\t')
+            word, trans = (he, en) if mode == 'he-to-en' else (en, he)
+            if len(word) < 3:
+                continue
+
+            if easy_mode and max(len(word), len(trans)) > 20:
+                continue
+
+            word_to_translation[word].append(trans)
+
+    print('Size of Hebrew-to-English translation dict:', len(word_to_translation))
+    return word_to_translation
 
 
 # noinspection SpellCheckingInspection,PyUnresolvedReferences

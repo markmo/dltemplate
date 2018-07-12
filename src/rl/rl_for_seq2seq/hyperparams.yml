@@ -1,0 +1,9 @@
+# If True, only translates phrases shorter than 20 characters (way easier).
+# Useful for initial coding. If false, works with all phrases.
+easy_mode: true
+
+mode: "he-to-en"  # Translation direction ['he-to-en', 'en-to-he']
+
+n_epochs: 25000
+
+report_freq: 100  # Frequency to evaluate validation score
