@@ -37,6 +37,7 @@ Model Templates
 31. `Playing Kung Fu Master using Advantage Actor Critic (AAC) <src/rl/aac_kungfumaster/>`_ (Keras)
 32. `Playing CartPole using Monte Carlo Tree Search <src/rl/mcts_planning/>`_
 33. `Translating Hebrew to English using RL for Seq2Seq Models <src/rl/rl_for_seq2seq/>`_ (TensorFlow)
+34. `Bernoulli Bandits - Survey of Model-free RL Algorithms <src/rl/bernoulli_bandits/>`_
 
 
 Demonstrates
@@ -76,6 +77,7 @@ Demonstrates
 31. Basic principles of using the Advantage Actor Critic (AAC) algorithm
 32. Introduction to Planning Algorithms using Monte Carlo Tree Search.
 33. Reinforcement learning for sequence-to-sequence models.
+34. Survey of Model-free RL algorithms - Epsilon-greedy, UCB1, and Thompson Sampling.
 
 
 Datasets
@@ -95,6 +97,7 @@ Datasets
 12. Duplicate questions set, with positive and negative examples, from StackOverflow
 13. Cornell movie dialog corpus.
 14. Open Subtitles movie dialog corpus.
+15. Hebrew to English words.
 
 
 Notation
