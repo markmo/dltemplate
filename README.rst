@@ -43,7 +43,8 @@ Model Templates
 37. `Contextual Bandits <src/rl/survey_of_methods/contextual_bandits/>`_ (TensorFlow)
 38. `Vanilla Policy Gradient Agent <src/rl/survey_of_methods/policy_gradient/>`_ (TensorFlow)
 39. `Model-based example for RL <src/rl/survey_of_methods/model_based/>`_ (TensorFlow)
-40. `Wake-word detection <src/keras_model/wake_word_detection/>`_ (Keras)
+40. `Deep Q-Network <src/rl/survey_of_methods/dqn/>`_ (TensorFlow)
+41. `Wake-word detection <src/keras_model/wake_word_detection/>`_ (Keras)
 
 
 Demonstrates
@@ -90,7 +91,8 @@ Demonstrates
     not determined by the previous state or action.
 38. Introduction to Policy Gradient methods in RL.
 39. Introduction to model-based RL networks.
-40. Processing audio using an RNN to detect wake-words.
+40. Implement a Deep Q-Network using Experience Replay.
+41. Processing audio using an RNN to detect wake-words.
 
 
 Datasets
