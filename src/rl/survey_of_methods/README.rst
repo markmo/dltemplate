@@ -19,6 +19,7 @@ Model-free / Value function methods:
 Model-based / Direct Policy Search
 
 * Model the policy itself (state -> action)
+
   * Adjust model parameters in direction of greatest policy improvement
 
 
@@ -31,13 +32,18 @@ Action types:
 Challenges:
 
 1. Representation
+
    * Large state spaces
    * Large action spaces
    * Continuous action spaces
+
 2. Generalization
+
    * Ability to act well in unseen states
+
 3. Exploration vs Exploitation
 4. Temporal Credit Assignment
+
    * Which of the actions was salient for the eventual observed outcome?
 
 
@@ -202,6 +208,7 @@ Notes:
 * Greedy and ϵ-Greedy have linear (sub-optimal) regret.
 * Worst-case regret is logT (T - number of time steps).
 * Regret Minimization Principle - "Optimism in the face of uncertainty"
+
   * Use collected data to eliminate arms that "very likely" are sub-optimal
   * Choose the most optimistic remaining option. (A more uncertain outcome could result
     in a higher reward!)
