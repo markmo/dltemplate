@@ -1,0 +1,3 @@
+learning_rate: 0.8
+gamma: 0.95
+n_episodes: 2000

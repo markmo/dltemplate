@@ -17,8 +17,30 @@ class GameObj(object):
 
 
 class GameEnvironment(object):
+    """
+    In the environment the agent controls a blue square, and the goal is to navigate
+    to the green squares (reward +1) while avoiding the red squares (reward -1). At
+    the start of each episode all squares are randomly placed within a 5x5 grid-world.
+    The agent has 50 steps to achieve as large a reward as possible. Because they are
+    randomly positioned, the agent needs to do more than simply learn a fixed path,
+    as is the case in the FrozenLake environment. Instead the agent must learn a
+    notion of spatial relationships between the blocks.
+
+    The game environment outputs 84x84x3 color images, and uses function calls as
+    similar to the OpenAI gym as possible. In doing so, it should be easy to modify
+    this code to work on any of the OpenAI Atari games.
+    """
 
     def __init__(self, partial, size):
+        """
+        Initializing the game environment with True limits the field of view,
+        resulting in a partially observable MDP. Initializing it with False
+        provides the agent with the entire environment, resulting in a fully
+        observable MDP.
+
+        :param partial:
+        :param size:
+        """
         self.size_x = size
         self.size_y = size
         self.actions = 4
@@ -58,13 +80,13 @@ class GameEnvironment(object):
         if direction == 0 and hero.y >= 1:
             hero.y -= 1
 
-        if direction == 1 and hero.y <= self.size_y - 2:
+        elif direction == 1 and hero.y <= self.size_y - 2:
             hero.y += 1
 
-        if direction == 2 and hero.x >= 1:
+        elif direction == 2 and hero.x >= 1:
             hero.x -= 1
 
-        if direction == 3 and hero.x <= self.size_x - 2:
+        elif direction == 3 and hero.x <= self.size_x - 2:
             hero.x += 1
 
         if hero.x == hero_x and hero.y == hero_y:
@@ -82,7 +104,7 @@ class GameEnvironment(object):
 
         current_positions = []
         for obj in self.objects:
-            if (obj.a, obj.y) not in current_positions:
+            if (obj.x, obj.y) not in current_positions:
                 current_positions.append((obj.x, obj.y))
 
         for pos in current_positions:
@@ -101,19 +123,17 @@ class GameEnvironment(object):
             else:
                 others.append(obj)
 
-            done = False
-            for other in others:
-                if hero.x == other.x and hero.y == other.y:
-                    self.objects.remove(other)
-                    if other.reward == 1:
-                        self.objects.append(GameObj(self.new_position(), 1, 1, 1, 1, 'goal'))
-                    else:
-                        self.objects.append(GameObj(self.new_position(), 1, 1, 0, -1, 'fire'))
+        for other in others:
+            if hero.x == other.x and hero.y == other.y:
+                self.objects.remove(other)
+                if other.reward == 1:
+                    self.objects.append(GameObj(self.new_position(), 1, 1, 1, 1, 'goal'))
+                else:
+                    self.objects.append(GameObj(self.new_position(), 1, 1, 0, -1, 'fire'))
 
-                    return other.reward, False
+                return other.reward, False
 
-            if not done:
-                return 0., False
+        return 0., False
 
     def render(self):
         a = np.ones([self.size_y + 2, self.size_x + 2, 3])

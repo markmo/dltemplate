@@ -1,0 +1,3 @@
+learning_rate: 0.001
+n_episodes: 10000
+epsilon: 0.1  # set the chance of taking a random action

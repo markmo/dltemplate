@@ -38,6 +38,12 @@ Model Templates
 32. `Playing CartPole using Monte Carlo Tree Search <src/rl/mcts_planning/>`_
 33. `Translating Hebrew to English using RL for Seq2Seq Models <src/rl/rl_for_seq2seq/>`_ (TensorFlow)
 34. `Bernoulli Bandits - Survey of Model-free RL Algorithms <src/rl/bernoulli_bandits/>`_
+35. `Q-Table Learning Agent <src/rl/survey_of_methods/q_table_learning/>`_
+36. `Multi-armed Bandit <src/rl/survey_of_methods/multi_armed_bandit/>`_ (TensorFlow)
+37. `Contextual Bandits <src/rl/survey_of_methods/contextual_bandits/>`_ (TensorFlow)
+38. `Vanilla Policy Gradient Agent <src/rl/survey_of_methods/policy_gradient/>`_ (TensorFlow)
+39. `Model-based example for RL <src/rl/survey_of_methods/model_based/>`_ (TensorFlow)
+40. `Wake-word detection <src/keras_model/wake_word_detection/>`_ (Keras)
 
 
 Demonstrates
@@ -78,6 +84,13 @@ Demonstrates
 32. Introduction to Planning Algorithms using Monte Carlo Tree Search.
 33. Reinforcement learning for sequence-to-sequence models.
 34. Survey of Model-free RL algorithms - Epsilon-greedy, UCB1, and Thompson Sampling.
+35. Introduction to Q-Table Learning.
+36. Building a simple policy-gradient based agent that can solve the multi-armed bandit problem.
+37. Building a simple policy-gradient based agent where the environment has state, but state is
+    not determined by the previous state or action.
+38. Introduction to Policy Gradient methods in RL.
+39. Introduction to model-based RL networks.
+40. Processing audio using an RNN to detect wake-words.
 
 
 Datasets

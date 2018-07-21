@@ -1,0 +1,8 @@
+learning_rate: 1e-2
+gamma: 0.99  # discount factor for reward
+model_batch_size: 3  # Batch size when learning from model
+real_batch_size: 3  # Batch size when learning from real environment
+obs_dim: 4  # input dimensionality
+policy_n_hidden: 8
+model_n_hidden: 256
+max_episodes: 5000
