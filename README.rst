@@ -47,7 +47,7 @@ Model Templates
 41. `Wake-word Detection <src/keras_model/wake_word_detection/>`_ (Keras)
 42. `Neural Turing Machine <src/tf_model/neural_turing_machine/>`_ (TensorFlow)
 
-`Reinforcement Learning - Survey of Methods <src/rl/survey_of_methods/>`_.
+`Reinforcement Learning <src/rl/>`_ -- `Survey of Methods <src/rl/survey_of_methods/>`_.
 
 
 Demonstrates

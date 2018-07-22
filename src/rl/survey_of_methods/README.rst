@@ -1,3 +1,14 @@
+Survey of Methods
+^^^^^^^^^^^^^^^^^
+
+1. `Q-Table Learning Agent <q_table_learning/>`_
+2. `Multi-armed Bandit <multi_armed_bandit/>`_ (TensorFlow)
+3. `Contextual Bandits <contextual_bandits/>`_ (TensorFlow)
+4. `Vanilla Policy Gradient Agent <policy_gradient/>`_ (TensorFlow)
+5. `Model-based example for RL <model_based/>`_ (TensorFlow)
+6. `Deep Q-Network <dqn/>`_ (TensorFlow)
+
+
 Introduction
 ^^^^^^^^^^^^
 
