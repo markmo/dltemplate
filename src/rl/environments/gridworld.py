@@ -158,9 +158,9 @@ class GameEnvironment(object):
         penalty = self.move(action)
         reward, done = self.check_goal()
         state = self.render()
-        if not reward:
-            print('done:', done)
-            print('reward:', reward)
-            print('penalty:', penalty)
+        # if not reward:
+        #     print('done:', done)
+        #     print('reward:', reward)
+        #     print('penalty:', penalty)
 
         return state, reward + penalty, done

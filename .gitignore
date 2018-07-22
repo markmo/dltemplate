@@ -162,3 +162,6 @@ readonly
 **/.DS_Store
 **/starspace_embedding*
 *.pb
+**/*.data*
+**/*.meta
+**/*.index

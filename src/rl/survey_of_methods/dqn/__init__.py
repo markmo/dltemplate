@@ -37,6 +37,7 @@ def run(constant_overwrites):
     reward_mat = np.resize(np.array(rewards), [len(rewards) // 100, 100])
     mean_reward = np.average(reward_mat, 1)
     plt.plot(mean_reward)
+    plt.show()
 
 
 if __name__ == '__main__':
