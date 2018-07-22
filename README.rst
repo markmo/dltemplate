@@ -44,10 +44,17 @@ Model Templates
 38. `Vanilla Policy Gradient Agent <src/rl/survey_of_methods/policy_gradient/>`_ (TensorFlow)
 39. `Model-based example for RL <src/rl/survey_of_methods/model_based/>`_ (TensorFlow)
 40. `Deep Q-Network <src/rl/survey_of_methods/dqn/>`_ (TensorFlow)
-41. `Wake-word Detection <src/keras_model/wake_word_detection/>`_ (Keras)
-42. `Neural Turing Machine <src/tf_model/neural_turing_machine/>`_ (TensorFlow)
+41. `Deep Recurrent Q-Network <src/rl/survey_of_methods/deep_recurrent_q_network/>`_ (TensorFlow)
+42. `Wake-word Detection <src/keras_model/wake_word_detection/>`_ (Keras)
+43. `Neural Turing Machine <src/tf_model/neural_turing_machine/>`_ (TensorFlow)
 
-`Reinforcement Learning <src/rl/>`_ -- `Survey of Methods <src/rl/survey_of_methods/>`_.
+
+Special Topics
+^^^^^^^^^^^^^^
+
+1. `Reinforcement Learning <src/rl/>`_ -- `Survey of Methods <src/rl/survey_of_methods/>`_.
+
+2. `Natural Language Processing <docs/nlp.rst>`_.
 
 
 Demonstrates
@@ -95,8 +102,9 @@ Demonstrates
 38. Introduction to Policy Gradient methods in RL.
 39. Introduction to model-based RL networks.
 40. Implement a Deep Q-Network using Experience Replay.
-41. Processing audio using an RNN to detect wake-words.
-42. Introduction to Neural Turing Machines.
+41. Implement a Deep Recurrent Q-Network to handle Partially Observable Markov Decision Processes (POMDPs).
+42. Processing audio using an RNN to detect wake-words.
+43. Introduction to Neural Turing Machines.
 
 
 Datasets

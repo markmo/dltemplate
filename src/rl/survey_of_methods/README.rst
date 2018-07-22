@@ -7,6 +7,7 @@ Survey of Methods
 4. `Vanilla Policy Gradient Agent <policy_gradient/>`_ (TensorFlow)
 5. `Model-based example for RL <model_based/>`_ (TensorFlow)
 6. `Deep Q-Network <dqn/>`_ (TensorFlow)
+7. `Deep Recurrent Q-Network <deep_recurrent_q_network/>`_ (TensorFlow)
 
 
 Introduction

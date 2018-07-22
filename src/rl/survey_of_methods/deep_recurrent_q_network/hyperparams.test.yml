@@ -1,0 +1,9 @@
+epsilon: 0.1  # chance of random action
+#n_episodes: 10000  # number episodes of game environment to train network
+n_episodes: 500
+max_episode_length: 50  # max allowed length of our episode
+n_hidden: 512  # size of final convolutional layer before splitting it into Advantage and Value streams
+time_per_step: 1  # length of each step used in gif creation
+summary_length: 100  # number episodes to periodically save for analysis
+load_model: True  # whether to load a saved model
+save_path: 'drqn'  # path to save our model to

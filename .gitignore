@@ -165,3 +165,4 @@ readonly
 **/*.data*
 **/*.meta
 **/*.index
+**/*.csv

@@ -1,0 +1,18 @@
+batch_size: 4  # number experience traces to use for each training step
+trace_length: 8  # length of each experience trace when training
+update_freq: 5  # frequency of performing a training step
+gamma: 0.99  # discount factor on the target Q-values
+start_epsilon: 1  # starting chance of random action
+end_epsilon: 0.1  # final chance of random action
+annealing_steps: 10000  # number steps of training to reduce start_epsilon to end_epsilon
+#n_episodes: 10000  # number episodes of game environment to train network
+n_episodes: 500
+n_pretrain_steps: 10000  # number steps of random actions before training begins
+max_episode_length: 50  # max allowed length of our episode
+n_hidden: 512  # size of final convolutional layer before splitting it into Advantage and Value streams
+time_per_step: 1  # length of each step used in gif creation
+summary_length: 100  # number episodes to periodically save for analysis
+tau: 0.001
+load_model: False  # whether to load a saved model
+save_path: 'drqn'  # path to save our model to
+learning_rate: 0.0001
