@@ -6,6 +6,22 @@ from tf_model.neural_turing_machine.ops import *
 from tf_model.neural_turing_machine.util import *
 
 
+def create_ntm(config, sess, **ntm_args):
+    cell = NTMCell(
+        input_dim=config.input_dim,
+        output_dim=config.output_dim,
+        controller_layer_size=config.controller_layer_size,
+        controller_dim=config.controller_dim,
+        write_head_size=config.write_head_size,
+        read_head_size=config.read_head_size
+    )
+    scope = ntm_args.pop('scope', 'NTM-%s' % config.task)
+    ntm = NTM(cell, sess, config.min_length, config.max_length,
+              test_max_length=config.test_max_length, scope=scope, **ntm_args)
+
+    return cell, ntm
+
+
 class NTMCell(object):
 
     def __init__(self, input_dim, output_dim,
@@ -383,72 +399,75 @@ class NTM(object):
         self.build_model(forward_only)
 
     def build_model(self, forward_only, is_copy=True):
-        print(' [*] Building an NTM model')
+        print(' [*] Building NTM model')
 
         with tf.variable_scope(self.scope):
-            # present start symbol
-            prev_state = None
-            if is_copy:
-                _, _, prev_state = self.cell(self.start_symbol, state=None)
-                self.save_state(prev_state, 0, self.max_length)
-
-            zeros = np.zeros(self.cell.input_dim, dtype=np.float32)
-            tf.get_variable_scope().reuse_variables()
-            for seq_length in range(1, self.max_length + 1):
-                progress(seq_length / float(self.max_length))
-                input_ = tf.placeholder(tf.float32, [self.cell.input_dim], name='input_%s' % seq_length)
-                true_output = tf.placeholder(tf.float32, [self.cell.output_dim], name='true_output_%s' % seq_length)
-                self.inputs.append(input_)
-                self.true_outputs.append(true_output)
-
-                # present inputs
-                _, _, prev_state = self.cell(input_, prev_state)
-                self.save_state(prev_state, seq_length, self.max_length)
-
-                # present end symbol
-                state = None
+            with tf.variable_scope(tf.get_variable_scope()):
+                # present start symbol
+                prev_state = None
                 if is_copy:
-                    _, _, state = self.cell(self.end_symbol, prev_state)
-                    self.save_state(state, seq_length)
+                    _, _, prev_state = self.cell(self.start_symbol, state=None)
+                    self.save_state(prev_state, 0, self.max_length)
 
-                self.prev_states[seq_length] = state
+                zeros = np.zeros(self.cell.input_dim, dtype=np.float32)
+                tf.get_variable_scope().reuse_variables()
+                for seq_length in range(1, self.max_length + 1):
+                    progress(seq_length / float(self.max_length))
+                    input_ = tf.placeholder(tf.float32, [self.cell.input_dim], name='input_%s' % seq_length)
+                    true_output = tf.placeholder(tf.float32, [self.cell.output_dim], name='true_output_%s' % seq_length)
+                    self.inputs.append(input_)
+                    self.true_outputs.append(true_output)
 
-                if not forward_only:
-                    # present targets
-                    outputs, output_logits = [], []
-                    for _ in range(seq_length):
-                        output, output_logit, state = self.cell(zeros, state)
-                        self.save_state(state, seq_length, is_output=True)
-                        outputs.append(output)
-                        output_logits.append(output_logit)
+                    # present inputs
+                    _, _, prev_state = self.cell(input_, prev_state)
+                    self.save_state(prev_state, seq_length, self.max_length)
 
-                    self.outputs[seq_length] = outputs
-                    self.output_logits[seq_length] = output_logits
+                    # present end symbol
+                    state = None
+                    if is_copy:
+                        _, _, state = self.cell(self.end_symbol, prev_state)
+                        self.save_state(state, seq_length)
+
+                    self.prev_states[seq_length] = state
+
+                    if not forward_only:
+                        # present targets
+                        outputs, output_logits = [], []
+                        for _ in range(seq_length):
+                            output, output_logit, state = self.cell(zeros, state)
+                            self.save_state(state, seq_length, is_output=True)
+                            outputs.append(output)
+                            output_logits.append(output_logit)
+
+                        self.outputs[seq_length] = outputs
+                        self.output_logits[seq_length] = output_logits
 
             if not forward_only:
                 for seq_length in range(self.min_length, self.max_length + 1):
-                    print(' [*] Building a loss model for seq_length %s' % seq_length)
-                    loss = sequence_loss(
-                        logits=self.output_logits[seq_length],
-                        targets=self.true_outputs[0:seq_length],
-                        weights=[1] * seq_length,
-                        average_across_timesteps=False,
-                        average_across_batch=False,
-                        softmax_loss_function=softmax_loss_function
-                    )
-                    self.losses[seq_length] = loss
-                    if not self.params:
-                        self.params = tf.trainable_variables()
+                    with tf.variable_scope(tf.get_variable_scope(), reuse=True):
+                        print(' [*] Building a loss model for seq_length %s' % seq_length)
+                        loss = sequence_loss(
+                            logits=self.output_logits[seq_length],
+                            targets=self.true_outputs[0:seq_length],
+                            weights=[1] * seq_length,
+                            average_across_timesteps=False,
+                            average_across_batch=False,
+                            softmax_loss_function=softmax_loss_function
+                        )
+                        self.losses[seq_length] = loss
+                        if not self.params:
+                            self.params = tf.trainable_variables()
 
-                    grads = []
-                    for grad in tf.gradients(loss, self.params):
-                        if grad is not None:
-                            grads.append(tf.clip_by_value(grad, self.min_grad, self.max_grad))
-                        else:
-                            grads.append(grad)
+                        grads = []
+                        for grad in tf.gradients(loss, self.params):
+                            if grad is not None:
+                                grads.append(tf.clip_by_value(grad, self.min_grad, self.max_grad))
+                            else:
+                                grads.append(grad)
 
-                    self.grads[seq_length] = grads
-                    optimizer = tf.train.RMSPropOptimizer(self.lr, decay=self.decay, momentum=self.momentum)
+                        self.grads[seq_length] = grads
+                        optimizer = tf.train.RMSPropOptimizer(self.lr, decay=self.decay, momentum=self.momentum)
+
                     reuse = seq_length != 1
                     with tf.variable_scope(tf.get_variable_scope(), reuse=reuse):
                         self.optims[seq_length] = optimizer.apply_gradients(zip(grads, self.params),
@@ -554,5 +573,5 @@ class NTM(object):
                 print(' [!] Training, but previous training data %s not found' % checkpoint_dir)
 
 
-def softmax_loss_function(labels, inputs):
-    return tf.nn.sigmoid_cross_entropy_with_logits(labels=labels, logits=inputs)
+def softmax_loss_function(labels, logits):
+    return tf.nn.sigmoid_cross_entropy_with_logits(labels=labels, logits=logits)

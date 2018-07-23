@@ -21,7 +21,7 @@ Model Templates
 15. `Deep Q Network <src/keras_model/dqn/>`_ (Keras)
 16. `Generative Adversarial Network (GAN) <src/keras_model/gan/>`_ (Keras)
 17. `Predicting StackOverflow Tags using Classical NLP <src/nlp/multilabel_classification/>`_
-18. `CNN using Sonnet <src/sonnet_model/cnn>`_ - Signs dataset
+18. `CNN using Sonnet <src/sonnet_model/cnn>`_ - Signs dataset (DeepMind Sonnet)
 19. `Recognize named entities on Twitter using a Bidirectional LSTM <src/tf_model/ner/>`_ (TensorFlow)
 20. `Recognize named entities on Twitter using CRF <src/nlp/crf_ner/>`_ (sklearn-crfsuite)
 21. `Recognize named entities on Twitter using Bi-LSTM + CRF <src/tf_model/bi_lstm_crf_ner/>`_ (TensorFlow)
