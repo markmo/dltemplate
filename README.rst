@@ -45,8 +45,9 @@ Model Templates
 39. `Model-based example for RL <src/rl/survey_of_methods/model_based/>`_ (TensorFlow)
 40. `Deep Q-Network <src/rl/survey_of_methods/dqn/>`_ (TensorFlow)
 41. `Deep Recurrent Q-Network <src/rl/survey_of_methods/deep_recurrent_q_network/>`_ (TensorFlow)
-42. `Wake-word Detection <src/keras_model/wake_word_detection/>`_ (Keras)
-43. `Neural Turing Machine <src/tf_model/neural_turing_machine/>`_ (TensorFlow)
+42. `Asynchronous Actor-Critic Agents (A3C) <src/rl/survey_of_methods/a3c/>`_ (TensorFlow)
+43. `Wake-word Detection <src/keras_model/wake_word_detection/>`_ (Keras)
+44. `Neural Turing Machine <src/tf_model/neural_turing_machine/>`_ (TensorFlow)
 
 
 Special Topics
@@ -103,8 +104,9 @@ Demonstrates
 39. Introduction to model-based RL networks.
 40. Implement a Deep Q-Network using Experience Replay.
 41. Implement a Deep Recurrent Q-Network to handle Partially Observable Markov Decision Processes (POMDPs).
-42. Processing audio using an RNN to detect wake-words.
-43. Introduction to Neural Turing Machines.
+42. Introduction to Asynchronous Actor-Critic Networks based on `DeepMind Paper <https://arxiv.org/pdf/1602.01783.pdf>`_.
+43. Processing audio using an RNN to detect wake-words.
+44. Introduction to Neural Turing Machines.
 
 
 Datasets

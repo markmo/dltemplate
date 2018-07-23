@@ -1,0 +1,6 @@
+max_episode_length: 300
+gamma: 0.99  # discount rate for advantage estimation and reward discounting
+s_size: 7056  # observations are greyscale frames, shape[84, 84, 1]
+a_size: 3  # Agent can move Left, Right, or Fire
+load_model: False
+model_path: './model'
