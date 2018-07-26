@@ -11,4 +11,4 @@ read_head_size: 1  # number of read heads
 test_max_length: 120  # maximum length of output sequence
 checkpoint_dir: 'checkpoint'  # directory path to save model checkpoints
 is_train: False  # True for training, False for testing
-continue_train: None  # True to continue training from saved checkpoint. False for restarting. None for automatic.
+continue_train: False  # True to continue training from saved checkpoint. False for restarting. None for automatic.

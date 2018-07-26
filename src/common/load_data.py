@@ -258,25 +258,36 @@ def load_names():
         return [' ' + name for name in names]
 
 
-def load_signs_dataset():
-    train = h5py.File(DATA_DIR + 'signs/train_signs.h5', 'r')
-    test = h5py.File(DATA_DIR + 'signs/test_signs.h5', 'r')
-    x_train = np.array(train['train_set_x']).astype('float32')
-    y_train = np.array(train['train_set_y'])
-    x_test = np.array(test['test_set_x']).astype('float32')
-    y_test = np.array(test['test_set_y'])
-    classes = np.array(test['list_classes'])
-    return x_train, y_train, x_test, y_test, classes
+def load_pix2pix_dataset(category):
+    """
+    pix2pix datasets:
 
+    'facades': 400 images from CMP Facades dataset <http://cmp.felk.cvut.cz/~tylecr1/facade/>.
+    'cityscapes': 2975 images from the Cityscapes training set <https://www.cityscapes-dataset.com/>.
+    'maps': 1096 training images scraped from Google Maps
+    'edges2shoes': 50k training images from UT Zappos50K dataset
+                   <http://vision.cs.utexas.edu/projects/finegrained/utzap50k/>.
+    'edges2handbags': 137K Amazon Handbag images from iGAN project <https://github.com/junyanz/iGAN>.
 
-def load_tagged_sentences():
-    nltk.download('brown')
-    nltk.download('universal_tagset')
-    data = nltk.corpus.brown.tagged_sents(tagset='universal')
-    all_tags = ['#EOS#', '#UNK#', 'ADV', 'NOUN', 'ADP', 'PRON', 'DET', '.', 'PRT', 'VERB', 'X', 'NUM', 'CONJ', 'ADJ']
-    data = np.array([[(word.lower(), tag) for word, tag in sentence] for sentence in data])
-    return data, all_tags
+    :param category:
+    :return:
+    """
+    category = category.lower()
+    assert category in ['facades', 'cityscapes', 'maps', 'edges2shoes', 'edges2handbags'], \
+        "category arg must be one of 'facades', 'cityscapes', 'maps', 'edges2shoes', 'edges2handbags'"
 
+    if not os.path.exists('{}pix2pix/{}'.format(DATA_DIR, category)):
+        util_download.sequential_downloader(
+            'https://people.eecs.berkeley.edu/~tinghuiz/projects/pix2pix/datasets/{}.tar.gz'.format(category),
+            'week1',
+            [
+                'train.tsv',
+                'validation.tsv',
+                'test.tsv',
+                'text_prepare_tests.tsv'
+            ],
+            DATA_DIR + 'stackoverflow'
+        )
 
 def load_quickdraw_dataset(category, target_dir, fmt='npy'):
     """
@@ -300,6 +311,17 @@ def load_quickdraw_dataset(category, target_dir, fmt='npy'):
     url = url_template.format(folder, url_quote(category), fmt)
     util_download.download_file(url, file_path)
     return file_path
+
+
+def load_signs_dataset():
+    train = h5py.File(DATA_DIR + 'signs/train_signs.h5', 'r')
+    test = h5py.File(DATA_DIR + 'signs/test_signs.h5', 'r')
+    x_train = np.array(train['train_set_x']).astype('float32')
+    y_train = np.array(train['train_set_y'])
+    x_test = np.array(test['test_set_x']).astype('float32')
+    y_test = np.array(test['test_set_y'])
+    classes = np.array(test['list_classes'])
+    return x_train, y_train, x_test, y_test, classes
 
 
 def load_stack_overflow_dataset():
@@ -380,6 +402,15 @@ def load_stack_overflow_questions_dataset():
 
 URL_TOKEN = '<URL>'
 USR_TOKEN = '<USR>'
+
+
+def load_tagged_sentences():
+    nltk.download('brown')
+    nltk.download('universal_tagset')
+    data = nltk.corpus.brown.tagged_sents(tagset='universal')
+    all_tags = ['#EOS#', '#UNK#', 'ADV', 'NOUN', 'ADP', 'PRON', 'DET', '.', 'PRT', 'VERB', 'X', 'NUM', 'CONJ', 'ADJ']
+    data = np.array([[(word.lower(), tag) for word, tag in sentence] for sentence in data])
+    return data, all_tags
 
 
 def load_twitter_entities_dataset():

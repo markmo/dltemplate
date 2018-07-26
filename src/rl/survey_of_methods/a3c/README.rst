@@ -3,6 +3,8 @@ Asynchronous Actor-Critic Agents (A3C)
 
 An implementation of the A3C algorithm to solve a simple 3D Doom challenge using the VizDoom engine.
 
+.. image:: ../../../images/a3c_network.png
+
 The A3C algorithm was released by Google’s DeepMind group earlier this year, and it made a splash by
 essentially obsoleting DQN. It was faster, simpler, more robust, and able to achieve much better
 scores on the standard battery of Deep RL tasks. On top of all that it could work in continuous as

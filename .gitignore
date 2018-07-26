@@ -166,3 +166,4 @@ readonly
 **/*.meta
 **/*.index
 **/*.csv
+**/logs

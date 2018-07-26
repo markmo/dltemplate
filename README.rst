@@ -48,6 +48,7 @@ Model Templates
 42. `Asynchronous Actor-Critic Agents (A3C) <src/rl/survey_of_methods/a3c/>`_ (TensorFlow)
 43. `Wake-word Detection <src/keras_model/wake_word_detection/>`_ (Keras)
 44. `Neural Turing Machine <src/tf_model/neural_turing_machine/>`_ (TensorFlow)
+45. `DiscoGAN - Learning to Discover Cross-Domain Relations with Generative Adversarial Networks <pytorch_model/discogan/>`_ (PyTorch)
 
 
 Special Topics
@@ -107,6 +108,7 @@ Demonstrates
 42. Introduction to Asynchronous Actor-Critic Networks based on `DeepMind Paper <https://arxiv.org/pdf/1602.01783.pdf>`_.
 43. Processing audio using an RNN to detect wake-words.
 44. Introduction to Neural Turing Machines.
+45.
 
 
 Datasets

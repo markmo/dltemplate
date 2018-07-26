@@ -65,7 +65,7 @@ def train(ntm, config, sess):
     tf.global_variables_initializer().run()
     print(' [*] Initialization finished')
 
-    if config.continue_train:
+    if config.continue_train is not False:
         ntm.load(config.checkpoint_dir, config.task, strict=config.continue_train)
 
     start_time = time.time()
