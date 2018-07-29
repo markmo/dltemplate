@@ -28,3 +28,56 @@ example, when learning to generate a shoe image based on each handbag image, we 
 generated image to be an image-based representation of the handbag image (and hence reconstruct
 the handbag image) through a reconstruction loss, and to be as close to images in the shoe
 domain as possible through a GAN loss.
+
+
+Creating your own dataset
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can create your own dataset by organizing images as:
+
+::
+
+    data
+    └── YOUR_DATASET_NAME
+        ├── A
+        │   ├── xxx.jpg (name doesn't matter)
+        │   ├── yyy.jpg
+        │   └── ...
+        └── B
+            ├── zzz.jpg
+            ├── www.jpg
+            └── ...
+
+All images in each dataset should have same size:
+
+::
+
+    # for Ubuntu
+    $ sudo apt-get install imagemagick
+    $ mogrify -resize 256x256! -quality 100 -path YOUR_DATASET_NAME/A/*.jpg
+    $ mogrify -resize 256x256! -quality 100 -path YOUR_DATASET_NAME/B/*.jpg
+
+    # for Mac
+    $ brew install imagemagick
+    $ mogrify -resize 256x256! -quality 100 -path YOUR_DATASET_NAME/A/*.jpg
+    $ mogrify -resize 256x256! -quality 100 -path YOUR_DATASET_NAME/B/*.jpg
+
+    # for scale and center crop
+    $ mogrify -resize 256x256^ -gravity center -crop 256x256+0+0 -quality 100 -path ../A/*.jpg
+
+To train a model (from the project root):
+
+::
+
+    export PYTHONPATH=src
+    python src/pytorch_model/discogan/__init__.py --dataset=edges2shoes --num_gpu=1
+    python src/pytorch_model/discogan/__init__.py --dataset=YOUR_DATASET_NAME --num_gpu=4
+
+To test a model, use your `load_path`:
+
+::
+
+    export PYTHONPATH=src
+    python src/pytorch_model/discogan/__init__.py --dataset=edges2handbags \
+        --load_path=src/pytorch_model/discogan/logs/edges2handbags_2017-07-28_10-55-37 \
+        --num_gpu=0 ==is_train=False

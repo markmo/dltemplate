@@ -60,6 +60,18 @@ Challenges:
    * Which of the actions was salient for the eventual observed outcome?
 
 
+Regret
+^^^^^^
+
+The gap between optimal policy and selected actions.
+
+Greedy and Epsilon-Greedy policies have linear regret L_T >= Const . T
+
+No matter the algorithm, lower bound on regret is lim{T -> inf} L_T >= Const' . logT [Lai and Robbins]
+
+Greedy exploits too much. Epsilon-Greedy explores too much.
+
+
 Approach to Exploration
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -86,6 +98,9 @@ to ensure that all actions are tried at least once.
 
     Q_values = np.ones(n_actions)
 
+
+Optimistic-Greedy. Initialize rewards per action to a large initial value. Force playing
+untried actions.
 
 Random. The opposite approach to greedy selection is to simply always take a random
 action.
@@ -121,6 +136,15 @@ the agent is assumed to learn most of what it needs about the environment.
         action = np.argmax(Q_dist)
 
 Variant - annealing of ϵ to some low value or zero.
+
+Upper Confidence Bound Algorithm (UCB). Optimism in the face of uncertainty.
+
+UCB1 achieves logarithmic regret.
+
+
+Posterior Sampling Approaches (Thompson Sampling).
+
+Posterior Sampling also achieves logarithmic regret bound.
 
 
 Boltzmann Approach. Instead of always taking the optimal action, or taking a

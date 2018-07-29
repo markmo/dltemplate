@@ -48,15 +48,16 @@ Model Templates
 42. `Asynchronous Actor-Critic Agents (A3C) <src/rl/survey_of_methods/a3c/>`_ (TensorFlow)
 43. `Wake-word Detection <src/keras_model/wake_word_detection/>`_ (Keras)
 44. `Neural Turing Machine <src/tf_model/neural_turing_machine/>`_ (TensorFlow)
-45. `DiscoGAN - Learning to Discover Cross-Domain Relations with Generative Adversarial Networks <pytorch_model/discogan/>`_ (PyTorch)
+45. `DiscoGAN - Learning to Discover Cross-Domain Relations with Generative Adversarial Networks <src/pytorch_model/discogan/>`_ (PyTorch)
+46. `Pointer Generator Network for Text Summarization <src/tf_model/pointer_generator>`_ (TensorFlow)
 
 
 Special Topics
 ^^^^^^^^^^^^^^
 
-1. `Reinforcement Learning <src/rl/>`_ -- `Survey of Methods <src/rl/survey_of_methods/>`_.
-
-2. `Natural Language Processing <docs/nlp.rst>`_.
+1. `Reinforcement Learning <src/rl/>`_ -- `Survey of Methods <src/rl/survey_of_methods/>`_
+2. `Natural Language Processing <docs/nlp.rst>`_
+3. `What do you do with... <docs/general.rst>`_
 
 
 Demonstrates
@@ -108,7 +109,9 @@ Demonstrates
 42. Introduction to Asynchronous Actor-Critic Networks based on `DeepMind Paper <https://arxiv.org/pdf/1602.01783.pdf>`_.
 43. Processing audio using an RNN to detect wake-words.
 44. Introduction to Neural Turing Machines.
-45.
+45. Using a GAN to transfer style from one domain to another while preserving key attributes
+    such as orientation and face identity.
+46. Basic principles of Pointer Generator Networks.
 
 
 Datasets
@@ -129,6 +132,7 @@ Datasets
 13. Cornell movie dialog corpus.
 14. Open Subtitles movie dialog corpus.
 15. Hebrew to English words.
+16. Pix2pix datasets.
 
 
 Notation
