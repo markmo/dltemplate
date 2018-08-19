@@ -49,7 +49,8 @@ Model Templates
 43. `Wake-word Detection <src/keras_model/wake_word_detection/>`_ (Keras)
 44. `Neural Turing Machine <src/tf_model/neural_turing_machine/>`_ (TensorFlow)
 45. `DiscoGAN - Learning to Discover Cross-Domain Relations with Generative Adversarial Networks <src/pytorch_model/discogan/>`_ (PyTorch)
-46. `Pointer Generator Network for Text Summarization <src/tf_model/pointer_generator>`_ (TensorFlow)
+46. `Pointer Generator Network for Text Summarization <src/tf_model/pointer_generator/>`_ (TensorFlow)
+47. `Minimizing network delay using an Actor-Critic Network <src/rl/routing_optimization/>`_ (Keras)
 
 
 Special Topics
@@ -112,6 +113,7 @@ Demonstrates
 45. Using a GAN to transfer style from one domain to another while preserving key attributes
     such as orientation and face identity.
 46. Basic principles of Pointer Generator Networks.
+47. Using Reinforcement Learning to optimize a Software Defined Network (SDN).
 
 
 Datasets

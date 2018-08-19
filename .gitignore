@@ -167,3 +167,4 @@ readonly
 **/*.index
 **/*.csv
 **/logs
+**/runs

@@ -1,0 +1,25 @@
+active_nodes: 14  # number of active nodes in the network
+action_type: 'new'  # action: ['new', 'delta']
+batch_size: 32  # batch size
+buffer_size: 1600  # max size of replay buffer
+env: 'label'  # environment ['label', 'balancing']
+n_episodes: 100  # number of episodes to train
+exploration: 0.8  # exploration: rate if <= 1, otherwise number of steps
+gamma: 0.99  # discount factor
+hidden_layer_activation_fn: 'selu'  # Scaled Exponential Linear Unit. (Klambauer et al., 2017)
+n_hidden1: 91  # size hidden layer 1
+n_hidden2: 42  # size hidden layer 2
+lr_actor: 0.0001  # learning rate of the actor network
+lr_critic: 0.001  # learning rate of the critic network
+max_delta: 0.1
+max_steps: 1000  # max number of steps per episode
+mu: 0.0  # Ornstein-Uhlenbeck process' μ
+reward_fn: 'avg'  # reward function
+print: false  # logging verbosity during training
+routing: 'Linkweight'  # ['Balancer', 'Linkweight', 'Pathchoice']
+seed: null  # random seed: null or int
+sigma: 0.4  # Ornstein-Uhlenbeck process' σ
+state_type: 't'  # state representation ['rt' (routing table), 't' (traffic)]
+tau: 0.001  # soft target update
+theta: 0.2  # Ornstein-Uhlenbeck process' θ
+traffic: 'exp'  # traffic: static or changing (~randomly)

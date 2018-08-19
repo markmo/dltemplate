@@ -4,7 +4,7 @@ Model-based RL
 Implement a policy and model network, which work in tandem to solve the CartPole
 reinforcement learning problem.
 
-.. image:: ../../../images/model-based-rl.png
+.. image:: ../../../../images/model-based-rl.png
 
 In this case, a model is going to be a neural network that attempts to learn the
 dynamics of the real environment. For example, in the CartPole challenge, we would
