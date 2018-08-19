@@ -1,5 +1,5 @@
-Minimizing network delay using an Actor-Critic Network
-------------------------------------------------------
+Minimizing network delay using Deep Deterministic Policy Gradients (DDPG)
+-------------------------------------------------------------------------
 
 A Deep-Reinforcement Learning agent that optimizes routing. Our agent adapts automatically
 to current traffic conditions and proposes tailored configurations that attempt to minimize
@@ -133,7 +133,7 @@ cities, the edges are roads connecting the cities. Traffic passes through links 
 origin and destination vertices. Additional information about the nodes and the edges is the
 population of the cities and the distances between them.
 
-.. image:: ../../../images/gravity_model.jpg
+.. image:: ../../../images/gravity_model.png
 
 In network applications, gravity models have been used to model the volume of telephone calls
 in a network. In the context of Internet TMs, we can naturally interpret Xij as the traffic
@@ -158,7 +158,7 @@ to pair (i, j). If multiple routes are possible, the entries of B are instead fr
 representing, for example, the proportion of traffic from i to j that is expected to use the
 link e.
 
-.. image:: ../../../images/routing_matrix.jpg
+.. image:: ../../../images/routing_matrix.png
 
 
 Traffic matrix
@@ -174,7 +174,7 @@ SNMP data is easy to collect, and almost ubiquitous. However, SNMP data only pro
 measurements, not TM measurements. The link measurements y are related to the TM, which is written
 as a column vector x, by the relationship y = Ax where A is called the routing matrix.
 
-.. image:: ../../../images/traffic_matrix.jpg
+.. image:: ../../../images/traffic_matrix.png
 
 
 See `Gravity Models <https://courses.cs.ut.ee/2011/graphmining/Main/GravityModels>`_ and

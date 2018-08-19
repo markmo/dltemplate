@@ -50,7 +50,7 @@ Model Templates
 44. `Neural Turing Machine <src/tf_model/neural_turing_machine/>`_ (TensorFlow)
 45. `DiscoGAN - Learning to Discover Cross-Domain Relations with Generative Adversarial Networks <src/pytorch_model/discogan/>`_ (PyTorch)
 46. `Pointer Generator Network for Text Summarization <src/tf_model/pointer_generator/>`_ (TensorFlow)
-47. `Minimizing network delay using an Actor-Critic Network <src/rl/routing_optimization/>`_ (Keras)
+47. `Minimizing network delay using Deep Deterministic Policy Gradients (DDPG) <src/rl/routing_optimization/>`_ (Keras)
 
 
 Special Topics
