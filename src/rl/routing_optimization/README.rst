@@ -46,7 +46,7 @@ can be used to represent the actor and critic structures.
 off-policy generally employ a separate behavior policy that is independent of the policy
 being improved upon; the behavior policy is used to simulate trajectories. A key benefit
 of this separation is that the behavior policy can operate by sampling all actions, whereas
-the estimation policy can be deterministic (e.g., greedy) [1]. Q-learning is an off-policy
+the estimation policy can be deterministic (e.g., greedy). Q-learning is an off-policy
 algorithm, since it updates the Q values without making any assumptions about the actual
 policy being followed. Rather, the Q-learning algorithm simply states that the Q-value
 corresponding to state s(t) and action a(t) is updated using the Q-value of the next state
@@ -112,6 +112,19 @@ Reads hyperparams from `<folder>` (created from training):
 Using traffic file:
 
     python rl/routing_optimization/__init__.py --play --folder <folder> --traffic-folder <path to folder with traffic file>
+
+
+Synthesizing Training Data
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Synthesis is needed because traffic matrices are a crucial input for testing many new
+networking algorithms, but traffic matrices themselves are generally kept secret by providers.
+Furthermore, even given traffic matrices from a real network, it is difficult to realistically
+adjust these to generate a range of scenarios (for instance for different network sizes).
+
+The methods below are useful in generating realistic data. In particular, a Gravity Model is
+presented as a good approach for synthesis: it is simple, requires only one parameter, and fits
+the distributions of Traffic Matrices (see below) well.
 
 
 Gravity Model
