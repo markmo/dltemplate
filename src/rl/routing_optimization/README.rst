@@ -12,7 +12,7 @@ See `A Deep-Reinforcement Learning Approach for Software-Defined Networking Rout
 Glossary
 ^^^^^^^^
 
-DDPG - Deep Deterministic Policy Gradient. Google DeepMind devised a solid algorithm for
+**DDPG (Deep Deterministic Policy Gradient)**. Google DeepMind devised a solid algorithm for
 tackling the continuous action space problem. Building off their `prior work <http://proceedings.mlr.press/v32/silver14.pdf>`_
 on Deterministic Policy Gradients, they produced a policy-gradient actor-critic algorithm called
 `Deep Deterministic Policy Gradients (DDPG) <https://arxiv.org/pdf/1509.02971v2.pdf>`_ that is
@@ -21,7 +21,7 @@ along with Deep Q-Networks (hence the "deep"-ness of DDPG).
 
 See `Deep Deterministic Policy Gradients in TensorFlow <https://pemami4911.github.io/blog/2016/08/21/ddpg-rl.html>`_.
 
-Policy Gradient Methods. Policy-Gradient (PG) algorithms optimize a policy end-to-end by
+**Policy Gradient Methods**. Policy-Gradient (PG) algorithms optimize a policy end-to-end by
 computing noisy estimates of the gradient of the expected reward of the policy and then
 updating the policy in the gradient direction. Traditionally, PG methods have assumed a
 stochastic policy μ(a|s), which gives a probability distribution over actions. Ideally,
@@ -29,7 +29,7 @@ the algorithm sees lots of training examples of high rewards from good actions a
 rewards from bad actions. For RL problems with continuous action spaces, vanilla-PG is all
 but useless due to the credit assignment problem.
 
-Actor-Critic Algorithms.
+**Actor-Critic Algorithms**.
 
 .. image:: ../../../images/actor-critic.png
 
@@ -42,7 +42,7 @@ function Q(s,a), it will also need the output of the actor. The output of the cr
 learning in both the actor and the critic. In Deep Reinforcement Learning, neural networks
 can be used to represent the actor and critic structures.
 
-Off-Policy vs. On-Policy. Reinforcement Learning algorithms which are characterized as
+**Off-Policy vs. On-Policy**. Reinforcement Learning algorithms which are characterized as
 off-policy generally employ a separate behavior policy that is independent of the policy
 being improved upon; the behavior policy is used to simulate trajectories. A key benefit
 of this separation is that the behavior policy can operate by sampling all actions, whereas
@@ -55,7 +55,7 @@ s(t+1) and the action a(t+1) that maximizes the Q-value at state s(t+1).
 On-policy algorithms directly use the policy that is being estimated to sample trajectories
 during training.
 
-Model-free Algorithms. Model-free RL algorithms are those that make no effort to learn the
+**Model-free Algorithms**. Model-free RL algorithms are those that make no effort to learn the
 underlying dynamics that govern how an agent interacts with the environment. In the case
 where the environment has a discrete state space and the agent has a discrete number of
 actions to choose from, a model of the dynamics of the environment is the 1-step transition
@@ -74,7 +74,7 @@ using a good approximation of the underlying model of the environment can only b
 Be wary - using a bad approximation of a model of the environment will only bring you misery.
 In addition, model-free methods generally require a larger number of training examples.
 
-Target networks. Directly updating your actor and critic neural network weights with the
+**Target networks**. Directly updating your actor and critic neural network weights with the
 gradients obtained from the TD error signal that was computed from both your replay buffer
 and the output of the actor and critic networks causes your learning algorithm to diverge
 (or to not learn at all). It was recently discovered that using a set of target networks to

@@ -1,4 +1,4 @@
-""" models """
+""" models. warning! uses Keras 1.x """
 __credits__ = 'giorgio@ac.upc.edu'
 
 import keras
