@@ -1,10 +1,13 @@
 import numpy as np
+import os
 from rl.survey_of_methods.a3c.util import discount, normalized_columns_initializer
 from rl.survey_of_methods.a3c.util import process_frame, update_target_graph
 from rl.survey_of_methods.deep_recurrent_q_network.util import make_gif
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 from vizdoom import *
+
+ROOT = os.path.dirname(os.path.realpath(__file__)) + '/'
 
 
 class ACNetwork(object):
@@ -76,7 +79,8 @@ class ACNetwork(object):
 
 class Worker(object):
 
-    def __init__(self, game, name, s_size, a_size, optimizer, model_path, global_episodes):
+    def __init__(self, game, name, s_size, a_size, optimizer, model_path, global_episodes,
+                 is_visible=False, is_audible=False):
         self.name = 'worker_{}'.format(name)
         self.number = name
         self.model_path = model_path
@@ -95,7 +99,7 @@ class Worker(object):
 
         # the following code is for setting up the Doom environment
         # this corresponds to the simple task we will pose our agent
-        game.set_doom_scenario_path('basic.wad')
+        game.set_doom_scenario_path(ROOT + 'basic.wad')
         game.set_doom_map('map01')
         game.set_screen_resolution(ScreenResolution.RES_160X120)
         game.set_screen_format(ScreenFormat.GRAY8)
@@ -112,8 +116,8 @@ class Worker(object):
         game.add_available_game_variable(GameVariable.POSITION_Y)
         game.set_episode_timeout(300)
         game.set_episode_start_time(10)
-        game.set_window_visible(False)
-        game.set_sound_enabled(False)
+        game.set_window_visible(is_visible)
+        game.set_sound_enabled(is_audible)
         game.set_living_reward(-1)
         game.set_mode(Mode.PLAYER)
         game.init()

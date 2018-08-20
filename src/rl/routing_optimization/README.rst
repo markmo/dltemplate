@@ -8,6 +8,13 @@ provides important operational advantages with respect to traditional optimizati
 
 See `A Deep-Reinforcement Learning Approach for Software-Defined Networking Routing Optimization <https://arxiv.org/abs/1709.07080>`_.
 
+A fundamental networking problem is the Traffic Engineering (TE): given a set of network
+flows with source and destination nodes, find a solution to forward the data traffic with
+the objective of maximizing a utility function. Simple and widely-used solutions include
+always routing traffic via shortest paths (e.g., Open Shortest Path First (OSPF)); or evenly
+distributing traffic via multiple available paths (e.g., Valiant Load Balancing (VLB)).
+Obviously, neither of them are optimal.
+
 
 Glossary
 ^^^^^^^^
@@ -73,6 +80,15 @@ This is much more computationally efficient. I should note that, if possible, ob
 using a good approximation of the underlying model of the environment can only be beneficial.
 Be wary - using a bad approximation of a model of the environment will only bring you misery.
 In addition, model-free methods generally require a larger number of training examples.
+
+**Monte-Carlo Update vs. Temporal-Difference (TD) Update**. A Monte-Carlo update means the
+agent updates its estimation for a state-action pair by calculating the mean return from a
+collection of episodes. A TD update approximates the estimation by comparing estimates at
+two consecutive episodes. For example, Q-learning updates its Q-value by the TD update as
+`Q(s, a) ← Q(s, a) + α(R(s, a) + γ max_a′ Q(s′, a′) − Q(s, a))`, where `α` is the learning
+rate. Specifically, the term `R(s, a) + γ max_a′ Q(s′, a′) − Q(s, a)` is also named as the
+TD error, since it captures the difference between the current (sampled) estimate
+`R(s, a) + γ max_a′ Q(s′, a′)` and the previous one `Q(s, a)`.
 
 **Target networks**. Directly updating your actor and critic neural network weights with the
 gradients obtained from the TD error signal that was computed from both your replay buffer

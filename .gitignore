@@ -168,3 +168,7 @@ readonly
 **/*.csv
 **/logs
 **/runs
+**/model-*
+**/train_*
+**/frames
+**/_vizdoom.ini

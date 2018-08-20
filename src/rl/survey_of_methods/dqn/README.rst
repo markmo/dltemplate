@@ -19,7 +19,7 @@ superhuman performance on dozens of Atari games using a DQN agent.
 Model Architecture
 ^^^^^^^^^^^^^^^^^^
 
-.. image:: ../../../images/q-network.png
+.. image:: ../../../../images/q-network.png
 
 Convolutional layers. Instead of considering each pixel independently, convolutional
 layers allow us to consider regions of an image, and maintain spatial relationships
@@ -81,7 +81,7 @@ equation for updating the target value.
 Dueling DQN
 ^^^^^^^^^^^
 
-.. image:: ../../../images/dueling_dqn.png
+.. image:: ../../../../images/dueling_dqn.png
 
 In order to explain the reasoning behind the architecture changes that Dueling DQN
 makes, we need to first explain some a few additional reinforcement learning terms.

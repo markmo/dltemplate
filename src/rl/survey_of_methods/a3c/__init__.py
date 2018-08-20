@@ -37,13 +37,18 @@ def run(constant_overwrites):
         # Generate global network
         master_network = ACNetwork(s_size, a_size, 'global', None)
 
-        # Set workers to number of available CPU threads
-        n_workers = multiprocessing.cpu_count()
+        if 'n_workers' in constants:
+            n_workers = constants['n_workers']
+        else:
+            # Set workers to number of available CPU threads
+            n_workers = multiprocessing.cpu_count()
+
         workers = []
 
         # Create worker classes
         for i in range(n_workers):
-            workers.append(Worker(DoomGame(), i, s_size, a_size, optimizer, model_path, global_episodes))
+            workers.append(Worker(DoomGame(), i, s_size, a_size, optimizer, model_path, global_episodes,
+                                  is_visible=constants['visible'], is_audible=constants['audible']))
 
         saver = tf.train.Saver(max_to_keep=5)
 
@@ -72,9 +77,14 @@ def run(constant_overwrites):
 if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run A3C Agent')
+    parser.add_argument('--workers', dest='n_workers', type=int, help='number workers')
     parser.add_argument('--model-path', dest='model_path', type=str, default='./model', help='file path to saved model')
     parser.add_argument('--load-model', dest='load_model', help='load model flag', action='store_true')
+    parser.add_argument('--visible', dest='visible', help='display VizDoom window', action='store_true')
+    parser.add_argument('--audible', dest='audible', help='enable sound', action='store_true')
     parser.set_defaults(load_model=False)
+    parser.set_defaults(visible=False)
+    parser.set_defaults(audible=False)
     args = parser.parse_args()
 
     run(vars(args))

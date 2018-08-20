@@ -6,7 +6,7 @@ that can solve the contextual bandit problem.
 
 There is a set of problems in between the stateless situation and the full RL problem.
 
-.. image:: ../../../images/context_bandit.png
+.. image:: ../../../../images/context_bandit.png
 
 Contextual Bandits introduce the concept of the state. The state consists of a description
 of the environment that the agent can use to take more informed actions. In our problem,
@@ -20,4 +20,5 @@ This example solves problems in which there are states, but the states are not d
 by the previous states or actions.
 
 
-See https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-1-5-contextual-bandits-bff01d1aad9c
+See `Simple Reinforcement Learning with Tensorflow Part 1.5: Contextual Bandits
+<https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-1-5-contextual-bandits-bff01d1aad9c>`_.
