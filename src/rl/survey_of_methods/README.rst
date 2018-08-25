@@ -75,7 +75,7 @@ Greedy exploits too much. Epsilon-Greedy explores too much.
 Approach to Exploration
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Greedy. A naive approach to ensuring the optimal action is taken at any given time
+**Greedy**. A naive approach to ensuring the optimal action is taken at any given time
 is to simply choose the action which the agent expects to provide the greatest reward.
 Taking the action which the agent estimates to be the best at the current moment is
 an example of exploitation: the agent is exploiting its current knowledge about the
@@ -91,7 +91,7 @@ suboptimal solution.
     Q_values = sess.run(Q_out, feed_dict={inputs: [state]})
     action = np.argmax(Q_values)
 
-Variation - Optimistic Greedy. Initialize all actions to optimistic value, such as 1,
+**Variation - Optimistic Greedy**. Initialize all actions to optimistic value, such as 1,
 to ensure that all actions are tried at least once.
 
 ::
@@ -99,10 +99,10 @@ to ensure that all actions are tried at least once.
     Q_values = np.ones(n_actions)
 
 
-Optimistic-Greedy. Initialize rewards per action to a large initial value. Force playing
+**Optimistic-Greedy**. Initialize rewards per action to a large initial value. Force playing
 untried actions.
 
-Random. The opposite approach to greedy selection is to simply always take a random
+**Random**. The opposite approach to greedy selection is to simply always take a random
 action.
 
 ::
@@ -114,7 +114,7 @@ action.
     action = np.random.randint(0, n_actions)
 
 
-ϵ-Greedy Approach. In this approach the agent chooses what it believes to be the
+**ϵ-Greedy Approach**. In this approach the agent chooses what it believes to be the
 optimal action most of the time, but occasionally acts randomly. The ϵ in ϵ-greedy
 is an adjustable parameter which determines the probability of taking a random,
 rather than principled, action. Due to its simplicity and surprising power, this
@@ -137,17 +137,17 @@ the agent is assumed to learn most of what it needs about the environment.
 
 Variant - annealing of ϵ to some low value or zero.
 
-Upper Confidence Bound Algorithm (UCB). Optimism in the face of uncertainty.
+**Upper Confidence Bound Algorithm (UCB)**. Optimism in the face of uncertainty.
 
 UCB1 achieves logarithmic regret.
 
 
-Posterior Sampling Approaches (Thompson Sampling).
+**Posterior Sampling Approaches (Thompson Sampling)**.
 
 Posterior Sampling also achieves logarithmic regret bound.
 
 
-Boltzmann Approach. Instead of always taking the optimal action, or taking a
+**Boltzmann Approach**. Instead of always taking the optimal action, or taking a
 random action, this approach involves choosing an action with weighted probabilities.
 To accomplish this we use a softmax over the networks estimates of value for each
 action. In this case the action which the agent estimates to be optimal is most
@@ -192,7 +192,7 @@ uncertainty about the value of different actions.
     action = np.argmax(Q_probs[0] == action_value)
 
 
-Bayesian Approaches (w/ Dropout). What if an agent could exploit its own uncertainty
+**Bayesian Approaches (w/ Dropout)**. What if an agent could exploit its own uncertainty
 about its actions? This is exactly the ability that a class of neural network models
 referred to as Bayesian Neural Networks (BNNs) provide. Unlike traditional neural
 network which act deterministically, BNNs act probabilistically. This means that
@@ -228,7 +228,7 @@ annealed over time from 0.1 to 1.0.
     action = # Insert your favorite action-selection strategy with the sampled Q-values.
 
 
-Advanced Approaches
+**Advanced Approaches**
 
 All of the methods discussed above deal with the selection of actions. There is another
 approach to exploration that deals with the nature of the reward signal itself. These

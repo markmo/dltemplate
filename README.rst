@@ -51,6 +51,7 @@ Model Templates
 45. `DiscoGAN - Learning to Discover Cross-Domain Relations with Generative Adversarial Networks <src/pytorch_model/discogan/>`_ (PyTorch)
 46. `Pointer Generator Network for Text Summarization <src/tf_model/pointer_generator/>`_ (TensorFlow)
 47. `Minimizing network delay using Deep Deterministic Policy Gradients (DDPG) <src/rl/routing_optimization/>`_ (Keras)
+48. `RL from scratch - Using Policy Gradients to play Pong <src/rl/policy_gradient_pong/>`_
 
 
 Special Topics
@@ -114,6 +115,7 @@ Demonstrates
     such as orientation and face identity.
 46. Basic principles of Pointer Generator Networks.
 47. Using Reinforcement Learning to optimize a Software Defined Network (SDN).
+48. Introduction to Policy Gradients.
 
 
 Datasets
