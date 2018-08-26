@@ -2,8 +2,8 @@
 import gym
 import numpy as np
 import os
-from rl.policy_gradient_pong.util import discount_rewards, load_model, log_episode, normalize, preprocess
-from rl.policy_gradient_pong.util import save_model, sigmoid
+from rl.policy_gradients_pong.util import discount_rewards, load_model, log_episode, normalize, preprocess
+from rl.policy_gradients_pong.util import save_model, sigmoid
 
 
 # hyperparams

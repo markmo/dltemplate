@@ -1,14 +1,14 @@
 """ This file contains code to process data into batches """
-import tf_model.pointer_generator.data as data
 import numpy as np
 import os
 from queue import Queue
 from random import shuffle
 import tensorflow as tf
+from tensorflow.python import debug as tf_debug
+from tf_model.pointer_generator.data import abstract2ids, abstract2sents, article2ids, example_generator
+from tf_model.pointer_generator.data import PAD_TOKEN, START_DECODING, STOP_DECODING
 from threading import Thread
 import time
-
-FLAGS = tf.app.flags.FLAGS
 
 
 class Batch(object):
@@ -22,11 +22,6 @@ class Batch(object):
         :param config: hyperparameters
         :param vocab: Vocabulary object
         """
-        self.pad_id = vocab.word2id(data.PAD_TOKEN)  # id of the PAD token used to pad sequences
-        self.init_encoder_seq(example_list, config)  # initialize the input to the encoder
-        self.init_decoder_seq(example_list, config)  # initialize the input and targets for the decoder
-        self.store_orig_strings(example_list)  # store the original strings
-
         self.enc_batch = None
         self.enc_lens = None
         self.enc_padding_mask = None
@@ -39,6 +34,10 @@ class Batch(object):
         self.original_articles = []
         self.original_abstracts = []
         self.original_abstracts_sents = []
+        self.pad_id = vocab.word2id(PAD_TOKEN)  # id of the PAD token used to pad sequences
+        self.init_encoder_seq(example_list, config)  # initialize the input to the encoder
+        self.init_decoder_seq(example_list, config)  # initialize the input and targets for the decoder
+        self.store_orig_strings(example_list)  # store the original strings
 
     def init_encoder_seq(self, example_list, config):
         """
@@ -217,7 +216,7 @@ class Batcher(object):
         """
         # If the batch queue is empty, print a warning
         if self._batch_queue.qsize() == 0:
-            tf.logging.warning('Bucket input queue is empty when calling next_batch. ' +
+            tf.logging.warning('Bucket input queue is empty when calling next_batch. '
                                'Bucket queue size: %i, Input queue size: %i',
                                self._batch_queue.qsize(), self._example_queue.qsize())
             if self._single_pass and self._finished_reading:
@@ -229,7 +228,7 @@ class Batcher(object):
 
     def fill_example_queue(self):
         """ Reads data from file and processes into Examples which are then placed into the example queue. """
-        input_gen = self.text_generator(data.example_generator(self._data_path, self._single_pass))
+        input_gen = self.text_generator(example_generator(self._data_path, self._single_pass))
 
         while True:
             try:
@@ -238,7 +237,7 @@ class Batcher(object):
             except StopIteration:  # if there are no more examples:
                 tf.logging.info('The example generator for this example-queue-filling-thread has exhausted data.')
                 if self._single_pass:
-                    tf.logging.info("single_pass mode is on, so we've finished reading dataset. " +
+                    tf.logging.info("single_pass mode is on, so we've finished reading dataset. "
                                     "This thread is stopping.")
                     self._finished_reading = True
                     break
@@ -246,7 +245,7 @@ class Batcher(object):
                     raise Exception('single_pass mode is off but the example generator is out of data; error.')
 
             # Use the <s> and </s> tags in abstract to get a list of sentences.
-            abstract_sentences = [sent.strip() for sent in data.abstract2sents(abstract)]
+            abstract_sentences = [sent.strip() for sent in abstract2sents(abstract)]
             example = Example(article, abstract_sentences, self._vocab, self._config)  # Process into an Example.
             self._example_queue.put(example)  # place the Example in the example queue.
 
@@ -306,21 +305,21 @@ class Batcher(object):
                     new_t.start()
 
     # noinspection PyMethodMayBeStatic
-    def text_generator(self, example_generator):
+    def text_generator(self, example_gen):
         """
         Generates article and abstract text from tf.Example.
 
-        :param example_generator: a generator of tf.Examples from file. See data.example_generator
+        :param example_gen: a generator of tf.Examples from file. See data.example_generator
         :return:
         """
         while True:
-            e = next(example_generator)  # e is a tf.Example
+            eg = next(example_gen)  # e is a tf.Example
             try:
                 # the article text was saved under the key 'article' in the data files
-                article_text = e.features.feature['article'].bytes_list.value[0].decode()
+                article_text = eg.features.feature['article'].bytes_list.value[0].decode()
 
                 # the abstract text was saved under the key 'abstract' in the data files
-                abstract_text = e.features.feature['abstract'].bytes_list.value[0].decode()
+                abstract_text = eg.features.feature['abstract'].bytes_list.value[0].decode()
             except ValueError:
                 tf.logging.error('Failed to get article or abstract from example')
                 continue
@@ -349,8 +348,8 @@ class Example(object):
         self.config = config
 
         # Get ids of special tokens
-        start_decoding = vocab.word2id(data.START_DECODING)
-        stop_decoding = vocab.word2id(data.STOP_DECODING)
+        start_decoding = vocab.word2id(START_DECODING)
+        stop_decoding = vocab.word2id(STOP_DECODING)
 
         # Process the article
         article_words = article.split()
@@ -378,11 +377,11 @@ class Example(object):
         if config.pointer_gen:
             # Store a version of the enc_input where in-article OOVs are represented by their
             # temporary OOV id; also store the in-article OOVs words themselves
-            self.enc_input_extend_vocab, self.article_oovs = data.article2ids(article_words, vocab)
+            self.enc_input_extend_vocab, self.article_oovs = article2ids(article_words, vocab)
 
             # Get a version of the reference summary where in-article OOVs are represented by
             # their temporary article OOV id
-            abs_ids_extend_vocab = data.abstract2ids(abstract_words, vocab, self.article_oovs)
+            abs_ids_extend_vocab = abstract2ids(abstract_words, vocab, self.article_oovs)
 
             # Overwrite decoder target sequence so it uses the temp article OOV ids
             _, self.target = self.get_dec_inp_targ_seqs(abs_ids_extend_vocab, config.max_dec_steps,
@@ -440,6 +439,59 @@ class Example(object):
                 self.enc_input_extend_vocab.append(pad_id)
 
 
+def calc_running_avg_loss(loss, running_avg_loss, summary_writer, step, decay=0.99):
+    """
+    Calculate the running average loss using exponential decay.
+
+    Used to implement early stopping w.r.t. a smoother loss curve than the raw loss curve.
+
+    :param loss: loss on the most recent eval step
+    :param running_avg_loss: running_avg_loss so far
+    :param summary_writer: FileWriter object to write for TensorBoard
+    :param step: training step
+    :param decay: rate of exponential decay, a float between 0 and 1. Larger is smoother.
+    :return:
+        running_avg_loss: new running average loss
+    """
+    if running_avg_loss == 0:
+        # on the first iteration just take the loss
+        running_avg_loss = loss
+    else:
+        running_avg_loss *= decay + (1 - decay) * loss
+
+    running_avg_loss = min(running_avg_loss, 12)  # clip
+    loss_sum = tf.Summary()
+    tag_name = 'running_avg_loss/decay=%f' % decay
+    loss_sum.value.add(tag=tag_name, simple_value=running_avg_loss)
+    summary_writer.add_summary(loss_sum, step)
+    tf.logging.info('running_avg_loss: %f', running_avg_loss)
+    return running_avg_loss
+
+
+def convert_to_coverage_model(log_root):
+    """ Load non-coverage checkpoint, add initialized extra variables for coverage, and save as new checkpoint """
+    tf.logging.info('Converting non-coverage model to coverage model...')
+
+    # initialize an entire coverage model from scratch
+    sess = tf.Session(config=get_config())
+    print('initializing everything...')
+    sess.run(tf.global_variables_initializer())
+
+    # load all non-coverage weights from checkpoint
+    saver = tf.train.Saver([v for v in tf.global_variables() if 'coverage' not in v.name and 'Adagrad' not in v.name])
+    print('restoring non-coverage variables...')
+    curr_ckpt = load_ckpt(saver, sess, log_root)
+    print('Restored!')
+
+    # save this model and quit
+    new_filename = curr_ckpt + '_cov_init'
+    print('Saving model to %s...' % new_filename)
+    new_saver = tf.train.Saver()  # this one will save all variables that now exist
+    new_saver.save(sess, new_filename)
+    print('Saved!')
+    exit()
+
+
 def get_config():
     """ Returns config for tf.session """
     config = tf.ConfigProto(allow_soft_placement=True)
@@ -448,20 +500,21 @@ def get_config():
 
 
 # noinspection PyBroadException
-def load_ckpt(saver, sess, ckpt_dir='train'):
+def load_ckpt(saver, sess, log_root, ckpt_dir='train'):
     """
     Load checkpoint from the ckpt_dir (if unspecified, this is train dir) and restore it
     to saver and sess, waiting 10 secs in the case of failure. Also returns checkpoint name.
 
     :param saver:
     :param sess:
+    :param log_root:
     :param ckpt_dir:
     :return:
     """
     while True:
         try:
             latest_filename = 'checkpoint_best' if ckpt_dir == 'eval' else None
-            ckpt_dir = os.path.join(FLAGS.log_root, ckpt_dir)
+            ckpt_dir = os.path.join(log_root, ckpt_dir)
             ckpt_state = tf.train.get_checkpoint_state(ckpt_dir, latest_filename=latest_filename)
             tf.logging.info('Loading checkpoint %s', ckpt_state.model_checkpoint_path)
             saver.restore(sess, ckpt_state.model_checkpoint_path)
@@ -469,3 +522,153 @@ def load_ckpt(saver, sess, ckpt_dir='train'):
         except Exception:
             tf.logging.info('Failed to load checkpoint from %s. Sleeping for %i secs...', ckpt_dir, 10)
             time.sleep(10)
+
+
+def restore_best_model(log_root):
+    """ Load best model file from eval directory, add variables for adagrad, and save to train directory """
+    tf.logging.info('Restoring best model for training...')
+
+    # Initialize all vars in the model
+    sess = tf.Session(config=get_config())
+    print('Initializing all variables...')
+    sess.run(tf.initialize_all_variables())
+
+    # Restore the best model from eval dir
+    saver = tf.train.Saver([v for v in tf.all_variables() if 'Adagrad' not in v.name])
+    print('Restoring all non-adagrad variables from best model in eval dir...')
+    curr_ckpt = load_ckpt(saver, sess, log_root, 'eval')
+    print('Restored %s.' % curr_ckpt)
+
+    # Save this model to train dir and quit
+    new_model_name = curr_ckpt.split('/')[-1].replace('bestmodel', 'model')
+    new_filename = os.path.join(log_root, 'train', new_model_name)
+    print('Saving model to %s...' % new_filename)
+    new_saver = tf.train.Saver()  # this saver saves all variables that now exist, including the Adagrad variables
+    new_saver.save(sess, new_filename)
+    print('Saved!')
+    exit()
+
+
+def run_eval(model, batcher, constants):
+    """
+    Repeatedly runs eval iterations, logging to screen and writing summaries.
+    Saves the model with the best loss seen so far.
+
+    :param model:
+    :param batcher:
+    :param constants:
+    :return:
+    """
+    model.build_graph()
+    saver = tf.train.Saver(max_to_keep=3)  # keep 3 best checkpoints at a time
+    sess = tf.Session(config=get_config())
+    eval_dir = os.path.join(constants['log_root'], 'eval')  # make a subdir of the root dir for eval data
+    best_model_save_path = os.path.join(eval_dir, 'bestmodel')  # this is where checkpoints of best models are saved
+    summary_writer = tf.summary.FileWriter(eval_dir)
+
+    # the eval job keeps a smoother running average loss to tell it when to implement early stopping
+    running_avg_loss = 0
+    best_loss = None  # hold the best loss achieved so far
+    while True:
+        load_ckpt(saver, sess, constants['log_root'])  # load a new checkpoint
+        batch = batcher.next_batch()
+
+        # run eval on the batch
+        t0 = time.time()
+        results = model.run_eval_step(sess, batch)
+        t1 = time.time()
+        tf.logging.info('seconds for batch: %.2f', t1 - t0)
+
+        # print the loss and coverage loss to screen
+        loss = results['loss']
+        tf.logging.info('loss: %f', loss)
+        if constants['coverage']:
+            coverage_loss = results['coverage_loss']
+            tf.logging.info('coverage_loss: %f', coverage_loss)
+
+        # add summaries
+        summaries = results['summaries']
+        train_step = results['global_step']
+        summary_writer.add_summary(summaries, train_step)
+
+        # calculate running avg loss
+        running_avg_loss = calc_running_avg_loss(np.asscalar(loss), running_avg_loss, summary_writer, train_step)
+
+        # If running_avg_loss is best so far, save this checkpoint (early stopping).
+        # These checkpoints will appear as bestmodel-<iteration_number> in the eval dir.
+        if best_loss is None or running_avg_loss < best_loss:
+            tf.logging.info('Found new best model with %.3f running_avg_loss. Saving to %s',
+                            running_avg_loss, best_model_save_path)
+            saver.save(sess, best_model_save_path, global_step=train_step, latest_filename='checkpoint_best')
+            best_loss = running_avg_loss
+
+        # flush the summary writer every so often
+        if train_step % 100 == 0:
+            summary_writer.flush()
+
+
+def run_training(model, batcher, sess_context_manager, summary_writer, constants):
+    """ Repeatedly runs training iterations, logging loss to screen and writing summaries """
+    tf.logging.info('Starting run_training...')
+    with sess_context_manager as sess:
+        if constants['debug']:
+            sess = tf_debug.LocalCLIDebugWrapperSession(sess)
+            sess.add_tensor_filter('has_inf_or_nan', tf_debug.has_inf_or_nan)
+
+        while True:  # repeats until interrupted
+            batch = batcher.next_batch()
+            tf.logging.info('running training step...')
+            t0 = time.time()
+            results = model.run_train_step(sess, batch)
+            t1 = time.time()
+            tf.logging.info('seconds for training step: %.3f', t1 - t0)
+            loss = results['loss']
+            tf.logging.info('loss: %f', loss)  # print the loss to screen
+            if not np.isfinite(loss):
+                raise Exception('Loss is not finite. Stopping.')
+
+            if constants['coverage']:
+                coverage_loss = results['coverage_loss']
+                tf.logging.info('coverage_loss: %f', coverage_loss)  # print the coverage loss to screen
+
+            # get the summaries and iteration number so we can write summaries to TensorBoard
+            summaries = results['summaries']  # write these summaries to TensorBoard using summary_writer
+            train_step = results['global_step']  # we need this to update our running average loss
+            summary_writer.add_summary(summaries, train_step)  # write the summaries
+            if train_step % 100 == 0:  # flush the summary writer every so often
+                summary_writer.flush()
+
+
+def setup_training(model, batcher, constants):
+    """ Setup before starting training """
+    train_dir = os.path.join(constants['log_root'], 'train')
+    if not os.path.exists(train_dir):
+        os.makedirs(train_dir)
+
+    model.build_graph()
+    if constants['convert_to_coverage_model']:
+        assert constants['coverage'], 'To convert your non-coverage model to a coverage model, ' \
+                                      'run with convert_to_coverage_model=True and coverage=True'
+        convert_to_coverage_model(constants['log_root'])
+
+    if constants['restore_best_model']:
+        restore_best_model(constants['log_root'])
+
+    saver = tf.train.Saver(max_to_keep=3)  # keep 3 checkpoints at a time
+    supervisor = tf.train.Supervisor(logdir=train_dir,
+                                     is_chief=True,
+                                     saver=saver,
+                                     summary_op=None,
+                                     save_summaries_secs=60,  # save summaries for TensorBoard every 60 secs
+                                     save_model_secs=60,      # checkpoint every 60 secs
+                                     global_step=model.global_step)
+    summary_writer = supervisor.summary_writer
+    tf.logging.info('Preparing or waiting for session...')
+    sess_context_manager = supervisor.prepare_or_wait_for_session(config=get_config())
+    tf.logging.info('Created session!')
+    try:
+        # this is an infinite loop until interrupted
+        run_training(model, batcher, sess_context_manager, summary_writer, constants)
+    except KeyboardInterrupt:
+        tf.logging.info('Caught keyboard interrupt on worker. Stopping supervisor...')
+        supervisor.stop()

@@ -1,10 +1,6 @@
 """ This file contains code to run beam search decoding """
-import tf_model.pointer_generator.data as data
 import numpy as np
-import tensorflow as tf
-
-
-FLAGS = tf.app.flags.FLAGS
+from tf_model.pointer_generator.data import START_DECODING, STOP_DECODING, UNKNOWN_TOKEN
 
 
 class Hypothesis(object):
@@ -69,7 +65,7 @@ class Hypothesis(object):
         return self.log_prob / len(self.tokens)
 
 
-def run_beam_search(sess, model, vocab, batch):
+def run_beam_search(sess, model, vocab, batch, min_dec_steps, max_dec_steps, beam_size):
     """
     Performs beam search decoding on the given example.
 
@@ -77,6 +73,9 @@ def run_beam_search(sess, model, vocab, batch):
     :param model: a seq2seq model
     :param vocab: Vocabulary object
     :param batch: Batch object that is the same example repeated across the batch
+    :param min_dec_steps:
+    :param max_dec_steps:
+    :param beam_size:
     :return:
         best_hyp: Hypothesis object; the best hypothesis found by beam search.
     """
@@ -86,20 +85,20 @@ def run_beam_search(sess, model, vocab, batch):
     # enc_states has shape [batch_size, <=max_enc_steps, 2*hidden_dim].
 
     # Initialize hypotheses (beam_size)
-    hyps = [Hypothesis(tokens=[vocab.word2id(data.START_DECODING)],
+    hyps = [Hypothesis(tokens=[vocab.word2id(START_DECODING)],
                        log_probs=[0.],
                        state=dec_in_state,
                        attn_dists=[],
                        p_gens=[],
                        coverage=np.zeros([batch.enc_shape[1]])  # zero vector of length attention_length
-                       ) for _ in range(FLAGS.beam_size)]
+                       ) for _ in range(beam_size)]
     results = []  # this will contain finished hypotheses (those that have emitted the [STOP] token)
     steps = 0
-    while steps < FLAGS.max_dec_steps and len(results) < FLAGS.beam_size:
+    while steps < max_dec_steps and len(results) < beam_size:
         latest_tokens = [h.latest_token for h in hyps]  # latest token produced by each hypothesis
 
         # change any in-article temporary OOV ids to [UNK] id, so that we can lookup word embeddings
-        latest_tokens = [t if t in range(vocab.size()) else vocab.word2id(data.UNKNOWN_TOKEN)
+        latest_tokens = [t if t in range(vocab.size()) else vocab.word2id(UNKNOWN_TOKEN)
                          for t in latest_tokens]
         states = [h.state for h in hyps]  # list of current decoder states of the hypotheses
         prev_coverage = [h.coverage for h in hyps]  # list of coverage vectors (or None)
@@ -125,7 +124,7 @@ def run_beam_search(sess, model, vocab, batch):
             new_coverage_i = new_coverage[i]
 
             # for each of the top 2 * beam_size hypotheses
-            for j in range(FLAGS.beam_size * 2):
+            for j in range(beam_size * 2):
                 # extend the ith hypothesis with the jth option
                 new_hyp = h.extend(token=top_k_ids[i, j],
                                    log_prob=top_k_log_probs[i, j],
@@ -138,14 +137,14 @@ def run_beam_search(sess, model, vocab, batch):
         # Filter and collect any hypotheses that have produced the end token.
         hyps = []  # will contain hypotheses for the next step
         for h in sort_hyps(all_hyps):  # in order of most likely hypothesis
-            if h.latest_token == vocab.word2id(data.STOP_DECODING):  # if stop token is reached...
+            if h.latest_token == vocab.word2id(STOP_DECODING):  # if stop token is reached...
                 # If this hypothesis is sufficiently long, put in results. Otherwise discard.
-                if steps >= FLAGS.min_dec_steps:
+                if steps >= min_dec_steps:
                     results.append(h)
             else:  # hasn't reached stop token, so continue to extend this hypothesis
                 hyps.append(h)
 
-            if len(hyps) == FLAGS.bean_size or len(results) == FLAGS.beam_size:
+            if len(hyps) == beam_size or len(results) == beam_size:
                 # Once we've collected beam_size-many hypotheses for the next step,
                 # or beam_size-many complete hypotheses, stop.
                 break

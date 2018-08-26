@@ -1,11 +1,10 @@
 import numpy as np
 import os
+import sys
 import tensorflow as tf
 from tensorflow.contrib.tensorboard.plugins import projector
 from tensorflow.python.ops import array_ops, math_ops, nn_ops, variable_scope
 import time
-
-FLAGS = tf.app.flags.FLAGS
 
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -114,7 +113,7 @@ def attention_decoder(decoder_inputs, initial_state, encoder_states, enc_padding
 
                 # Calculate v^T tanh(W_h h_i + W_s s_t + w_c c_i^t + b_attn)
                 # shape (batch_size, attn_length)
-                e = math_ops.reduce_sum(v * math_ops.tan(encoder_features + decoder_features + coverage_features),
+                e = math_ops.reduce_sum(v * math_ops.tanh(encoder_features + decoder_features + coverage_features),
                                         [2, 3])
 
                 # Calculate attention distribution
@@ -135,7 +134,7 @@ def attention_decoder(decoder_inputs, initial_state, encoder_states, enc_padding
             # Calculate the context vector from attn_dist and encoder_states
             # shape (batch_size, attn_size)
             context_vector_ = math_ops.reduce_sum(array_ops.reshape(attn_dist, [batch_size, -1, 1, 1]) *
-                                                  encoder_features, [1, 2])
+                                                  encoder_states, [1, 2])
             context_vector_ = array_ops.reshape(context_vector_, [-1, attn_size])
 
         return context_vector_, attn_dist, coverage_
@@ -156,7 +155,7 @@ def attention_decoder(decoder_inputs, initial_state, encoder_states, enc_padding
         context_vector, _, coverage = attention(initial_state, coverage)
 
     for i, inp in enumerate(decoder_inputs):
-        tf.logging.info('Adding attention_decoder timestep %i of %i', i, len(decoder_inputs))
+        tf.logging.info('Adding attention_decoder timestep %i of %i', i + 1, len(decoder_inputs))
         if i > 0:
             variable_scope.get_variable_scope().reuse_variables()
 
@@ -268,7 +267,7 @@ class SummarizationModel(object):
         self._enc_batch = tf.placeholder(tf.int32, [config.batch_size, None], name='enc_batch')
         self._enc_lens = tf.placeholder(tf.int32, [config.batch_size], name='enc_lens')
         self._enc_padding_mask = tf.placeholder(tf.float32, [config.batch_size, None], name='enc_padding_mask')
-        if FLAGS.pointer_gen:
+        if config.pointer_gen:
             self._enc_batch_extend_vocab = tf.placeholder(tf.int32, [config.batch_size, None],
                                                           name='enc_batch_extend_vocab')
             self._max_art_oovs = tf.placeholder(tf.int32, [], name='max_art_oovs')
@@ -294,7 +293,7 @@ class SummarizationModel(object):
             self._enc_lens: batch.enc_lens,
             self._enc_padding_mask: batch.enc_padding_mask
         }
-        if FLAGS.pointer_gen:
+        if self._config.pointer_gen:
             feed_dict[self._enc_batch_extend_vocab] = batch.enc_batch_extend_vocab
             feed_dict[self._max_art_oovs] = batch.max_art_oovs
 
@@ -447,6 +446,17 @@ class SummarizationModel(object):
             final_dists = [vocab_dist + copy_dist
                            for vocab_dist, copy_dist in zip(vocab_dists_extended, attn_dists_projected)]
 
+            # OOV part of vocab is max_art_oov long. Not all the sequences in a batch
+            # will have max_art_oov tokens. This will cause some entries to be 0 in
+            # the distribution, which results in a NaN when calculating log_dists.
+            # Clip the dist or add epsilon when that happens.
+            # def add_epsilon(dist, epsilon=sys.float_info.epsilon):
+            #     epsilon_mask = tf.ones_like(dist) * epsilon
+            #     return dist + epsilon_mask
+            #
+            # final_dists = [add_epsilon(dist) for dist in final_dists]
+            final_dists = [tf.clip_by_value(dist, sys.float_info.epsilon, 1.) for dist in final_dists]
+
             return final_dists
 
     def _add_emb_vis(self, embedding_var):
@@ -460,7 +470,7 @@ class SummarizationModel(object):
         :param embedding_var:
         :return:
         """
-        train_dir = os.path.join(FLAGS.log_root, 'train')
+        train_dir = os.path.join(self._config.log_root, 'train')
         vocab_metadata_path = os.path.join(train_dir, 'vocab_metadata.tsv')
         self._vocab.write_metadata(vocab_metadata_path)  # write metadata file
         summary_writer = tf.summary.FileWriter(train_dir)
@@ -531,7 +541,7 @@ class SummarizationModel(object):
 
             # For pointer-generator model, calc final distribution from copy distribution
             # and vocabulary distribution
-            if FLAGS.pointer_gen:
+            if config.pointer_gen:
                 final_dists = self._calc_final_dist(vocab_dists, self.attn_dists)
             else:  # final distribution is just vocabulary distribution
                 final_dists = vocab_dists
@@ -539,7 +549,7 @@ class SummarizationModel(object):
             if config.mode in ['train', 'eval']:
                 # Calculate loss
                 with tf.variable_scope('loss'):
-                    if FLAGS.pointer_gen:
+                    if config.pointer_gen:
                         # Calculate loss per step
                         # This is fiddly; we use tf.gather_nd to pick out the probabilities of the gold target words
                         loss_per_step = []  # will be list length max_dec_steps containing shape (batch_size)
@@ -598,7 +608,8 @@ class SummarizationModel(object):
         tf.summary.scalar('global_norm', global_norm)
 
         # Apply adagrad optimizer
-        optimizer = tf.train.AdagradOptimizer(self._config.lr, initial_accumulator_value=self._config.adagrad_init_acc)
+        optimizer = tf.train.AdagradOptimizer(self._config.learning_rate,
+                                              initial_accumulator_value=self._config.adagrad_init_acc)
         with tf.device('/gpu:0'):
             self._train_op = optimizer.apply_gradients(zip(grads, tvars),
                                                        global_step=self.global_step, name='train_step')
@@ -726,7 +737,7 @@ class SummarizationModel(object):
             'states': self._dec_out_state,
             'attn_dists': self.attn_dists
         }
-        if FLAGS.pointer_gen:
+        if self._config.pointer_gen:
             feed_dict[self._enc_batch_extend_vocab] = batch.enc_batch_extend_vocab,
             feed_dict[self._max_art_oovs] = batch.max_art_oovs,
             to_return['p_gens'] = self.p_gens
@@ -745,7 +756,7 @@ class SummarizationModel(object):
         assert len(results['attn_dists']) == 1
         attn_dists = results['attn_dists'][0].tolist()
 
-        if FLAGS.pointer_gen:
+        if self._config.pointer_gen:
             # Convert singleton list containing a tensor to a list of k arrays
             assert len(results['p_gens']) == 1
             p_gens = results['p_gens'][0].tolist()
@@ -753,7 +764,7 @@ class SummarizationModel(object):
             p_gens = [None for _ in range(beam_size)]
 
         # Convert the coverage tensor to a list length k containing the coverage vector for each hypothesis
-        if FLAGS.coverage:
+        if self._config.coverage:
             new_coverage = results['coverage'].tolist()
             assert len(new_coverage) == beam_size
         else:
