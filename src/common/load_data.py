@@ -15,6 +15,7 @@ from sklearn.model_selection import train_test_split
 import tarfile
 from tqdm import tqdm
 from urllib.parse import quote as url_quote
+from zipfile import ZipFile
 
 
 DATA_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/data/')
@@ -70,6 +71,32 @@ def load_cifar10_dataset():
     y_test = keras.utils.to_categorical(y_test)
 
     return x_train, y_train, x_test, y_test
+
+
+def load_cnn_daily_mail_dataset():
+    """
+    DeepMind Q&A Dataset.
+    Hermann et al. (2015) created two awesome datasets using news articles for Q&A research.
+    Each dataset contains many documents (90k and 197k each), and each document contains on
+    average 4 questions approximately. Each question is a sentence with one missing word/phrase
+    which can be found from the accompanying document/context.
+
+    https://cs.nyu.edu/~kcho/DMQA/
+
+    :return: None
+    """
+    target_path = DATA_DIR + 'cnn_daily_mail/'
+    url = 'https://drive.google.com/file/d/0BzQ6rtO2VN95a0c3TlZCWkl3aU0/view?usp=sharing'
+    filename = 'finished_files.zip'
+    if not os.path.exists(target_path + 'train.bin'):
+        os.makedirs(target_path, exist_ok=True)
+        target_file = target_path + filename
+        util_download.download_file(url, target_file)
+        zip_ref = ZipFile(target_file, 'r')
+        zip_ref.extractall(target_path)
+        zip_ref.close()
+    else:
+        print('CNN Daily Mail Dataset already exists')
 
 
 def load_faces_dataset():
@@ -288,6 +315,7 @@ def load_pix2pix_dataset(category):
             ],
             DATA_DIR + 'stackoverflow'
         )
+
 
 def load_quickdraw_dataset(category, target_dir, fmt='npy'):
     """

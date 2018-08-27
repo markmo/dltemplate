@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from collections import namedtuple
 from common.util import load_hyperparams, merge_dict
+from common.experimentalist import make_experiment_name, record_experiment, set_experiment_defaults
 import os
 import tensorflow as tf
 from tf_model.pointer_generator.data import Vocab
@@ -12,6 +13,17 @@ from tf_model.pointer_generator.util import Batcher, run_eval, setup_training
 def run(constant_overwrites):
     config_path = os.path.join(os.path.dirname(__file__), 'hyperparams.yml')
     constants = merge_dict(load_hyperparams(config_path), constant_overwrites)
+    set_experiment_defaults(constants, {
+        'experiment_name': make_experiment_name(),
+        'model_name': 'summarization',
+        'model_description': 'Pointer-generator network for text summarization',
+        'model_type': 'RNN',
+        'library': 'TensorFlow',
+        'library_version': '1.2.1',
+        'author_username': 'markmo',
+        'author_uri': 'https://github.com/markmo'
+    })
+    record_experiment(constants)
     tf.logging.set_verbosity(tf.logging.INFO)
     tf.logging.info('Starting seq2seq_attention in %s mode...', constants['mode'])
     constants['log_root'] = os.path.join(constants['log_root'], constants['experiment_name'])
