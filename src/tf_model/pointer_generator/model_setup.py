@@ -738,8 +738,8 @@ class SummarizationModel(object):
             'attn_dists': self.attn_dists
         }
         if self._config.pointer_gen:
-            feed_dict[self._enc_batch_extend_vocab] = batch.enc_batch_extend_vocab,
-            feed_dict[self._max_art_oovs] = batch.max_art_oovs,
+            feed_dict[self._enc_batch_extend_vocab] = batch.enc_batch_extend_vocab
+            feed_dict[self._max_art_oovs] = batch.max_art_oovs
             to_return['p_gens'] = self.p_gens
 
         if self._config.coverage:

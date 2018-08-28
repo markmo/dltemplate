@@ -90,7 +90,7 @@ def run_beam_search(sess, model, vocab, batch, min_dec_steps, max_dec_steps, bea
                        state=dec_in_state,
                        attn_dists=[],
                        p_gens=[],
-                       coverage=np.zeros([batch.enc_shape[1]])  # zero vector of length attention_length
+                       coverage=np.zeros([batch.enc_batch.shape[1]])  # zero vector of length attention_length
                        ) for _ in range(beam_size)]
     results = []  # this will contain finished hypotheses (those that have emitted the [STOP] token)
     steps = 0
@@ -105,8 +105,8 @@ def run_beam_search(sess, model, vocab, batch, min_dec_steps, max_dec_steps, bea
 
         # Run one step of the decoder to get the new info
         top_k_ids, top_k_log_probs, new_states, attn_dists, p_gens, new_coverage = \
-            model.decode_onestep(sess=sess, batch=batch, latest_tokens=latest_tokens,
-                                 enc_states=enc_states, dec_init_states=states, prev_coverage=prev_coverage)
+            model.decode_one_step(sess=sess, batch=batch, latest_tokens=latest_tokens,
+                                  enc_states=enc_states, dec_init_states=states, prev_coverage=prev_coverage)
 
         # Extend each hypothesis and collect them all in all_hyps
         all_hyps = []

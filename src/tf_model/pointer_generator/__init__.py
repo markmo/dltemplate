@@ -73,7 +73,7 @@ def run(constant_overwrites):
         # noinspection PyProtectedMember,PyUnresolvedReferences
         dec_model_conf = config._replace(max_dec_steps=1)
         model = SummarizationModel(dec_model_conf, vocab)
-        decoder = BeamSearchDecoder(model, batcher, vocab, config)
+        decoder = BeamSearchDecoder(model, batcher, vocab, constants)
 
         # decode indefinitely (unless single_pass=True, in which case decode the dataset exactly once.)
         decoder.decode()

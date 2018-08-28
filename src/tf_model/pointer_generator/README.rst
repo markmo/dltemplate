@@ -42,5 +42,5 @@ with NaN values, making it unusable. Here are some suggestions:
    You can switch to that checkpoint by editing the checkpoint file inside the train directory.
 4. Alternatively, you can restore a "best model" from the eval directory.
 5. If you want to try to diagnose the cause of the NaNs, you can run with the --debug=1 flag turned on.
-  This will run `Tensorflow Debugger <https://www.tensorflow.org/guide/debugger>`_, which checks for NaNs and
-  diagnoses their causes during training.
+   This will run `Tensorflow Debugger <https://www.tensorflow.org/guide/debugger>`_, which checks for NaNs and
+   diagnoses their causes during training.
