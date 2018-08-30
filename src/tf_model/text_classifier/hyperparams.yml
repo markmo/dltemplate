@@ -1,0 +1,11 @@
+batch_size: 128
+keep_prob: 0.5
+emb_dim: 300
+eval_every: 200
+filter_sizes: [3, 4, 5]
+n_hidden: 300
+l2_reg_lambda: 0.0
+max_pool_size: 4
+non_static: False
+n_epochs: 1
+n_filters: 32

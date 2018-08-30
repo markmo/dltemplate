@@ -52,6 +52,7 @@ Model Templates
 46. `Pointer Generator Network for Text Summarization <src/tf_model/pointer_generator/>`_ (TensorFlow)
 47. `Minimizing network delay using Deep Deterministic Policy Gradients (DDPG) <src/rl/routing_optimization/>`_ (Keras)
 48. `RL from scratch - Using Policy Gradients to play Pong <src/rl/policy_gradients_pong/>`_
+49. `Multi-class Text Classification using a CNN and RNN <src/tf_model/text_classifier/>`_ (TensorFlow)
 
 
 Special Topics
@@ -116,6 +117,7 @@ Demonstrates
 46. Basic principles of Pointer Generator Networks.
 47. Using Reinforcement Learning to optimize a Software Defined Network (SDN).
 48. Introduction to Policy Gradients.
+49. Experiments in finding best-in-class short-text classifier.
 
 
 Datasets
@@ -137,6 +139,7 @@ Datasets
 14. Open Subtitles movie dialog corpus.
 15. Hebrew to English words.
 16. Pix2pix datasets.
+17. San Francisco Crime Classification (for text/intent classification).
 
 
 Notation
