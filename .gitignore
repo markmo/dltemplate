@@ -172,3 +172,5 @@ readonly
 **/train_*
 **/frames
 **/_vizdoom.ini
+**/*.bin
+**/*.ftz

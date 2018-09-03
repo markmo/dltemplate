@@ -53,6 +53,8 @@ Model Templates
 47. `Minimizing network delay using Deep Deterministic Policy Gradients (DDPG) <src/rl/routing_optimization/>`_ (Keras)
 48. `RL from scratch - Using Policy Gradients to play Pong <src/rl/policy_gradients_pong/>`_
 49. `Multi-class Text Classification using a CNN and RNN <src/tf_model/text_classifier/>`_ (TensorFlow)
+50. `Multi-class Text Classification using fastText <src/text_classification_benchmarks/fasttext/>`_ (fastText)
+51. `Multi-class Text Classification using Fastai <src/text_classification_benchmarks/fastai/>`_ (Fastai / PyTorch)
 
 
 Special Topics
@@ -61,6 +63,7 @@ Special Topics
 1. `Reinforcement Learning <src/rl/>`_ -- `Survey of Methods <src/rl/survey_of_methods/>`_
 2. `Natural Language Processing <docs/nlp.rst>`_
 3. `What do you do with... <docs/general.rst>`_
+4. `Exploring state-of-the-art in text classification <src/text_classification_benchmarks/>`_
 
 
 Demonstrates
@@ -118,6 +121,8 @@ Demonstrates
 47. Using Reinforcement Learning to optimize a Software Defined Network (SDN).
 48. Introduction to Policy Gradients.
 49. Experiments in finding best-in-class short-text classifier.
+50. fastText (Facebook Research) performance in text classification tasks.
+51. Using Transfer Learning in NLP to achieve state-of-the-art performance in text classification.
 
 
 Datasets
@@ -140,6 +145,7 @@ Datasets
 15. Hebrew to English words.
 16. Pix2pix datasets.
 17. San Francisco Crime Classification (for text/intent classification).
+18. `Large Movie Review Dataset`_ (for text/intent classification).
 
 
 Notation
@@ -210,6 +216,7 @@ Useful references
 
 .. _`Flowers classification dataset`: http://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html
 .. _`Quick, Draw! dataset`: https://github.com/googlecreativelab/quickdraw-dataset
+.. _`Large Movie Review Dataset`: http://ai.stanford.edu/~amaas/data/sentiment/
 .. _`How to test gradient implementations`: https://timvieira.github.io/blog/post/2017/04/21/how-to-test-gradient-implementations/
 
 

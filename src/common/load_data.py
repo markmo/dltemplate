@@ -1,11 +1,10 @@
 from ast import literal_eval
 from collections import defaultdict
 from common import util_download
-from common.util import get_all_filenames
+from common.util import build_vocab, clean_text, get_all_filenames, pad_sentences
 import cv2
 import gensim
 import h5py
-import keras
 import nltk
 import numpy as np
 import os
@@ -40,39 +39,6 @@ def decode_image_from_raw_bytes(raw_bytes):
     return img
 
 
-def load_cifar10_dataset():
-    """
-    The CIFAR-10 dataset consists of 60,000 32x32 colour images in 10 classes,
-    with 6,000 images per class. There are 50,000 training images and 10,000
-    test images.
-
-    The dataset is divided into five training batches and one test batch,
-    each with 10,000 images. The test batch contains exactly 1,000
-    randomly-selected images from each class. The training batches contain
-    the remaining images in random order, but some training batches may contain
-    more images from one class than another. Between them, the training batches
-    contain exactly 5,000 images from each class.
-
-    The 10 classes are: airplane, automobile, bird, cat, deer, dog, frog, horse,
-    ship, and truck.
-
-    The classes are completely mutually exclusive. There is no overlap between
-    automobiles and trucks. "Automobile" includes sedans, SUVs, things of that sort.
-    "Truck" includes only big trucks. Neither includes pickup trucks.
-
-    :return:
-    """
-    (x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
-
-    x_train = x_train / 255. - 0.5
-    x_test = x_test / 255. - 0.5
-
-    y_train = keras.utils.to_categorical(y_train)
-    y_test = keras.utils.to_categorical(y_test)
-
-    return x_train, y_train, x_test, y_test
-
-
 def load_cnn_daily_mail_dataset():
     """
     DeepMind Q&A Dataset.
@@ -97,6 +63,70 @@ def load_cnn_daily_mail_dataset():
         zip_ref.close()
     else:
         print('CNN Daily Mail Dataset already exists')
+
+
+# noinspection SpellCheckingInspection
+def load_crime_dataset():
+    """
+    This dataset contains incidents derived from SFPD Crime Incident Reporting system.
+    The data ranges from 1/1/2003 to 5/13/2015. The training set and test set rotate
+    every week, meaning week 1,3,5,7... belong to test set, week 2,4,6,8 belong to
+    training set.
+
+    Data fields
+    Dates - timestamp of the crime incident
+    Category - category of the crime incident (only in train.csv). This is the target
+               variable you are going to predict.
+    Descript - detailed description of the crime incident (only in train.csv)
+    DayOfWeek - the day of the week
+    PdDistrict - name of the Police Department District
+    Resolution - how the crime incident was resolved (only in train.csv)
+    Address - the approximate street address of the crime incident
+    X - Longitude
+    Y - Latitude
+
+    :return:
+    """
+    filename = DATA_DIR + 'text_classification/crime/train.csv.zip'
+    df = pd.read_csv(filename, compression='zip')
+    selected = ['Category', 'Descript']
+    non_selected = list(set(df.columns) - set(selected))
+    df = df.drop(non_selected, axis=1)
+    df = df.dropna(axis=0, how='any', subset=selected)
+    df = df.reindex(np.random.permutation(df.index))
+    labels = sorted(list(set(df[selected[0]].tolist())))
+    n_labels = len(labels)
+    one_hot = np.zeros((n_labels, n_labels), int)
+    np.fill_diagonal(one_hot, 1)
+    label_dict = dict(zip(labels, one_hot))
+    x_raw = df[selected[1]].apply(lambda w: clean_text(w).split(' ')).tolist()
+    y_raw = df[selected[0]].apply(lambda w: label_dict[w]).tolist()
+    x_raw = pad_sentences(x_raw)
+    vocab, vocab_inv = build_vocab(x_raw)
+    x = np.array([[vocab[word] for word in sent] for sent in x_raw])
+    y = np.array(y_raw)
+    return x, y, vocab, vocab_inv, df, labels
+
+
+# noinspection SpellCheckingInspection
+def load_crime_test_dataset(labels):
+    filename = DATA_DIR + 'text_classification/crime/small_samples.csv'
+    df = pd.read_csv(filename, sep='|')
+    selected = ['Descript']
+    df = df.dropna(axis=0, how='any', subset=selected)
+    test_examples = df[selected[0]].apply(lambda x: clean_text(x).split(' ')).tolist()
+    n_labels = len(labels)
+    one_hot = np.zeros((n_labels, n_labels), int)
+    np.fill_diagonal(one_hot, 1)
+    label_dict = dict(zip(labels, one_hot))
+    y = None
+    if 'Category' in df.columns:
+        selected.append('Category')
+        y = df[selected[1]].apply(lambda x: label_dict[x]).tolist()
+
+    non_selected = list(set(df.columns) - set(selected))
+    df = df.drop(non_selected, axis=1)
+    return test_examples, y, df
 
 
 def load_faces_dataset():
@@ -241,34 +271,6 @@ def load_lfw_dataset(use_raw=False, dx=80, dy=80, dimx=45, dimy=45):
     # preserve photo_ids order
     all_attrs = photo_ids.merge(df_attrs, on=('person', 'imagenum')).drop(['person', 'imagenum'], axis=1)
     return all_photos, all_attrs
-
-
-def load_mnist_dataset(flatten=False):
-    """
-    MNIST database of handwritten digits.
-
-    Dataset of 60,000 28x28 grayscale images of the 10 digits, along with a test set of 10,000 images.
-
-    :param flatten: boolean setting to flatten pixel matrix to vector
-    :return: dataset divided into features and labels for training, validation and test
-    """
-    # loads into ~/.keras/datasets
-    (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
-
-    # normalize X
-    x_train = x_train.astype('float32') / 255.
-    x_test = x_test.astype('float32') / 255.
-
-    # we reserve the last 10000 training examples for validation
-    x_train, x_val = x_train[:-10000], x_train[-10000:]
-    y_train, y_val = y_train[:-10000], y_train[-10000:]
-
-    if flatten:
-        x_train = x_train.reshape([x_train.shape[0], -1])
-        x_val = x_val.reshape([x_val.shape[0], -1])
-        x_test = x_test.reshape([x_test.shape[0], -1])
-
-    return x_train, y_train, x_val, y_val, x_test, y_test
 
 
 def load_names():

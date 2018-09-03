@@ -13,3 +13,34 @@ words at a time. Next, we max-pool the result of the convolutional layer into a 
 vector, add dropout regularization, and classify the result using a softmax layer.
 
 See `Implementing a CNN for Text Classification in TensorFlow <http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/>`_.
+
+Using `Kaggle San Francisco Crime <https://www.kaggle.com/c/sf-crime/data>`_:
+
+Input: 'Descript' column
+Output: 'Category' column
+Examples:
+
+==========================================  =============
+Descript                                    Category
+==========================================  =============
+GRAND THEFT FROM LOCKED AUTO                LARCENY/THEFT
+POSSESSION OF NARCOTICS PARAPHERNALIA       DRUG/NARCOTIC
+AIDED CASE, MENTAL DISTURBED                NON-CRIMINAL
+AGGRAVATED ASSAULT WITH BODILY FORCE        ASSAULT
+ATTEMPTED ROBBERY ON THE STREET WITH A GUN  ROBBERY
+==========================================  =============
+
+Train
+^^^^^
+::
+
+    export PYTHONPATH=.
+    python tf_model/text_classifier/__init__.py --train
+
+
+Predict
+^^^^^^^
+::
+
+    export PYTHONPATH=.
+    python tf_model/text_classifier/__init__.py

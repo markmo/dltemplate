@@ -4,30 +4,30 @@ import tensorflow as tf
 
 class TextModel(object):
 
-    def __init__(self, embeddings, non_static, n_hidden, seq_len, max_pool_size,
-                 n_classes, emb_dim, filter_sizes, n_filters, l2_reg_lambda=0.):
+    def __init__(self, embedding_mat, non_static, n_hidden, seq_len, max_pool_size,
+                 n_classes, emb_dim, filter_sizes, n_filters, l2_reg_lambda=0.0):
         self.input_x = tf.placeholder(tf.int32, [None, seq_len], name='input_x')
         self.input_y = tf.placeholder(tf.float32, [None, n_classes], name='input_y')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.batch_size = tf.placeholder(tf.int32, [])
         self.pad = tf.placeholder(tf.float32, [None, 1, emb_dim, 1], name='pad')
         self.real_len = tf.placeholder(tf.int32, [None], name='real_len')
-        l2_loss = tf.constant(0.)
+        l2_loss = tf.constant(0.0)
         with tf.device('/cpu:0'), tf.name_scope('embedding'):
             if non_static:
-                w = tf.Variable(embeddings, name='W')
+                w = tf.Variable(embedding_mat, name='W')
             else:
-                w = tf.constant(embeddings, name='W')
+                w = tf.constant(embedding_mat, name='W')
 
             self.embedded_chars = tf.nn.embedding_lookup(w, self.input_x)
             emb = tf.expand_dims(self.embedded_chars, -1)
 
         pooled_concat = []
-        reduced = np.int32(np.ceil(seq_len * 1. / max_pool_size))
+        reduced = np.int32(np.ceil(seq_len * 1.0 / max_pool_size))
         for i, filter_size in enumerate(filter_sizes):
             with tf.name_scope('conv-maxpool-%s' % filter_size):
                 # zero-padded so the convolution output has dimension [batch, seq_len, emb_dim, n_channels]
-                n_prev = (filter_size - 1) / 2
+                n_prev = (filter_size - 1) // 2
                 n_post = filter_size - 1 - n_prev
                 pad_prev = tf.concat([self.pad] * n_prev, 1)
                 pad_post = tf.concat([self.pad] * n_post, 1)
@@ -55,7 +55,7 @@ class TextModel(object):
 
         # Collect the appropriate last words into variable output, shape [batch_size, emb_dim]
         output = outputs[0]
-        with tf.variable_scope('output'):
+        with tf.variable_scope('Output'):
             tf.get_variable_scope().reuse_variables()
             ones = tf.ones([1, n_hidden], tf.float32)
             for i in range(1, len(outputs)):
@@ -63,7 +63,7 @@ class TextModel(object):
                 indices = tf.to_float(indices)
                 indices = tf.expand_dims(indices, -1)
                 mat = tf.matmul(indices, ones)
-                output = tf.add(tf.multiply(output, mat), tf.multiply(outputs[i], 1. - mat))
+                output = tf.add(tf.multiply(output, mat), tf.multiply(outputs[i], 1.0 - mat))
 
         with tf.name_scope('output'):
             self.w = tf.Variable(tf.truncated_normal([n_hidden, n_classes], stddev=0.1), name='W')

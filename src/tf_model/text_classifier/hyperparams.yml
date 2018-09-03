@@ -9,3 +9,5 @@ max_pool_size: 4
 non_static: False
 n_epochs: 1
 n_filters: 32
+learning_rate: 0.001
+decay: 0.9

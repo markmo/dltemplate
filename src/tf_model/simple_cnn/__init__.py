@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from common.load_data import load_mnist_dataset
+from common.load_keras_datasets import load_mnist_dataset
 from common.util import merge_dict
 import matplotlib.pyplot as plt
 from tf_model.simple_cnn.hyperparams import get_constants

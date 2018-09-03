@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from common.load_data import load_cifar10_dataset
+from common.load_keras_datasets import load_cifar10_dataset
 from common.util import merge_dict
 from common.util_keras import ModelSaveCallback, reset_tf_session, TQDMProgressCallback
 from keras_model.cnn.hyperparams import get_constants

@@ -1,12 +1,15 @@
+from collections import Counter
 import cv2
-from itertools import cycle
+from itertools import chain, cycle
 import keras
+import logging
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pickle
 from queue import Empty, Full, Queue
+import re
 from scipy import interp
 from sklearn.metrics import auc, roc_curve
 import tarfile
@@ -14,6 +17,8 @@ import threading
 from tqdm import tqdm
 import yaml
 from zipfile import ZipFile
+
+logging.getLogger().setLevel(logging.INFO)
 
 
 # Common utility functions
@@ -130,6 +135,31 @@ def batch_generator(items, batch_size):
 
     if batch:
         yield batch
+
+
+def build_vocab(sentences):
+    word_counts = Counter(chain(*sentences))
+    vocab_inv = [word[0] for word in word_counts.most_common()]
+    vocab = {word: i for i, word in enumerate(vocab_inv)}
+    return vocab, vocab_inv
+
+
+def clean_text(text):
+    text = re.sub(r"[^A-Za-z0-9:(),!?'`]", ' ', text)
+    text = re.sub(r' : ', ':', text)
+    text = re.sub(r"'s", " 's", text)
+    text = re.sub(r"'ve", " 've", text)
+    text = re.sub(r"n't", " n't", text)
+    text = re.sub(r"'re", " 're", text)
+    text = re.sub(r"'d", " 'd", text)
+    text = re.sub(r"'ll", " 'll", text)
+    text = re.sub(r',', ' , ', text)
+    text = re.sub(r'!', ' ! ', text)
+    text = re.sub(r'\(', ' ( ', text)
+    text = re.sub(r'\)', ' ) ', text)
+    text = re.sub(r'\?', ' ? ', text)
+    text = re.sub(r'\s{2,}', ' ', text)
+    return text.strip().lower()
 
 
 def convert_to_one_hot(y, c):
@@ -258,6 +288,29 @@ def one_hot_encode(labels, n_classes):
     return encoded
 
 
+def pad_sentences(sentences, pad_token='<PAD>', forced_seq_len=None):
+    if forced_seq_len is None:  # Train
+        seq_len = max(len(sent) for sent in sentences)
+    else:  # Prediction
+        logging.critical('In prediction, reading trained sequence length...')
+        seq_len = forced_seq_len
+
+    logging.critical('Max sequence length: {}'.format(seq_len))
+    padded_sentences = []
+    for sent in sentences:
+        n_pad = seq_len - len(sent)
+        if n_pad < 0:
+            # In prediction, cut off sentence if it is longer than sequence length
+            logging.info('Sentence truncated because it is longer than trained sequence length')
+            padded_sent = sent[0: seq_len]
+        else:
+            padded_sent = sent + [pad_token] * n_pad
+
+        padded_sentences.append(padded_sent)
+
+    return padded_sentences
+
+
 def plot_accuracy(n_epochs, train_costs, val_costs):
     iterations = list(range(n_epochs))
     plt.figure()
@@ -269,6 +322,7 @@ def plot_accuracy(n_epochs, train_costs, val_costs):
     plt.show()
 
 
+# noinspection SpellCheckingInspection
 def plot_roc_auc(y_test, y_score, n_classes):
     """
     Plots ROC curve for macro and micro averaging.
@@ -416,10 +470,10 @@ def reshape(x, n, dtype='float32'):
 
 def sample_zip(filename_in, filename_out, rate=0.01, seed=42):
     np.random.seed(seed)
-    with ZipFile(filename_in) as fin, ZipFile(filename_out, 'w') as fout:
+    with ZipFile(filename_in) as fin, ZipFile(filename_out, 'w') as f:
         sampled = filter(lambda _: np.random.rand() < rate, fin.filelist)
         for zip_info in sampled:
-            fout.writestr(zip_info, fin.read(zip_info))
+            f.writestr(zip_info, fin.read(zip_info))
 
 
 def save_pickle(obj, fn):

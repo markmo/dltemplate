@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from common.load_data import load_cifar10_dataset
+from common.load_keras_datasets import load_cifar10_dataset
 from common.util import merge_dict
 from fastai.conv_learner import ConvLearner, resnet34, tfms_from_model
 from fastai.dataset import ImageClassifierData
@@ -11,9 +11,10 @@ from pytorch_model.cnn.hyperparams import get_constants
 OUTPUT_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/output/')
 
 
+# noinspection SpellCheckingInspection
 def run(constant_overwrites):
     x_train, y_train, x_test, y_test = load_cifar10_dataset()
-    n_classes = 10
+    # n_classes = 10
     classes = ['airplane', 'automobile', 'bird', 'cat', 'deer',
                'dog', 'frog', 'horse', 'ship', 'truck']
 
