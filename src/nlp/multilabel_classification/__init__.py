@@ -9,16 +9,9 @@ from nlp.multilabel_classification.util import print_evaluation_scores, print_la
 from sklearn.preprocessing import MultiLabelBinarizer
 
 
-def run(constant_overwrites):
-    # nltk.download('stopwords')
-    constants = merge_dict(get_constants(), constant_overwrites)
-    x_train, y_train, x_val, y_val, x_test = load_stack_overflow_dataset()
-    x_train = [clean_text(text) for text in x_train]
-    x_val = [clean_text(text) for text in x_val]
-    x_test = [clean_text(text) for text in x_test]
+def train_and_test(x_train, y_train, x_val, y_val, x_test, dict_size, print_metrics=False):
     tag_counts = get_counts(y_train)
     word_counts = get_counts(x_train)
-    dict_size = constants['dict_size']
     top_words = top_n(word_counts, dict_size)
     words_to_index = map_words_to_index(top_words)
     # index_to_words = map_index_to_words(top_words)
@@ -43,31 +36,46 @@ def run(constant_overwrites):
     y_val_predicted_labels_bow = classifier_bow.predict(x_val_bow)
     y_val_predicted_scores_bow = classifier_bow.decision_function(x_val_bow)
 
-    print('Bag-of-words metrics:')
-    print_labels(binarizer, x_val, y_val, y_val_predicted_labels_bow)
-    print_evaluation_scores(y_val, y_val_predicted_labels_bow)
-
     y_val_predicted_labels_tfidf = classifier_tfidf.predict(x_val_tfidf)
     y_val_predicted_scores_tfidf = classifier_tfidf.decision_function(x_val_tfidf)
 
-    print('TF-IDF metrics:')
-    print_labels(binarizer, x_val, y_val, y_val_predicted_labels_tfidf)
-    print_evaluation_scores(y_val, y_val_predicted_labels_tfidf)
+    if print_metrics:
+        print('\nBag-of-words metrics:')
+        print_labels(binarizer, x_val, y_val, y_val_predicted_labels_bow)
+        print_evaluation_scores(y_val, y_val_predicted_labels_bow)
 
-    # Plot ROC AUC BOW
-    plot_roc_auc(y_val, y_val_predicted_scores_bow, n_classes)
+        print('\nTF-IDF metrics:')
+        print_labels(binarizer, x_val, y_val, y_val_predicted_labels_tfidf)
+        print_evaluation_scores(y_val, y_val_predicted_labels_tfidf)
 
-    # Plot ROC AUC TF-IDF
-    plot_roc_auc(y_val, y_val_predicted_scores_tfidf, n_classes)
+        # Plot ROC AUC BOW
+        plot_roc_auc(y_val, y_val_predicted_scores_bow, n_classes)
 
-    # print words for tag 'c'
-    print_words_for_tag(classifier_tfidf, 'c', binarizer.classes, tfidf_vocab_reverse, n=5)
+        # Plot ROC AUC TF-IDF
+        plot_roc_auc(y_val, y_val_predicted_scores_tfidf, n_classes)
 
-    # print words for tag 'c++'
-    print_words_for_tag(classifier_tfidf, 'c++', binarizer.classes, tfidf_vocab_reverse, n=5)
+        # print words for tag 'c'
+        print_words_for_tag(classifier_tfidf, 'c', binarizer.classes, tfidf_vocab_reverse, n=5)
 
-    # print words for tag 'linux'
-    print_words_for_tag(classifier_tfidf, 'linux', binarizer.classes, tfidf_vocab_reverse, n=5)
+        # print words for tag 'c++'
+        print_words_for_tag(classifier_tfidf, 'c++', binarizer.classes, tfidf_vocab_reverse, n=5)
+
+        # print words for tag 'linux'
+        print_words_for_tag(classifier_tfidf, 'linux', binarizer.classes, tfidf_vocab_reverse, n=5)
+
+    return (binarizer.inverse_transform(y_val_predicted_labels_bow),
+            binarizer.inverse_transform(y_val_predicted_labels_tfidf))
+
+
+def run(constant_overwrites):
+    # nltk.download('stopwords')
+    constants = merge_dict(get_constants(), constant_overwrites)
+    x_train, y_train, x_val, y_val, x_test = load_stack_overflow_dataset()
+    x_train = [clean_text(text) for text in x_train]
+    x_val = [clean_text(text) for text in x_val]
+    x_test = [clean_text(text) for text in x_test]
+    dict_size = constants['dict_size']
+    train_and_test(x_train, y_train, x_val, y_val, x_test, dict_size, print_metrics=True)
 
 
 if __name__ == '__main__':

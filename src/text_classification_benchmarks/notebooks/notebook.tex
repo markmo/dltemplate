@@ -1,0 +1,1829 @@
+
+% Default to the notebook output style
+
+    
+
+
+% Inherit from the specified cell style.
+
+
+
+
+    
+\documentclass[11pt]{article}
+
+    
+    
+    \usepackage[T1]{fontenc}
+    % Nicer default font (+ math font) than Computer Modern for most use cases
+    \usepackage{mathpazo}
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % We will generate all images so they have a width \maxwidth. This means
+    % that they will get their normal width if they fit onto the page, but
+    % are scaled down if they would overflow the margins.
+    \makeatletter
+    \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+    \else\Gin@nat@width\fi}
+    \makeatother
+    \let\Oldincludegraphics\includegraphics
+    % Set max figure width to be 80% of text width, for now hardcoded.
+    \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=.8\maxwidth]{#1}}
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionLabelFormat{nolabel}{}
+    \captionsetup{labelformat=nolabel}
+
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    
+
+    
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{Short Text Classification}
+    
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+    \begin{document}
+    
+    
+    \maketitle
+    
+    
+
+    
+    \section{Short Text Classification}\label{short-text-classification}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}68}]:} \PY{k+kn}{import} \PY{n+nn}{importlib}
+         \PY{k+kn}{import} \PY{n+nn}{json}
+         \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+         \PY{k+kn}{import} \PY{n+nn}{os}
+         \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{metrics} \PY{k}{import} \PY{n}{classification\PYZus{}report}
+         \PY{k+kn}{import} \PY{n+nn}{sys}
+         \PY{k+kn}{import} \PY{n+nn}{zipfile}
+         \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}2}]:} \PY{n}{sys}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../..}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}3}]:} \PY{k+kn}{from} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{data\PYZus{}loader} \PY{k}{import} \PY{n}{clean\PYZus{}data}\PY{p}{,} \PY{n}{load\PYZus{}data}
+        \PY{k+kn}{from} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{data\PYZus{}loader} \PY{k}{import} \PY{n}{remove\PYZus{}classes\PYZus{}with\PYZus{}too\PYZus{}few\PYZus{}examples}\PY{p}{,} \PY{n}{tokenize}
+        \PY{k+kn}{from} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{metrics} \PY{k}{import} \PY{n}{perf\PYZus{}summary}\PY{p}{,} \PY{n}{print\PYZus{}perf\PYZus{}summary}
+        \PY{k+kn}{from} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{metrics} \PY{k}{import} \PY{n}{perf\PYZus{}by\PYZus{}label}\PY{p}{,} \PY{n}{print\PYZus{}perf\PYZus{}by\PYZus{}label}
+        \PY{k+kn}{from} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{metrics} \PY{k}{import} \PY{n}{plot\PYZus{}confusion\PYZus{}matrix}\PY{p}{,} \PY{n}{print\PYZus{}best\PYZus{}worst}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+/Users/d777710/miniconda3/envs/dltemplate\_rasa/lib/python3.6/site-packages/h5py/\_\_init\_\_.py:34: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from .\_conv import register\_converters as \_register\_converters
+
+    \end{Verbatim}
+
+    \subsection{About the data}\label{about-the-data}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}4}]:} \PY{n}{train\PYZus{}df}\PY{p}{,} \PY{n}{val\PYZus{}df}\PY{p}{,} \PY{n}{test\PYZus{}df}\PY{p}{,} \PY{n}{classes} \PY{o}{=} \PY{n}{load\PYZus{}data}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Lengths Train: 5696, Val: 633, Test: 703, Classes: 191
+
+    \end{Verbatim}
+
+    \subsubsection{Tokens per utterance}\label{tokens-per-utterance}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}5}]:} \PY{n}{train\PYZus{}df} \PY{o}{=} \PY{n}{tokenize}\PY{p}{(}\PY{n}{clean\PYZus{}data}\PY{p}{(}\PY{n}{train\PYZus{}df}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Length after cleaning data: 5695
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}6}]:} \PY{n}{train\PYZus{}df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}6}]:}    label                                          utterance  \textbackslash{}
+        0    111  Can you explain MMS charges for me while roaming?   
+        1    150                                    youre an idiott   
+        2     72  i am just making an enquiry today on the insto{\ldots}   
+        3     75                          I dnt kno wat auto pay is   
+        4     92     I want to monthly recharge using my debit card   
+        
+                                                      tokens  length  
+        0  [Can, you, explain, MMS, charges, for, me, whi{\ldots}      10  
+        1                              [you, re, an, idiott]       4  
+        2  [i, am, just, making, an, enquiry, today, on, {\ldots}      17  
+        3                  [I, dnt, kno, wat, auto, pay, is]       7  
+        4  [I, want, to, monthly, recharge, using, my, de{\ldots}       9  
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}7}]:} \PY{c+c1}{\PYZsh{} Min, Max, Mean, Std Dev. of tokens per utterance}
+        \PY{n}{lengths} \PY{o}{=} \PY{n}{train\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{length}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Min: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{, Max: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{, Mean: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{, Std: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}
+              \PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{lengths}\PY{o}{.}\PY{n}{min}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n+nb}{int}\PY{p}{(}\PY{n}{lengths}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n+nb}{int}\PY{p}{(}\PY{n}{lengths}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n+nb}{int}\PY{p}{(}\PY{n}{lengths}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Min: 1, Max: 70, Mean: 12, Std: 8
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}8}]:} \PY{c+c1}{\PYZsh{} Variance, Std. Dev. of lengths by label}
+        \PY{n}{lengths\PYZus{}by\PYZus{}label} \PY{o}{=} \PY{n}{train\PYZus{}df}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{label}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{length}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Mean Lengths by Label Variance: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{, Std: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}
+              \PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{lengths\PYZus{}by\PYZus{}label}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{var}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n+nb}{int}\PY{p}{(}\PY{n}{lengths\PYZus{}by\PYZus{}label}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Mean Lengths by Label Variance: 26, Std: 5
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{train\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{length}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{o}{.}\PY{n}{hist}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}9}]:} <matplotlib.axes.\_subplots.AxesSubplot at 0x13c1d01d0>
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_11_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsubsection{Class Balance?}\label{class-balance}
+
+Conventional algorithms are often biased towards the majority class, not
+taking the data distribution into consideration.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{counts\PYZus{}by\PYZus{}label} \PY{o}{=} \PY{n}{train\PYZus{}df}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{label}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{utterance}\PY{o}{.}\PY{n}{count}\PY{p}{(}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Number Utterances by Label Min: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{, Max: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{, Mean: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{, Std: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}
+               \PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n+nb}{int}\PY{p}{(}\PY{n}{counts\PYZus{}by\PYZus{}label}\PY{o}{.}\PY{n}{min}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n+nb}{int}\PY{p}{(}\PY{n}{counts\PYZus{}by\PYZus{}label}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} 
+                       \PY{n+nb}{int}\PY{p}{(}\PY{n}{counts\PYZus{}by\PYZus{}label}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n+nb}{int}\PY{p}{(}\PY{n}{counts\PYZus{}by\PYZus{}label}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Number Utterances by Label Min: 1, Max: 177, Mean: 29, Std: 26
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}11}]:} \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{12}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}\PY{p}{)}
+         \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{axes}\PY{p}{(}\PY{p}{)}
+         \PY{n}{train\PYZus{}df}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{label}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{utterance}\PY{o}{.}\PY{n}{count}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{plot}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{n}{ylim}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+         \PY{n}{ax}\PY{o}{.}\PY{n}{xaxis}\PY{o}{.}\PY{n}{set\PYZus{}major\PYZus{}formatter}\PY{p}{(}\PY{n}{plt}\PY{o}{.}\PY{n}{NullFormatter}\PY{p}{(}\PY{p}{)}\PY{p}{)}  \PY{c+c1}{\PYZsh{} hide labels}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_14_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsubsection{Remove classes with too few
+examples}\label{remove-classes-with-too-few-examples}
+
+Necessary for later models.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}12}]:} \PY{n}{train\PYZus{}df} \PY{o}{=} \PY{n}{remove\PYZus{}classes\PYZus{}with\PYZus{}too\PYZus{}few\PYZus{}examples}\PY{p}{(}\PY{n}{train\PYZus{}df}\PY{p}{,} \PY{n}{min\PYZus{}examples}\PY{o}{=}\PY{l+m+mi}{6}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Length after processing data: 5645
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}13}]:} \PY{n}{val\PYZus{}df} \PY{o}{=} \PY{n}{clean\PYZus{}data}\PY{p}{(}\PY{n}{val\PYZus{}df}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Length after cleaning data: 632
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}14}]:} \PY{n}{val\PYZus{}df}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}14}]:}    label                                          utterance
+         0     70                       What is the customer number?
+         1      3  i want to update my contact details with telst{\ldots}
+         2     47     I'm having trouble registering for Telstra air
+         3     21                            I have been overcharged
+         4    108  so change to post paid, and then my Mx plan is{\ldots}
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}15}]:} \PY{n}{val\PYZus{}df} \PY{o}{=} \PY{n}{remove\PYZus{}classes\PYZus{}with\PYZus{}too\PYZus{}few\PYZus{}examples}\PY{p}{(}\PY{n}{val\PYZus{}df}\PY{p}{,} \PY{n}{min\PYZus{}examples}\PY{o}{=}\PY{l+m+mi}{6}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Length after processing data: 271
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}16}]:} \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Lengths after removing labels with insufficient examples Train: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{, Val: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}
+               \PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{train\PYZus{}df}\PY{p}{)}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{val\PYZus{}df}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Lengths after removing labels with insufficient examples Train: 5645, Val: 271
+
+    \end{Verbatim}
+
+    \subsection{Metrics}\label{metrics}
+
+    Options: * ROC area under the curve * AUC for a precision-recall curve
+(sklearn.metrics.average\_precision\_score) * Generalize binary
+performance metrics such as precision, recall, and F1 to multi-class
+settings. Assuming a One-vs-All classifier, we can go with a "micro"
+average or a "macro" average. * Multi-class log loss
+
+In "micro averaging," we would calculate the performance, e.g.,
+precision, from the individualtrue positives, true negatives, false
+positives, and false negatives of the the k-class model, e.g.:
+
+\begin{verbatim}
+Precision_micro = (TP1 + ... + TPk) / (TP1 + ... + TPk + FP1 + ... + FPk)
+\end{verbatim}
+
+And in macro-averaging, we would average the performances of each
+individual class, e.g.:
+
+\begin{verbatim}
+Precision_macro = (P1 + ... + Pk) / k
+\end{verbatim}
+
+Because the micro-average gives equal weight to each individual
+decision, large classes will dominate small ones. This makes it a
+measure of how effective your classifier is on the large classes in the
+collection.
+
+On the other hand, macro-averaging gives equal weight to every class,
+and so will give you a sense of how effective you are on the small
+classes.
+
+    Notes: * Classification Accuracy (or misclassification error) makes
+sense if your class labels are uniformly distributed.
+
+    \subsection{Classical models}\label{classical-models}
+
+Bag-of-words features using TF-IDF.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}17}]:} \PY{k+kn}{from} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{tfidf\PYZus{}bow} \PY{k}{import} \PY{n}{generate\PYZus{}tfidf\PYZus{}features}\PY{p}{,} \PY{n}{show\PYZus{}relevant\PYZus{}terms}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}18}]:} \PY{n}{features}\PY{p}{,} \PY{n}{labels}\PY{p}{,} \PY{n}{tfidf}\PY{p}{,} \PY{n}{indices} \PY{o}{=} \PY{n}{generate\PYZus{}tfidf\PYZus{}features}\PY{p}{(}\PY{n}{train\PYZus{}df}\PY{p}{,} \PY{n}{val\PYZus{}df}\PY{p}{,} \PY{n}{cutoff}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{ngram\PYZus{}range}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}19}]:} \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Number Utterances: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{, Features: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{o}{*}\PY{n}{features}\PY{o}{.}\PY{n}{shape}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Number Utterances: 5916, Features: 1387
+
+    \end{Verbatim}
+
+    \emph{i} utterances represented by \emph{j} features, representing the
+TF-IDF score for various unigrams and bigrams.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}20}]:} \PY{n}{show\PYZus{}relevant\PYZus{}terms}\PY{p}{(}\PY{n}{features}\PY{p}{,} \PY{n}{labels}\PY{p}{,} \PY{n}{tfidf}\PY{p}{,} \PY{n}{classes}\PY{p}{,} \PY{n}{every}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Label: Account\_Management-E\_Close\_Cancel\_Account
+	Most correlated unigrams: switching, shut, cancel
+	Most correlated bigrams: phone internet, account credit, cancel service
+
+Label: Billing-E\_Bill\_Explanation
+	Most correlated unigrams: understand, charged, explain
+	Most correlated bigrams: late fee, got email, don understand
+
+Label: Complaints-T\_Troubleshooting\_Device
+	Most correlated unigrams: samsung, fault, edge
+	Most correlated bigrams: phone says, hi mobile, samsung s7
+
+Label: Flow\_Control-I\_Need\_More\_Time
+	Most correlated unigrams: try, ready, moment
+	Most correlated bigrams: don know, try later, need time
+
+Label: Information-T\_Share\_Data
+	Most correlated unigrams: packs, shared, share
+	Most correlated bigrams: add data, shared data, share data
+
+Label: Service\_Management-E\_Add\_Insurance
+	Most correlated unigrams: stay, stayconnected, insurance
+	Most correlated bigrams: pre paid, does work, stay connected
+
+Label: Service\_Management-T\_Data\_Share\_SIM
+	Most correlated unigrams: additional, shared, share
+	Most correlated bigrams: share data, share sim, data share
+
+Label: TEMP\_Account\_Management-T\_Recharge\_Amounts
+	Most correlated unigrams: happy, happens, zealand
+	Most correlated bigrams: having problem, haven received, having issues
+
+Label: TEMP\_ChitChat-What\_is\_happening
+	Most correlated unigrams: whats, doing, happening
+	Most correlated bigrams: want know, telstra air, pre paid
+
+Label: TEMP\_Information-T\_Online\_Purchase\_Benefits
+	Most correlated unigrams: happy, happens, zealand
+	Most correlated bigrams: having problem, haven received, having issues
+
+
+    \end{Verbatim}
+
+    \subsubsection{Multinomial Naive Bayes
+Classifier}\label{multinomial-naive-bayes-classifier}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}21}]:} \PY{k+kn}{from} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{multinomial\PYZus{}naive\PYZus{}bayes}\PY{n+nn}{.}\PY{n+nn}{model\PYZus{}setup} \PY{k}{import} \PY{n}{MultinomialNaiveBayesModel}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}22}]:} \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train} \PY{o}{=} \PY{n}{train\PYZus{}df}\PY{o}{.}\PY{n}{utterance}\PY{p}{,} \PY{n}{train\PYZus{}df}\PY{o}{.}\PY{n}{label}
+         \PY{n}{X\PYZus{}val}\PY{p}{,} \PY{n}{y\PYZus{}val} \PY{o}{=} \PY{n}{val\PYZus{}df}\PY{o}{.}\PY{n}{utterance}\PY{p}{,} \PY{n}{val\PYZus{}df}\PY{o}{.}\PY{n}{label}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}23}]:} \PY{n}{model} \PY{o}{=} \PY{n}{MultinomialNaiveBayesModel}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}24}]:} \PY{k}{def} \PY{n+nf}{print\PYZus{}prediction}\PY{p}{(}\PY{n}{sample\PYZus{}idx}\PY{p}{)}\PY{p}{:}
+             \PY{n}{utterance} \PY{o}{=} \PY{n}{X\PYZus{}val}\PY{p}{[}\PY{n}{sample\PYZus{}idx}\PY{p}{]}
+             \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Utterance:}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{utterance}\PY{p}{)}
+             \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Actual:}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{classes}\PY{p}{[}\PY{n}{y\PYZus{}val}\PY{p}{[}\PY{n}{sample\PYZus{}idx}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+             \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Predicted:}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{classes}\PY{p}{[}\PY{n}{model}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{utterance}\PY{p}{)}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}25}]:} \PY{n}{samples} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{choice}\PY{p}{(}\PY{n}{X\PYZus{}val}\PY{o}{.}\PY{n}{index}\PY{p}{,} \PY{n}{size}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)}
+         \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{samples}\PY{p}{:}
+             \PY{n}{print\PYZus{}prediction}\PY{p}{(}\PY{n}{i}\PY{p}{)}
+             \PY{n+nb}{print}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Utterance: Hi I can't activate online it is playing up when it comes to a question with options
+Actual: Complaints-T\_Troubleshooting\_Activation
+Predicted: Information-T\_Definitions
+
+Utterance: explain my bill Summary
+Actual: Billing-E\_Bill\_Explanation
+Predicted: Billing-E\_Bill\_Explanation
+
+Utterance: Hi. I am wanting to set up direct debit and am a concession card holder/pensioner. It says I could be exempt from the fee I think if so.
+Actual: Payment-E\_Recurring\_Payment\_Autopay
+Predicted: Payment-E\_Recurring\_Payment\_Autopay
+
+Utterance: I don't want data
+Actual: Flow\_Control\_Break\_Flow-That\_is\_not\_what\_we\_were\_talking\_about
+Predicted: Service\_Management-E\_Add\_Service\_Features
+
+Utterance: making telephone calls and texts from overseas
+Actual: Service\_Management-E\_Roaming\_Inquiry
+Predicted: Service\_Management-E\_Roaming\_Inquiry
+
+Utterance: Have not received a credit
+Actual: Billing-E\_Dispute
+Predicted: Complaints-T\_Troubleshooting\_Credit\_or\_Recharge
+
+Utterance: Its only given me an extension date till 31/07/2017
+Actual: Payment-E\_Defer\_Payment
+Predicted: Payment-E\_Defer\_Payment
+
+Utterance: I want to switch offers
+Actual: Service\_Management-E\_Price\_Plan\_Change
+Predicted: Sales-E\_Port\_In
+
+Utterance: how do i recharge my pre-paid wifi online
+Actual: Payment-E\_Recharge
+Predicted: Payment-E\_Recharge
+
+Utterance: Hi Cody, my husband is out of contract
+Actual: Sales-T\_Recontract\_Service
+Predicted: Information-T\_Definitions
+
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}26}]:} \PY{n}{y\PYZus{}pred} \PY{o}{=} \PY{p}{[}\PY{n}{model}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{utterance}\PY{p}{)} \PY{k}{for} \PY{n}{utterance} \PY{o+ow}{in} \PY{n}{X\PYZus{}val}\PY{p}{]}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}27}]:} \PY{n}{stats} \PY{o}{=} \PY{n}{perf\PYZus{}summary}\PY{p}{(}\PY{n}{y\PYZus{}val}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{)}
+         \PY{n}{print\PYZus{}perf\PYZus{}summary}\PY{p}{(}\PY{n}{stats}\PY{p}{,} \PY{n}{rounded}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Precision (weighted avg): 0.66
+Recall (weighted avg)   : 0.54
+F1 Score (weighted avg) : 0.51
+Accuracy                : 0.54
+ROC AUC (macro avg)     : 0.73
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}28}]:} \PY{n}{print\PYZus{}perf\PYZus{}by\PYZus{}label}\PY{p}{(}\PY{n}{perf\PYZus{}by\PYZus{}label}\PY{p}{(}\PY{n}{y\PYZus{}val}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{,} \PY{n}{classes}\PY{p}{,} \PY{n}{counts\PYZus{}by\PYZus{}label}\PY{p}{)}\PY{p}{,} \PY{n}{rounded}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{sort\PYZus{}column}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f1\PYZus{}score}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}28}]:}                                                  name  idx  precision  recall  \textbackslash{}
+         9            Complaints-T\_Troubleshooting\_Telstra\_Air   47       0.90    1.00   
+         6              Complaints-T\_Troubleshooting\_Broadband   36       0.88    0.88   
+         8                  Complaints-T\_Troubleshooting\_Email   41       1.00    0.75   
+         12                            Help-E\_Connect\_to\_Agent   67       1.00    0.73   
+         0              Account\_Management-T\_Telstra\_Air\_Login   14       0.83    0.83   
+         18                          Payment-E\_Payment\_History   90       1.00    0.71   
+         28                   Service\_Management-T\_Apple\_Music  114       0.83    0.83   
+         20                Payment-E\_Recurring\_Payment\_Autopay   92       0.86    0.75   
+         29               Service\_Management-T\_Carrier\_Billing  116       1.00    0.57   
+         26               Service\_Management-E\_Roaming\_Inquiry  111       0.83    0.62   
+         14                          Information-T\_Definitions   75       0.49    1.00   
+         3                                   Billing-E\_Dispute   21       0.80    0.50   
+         7     Complaints-T\_Troubleshooting\_Credit\_or\_Recharge   38       0.50    0.67   
+         16                            Payment-E\_Defer\_Payment   87       0.42    0.91   
+         11                       Flow\_Control-It\_Did\_Not\_Work   61       1.00    0.38   
+         21                                    Sales-E\_Port\_In   96       0.42    0.80   
+         4                                 Billing-T\_Bill\_Copy   23       1.00    0.33   
+         2                          Billing-E\_Bill\_Explanation   20       0.75    0.33   
+         24          Service\_Management-E\_Add\_Service\_Features  101       0.39    0.54   
+         25             Service\_Management-E\_Price\_Plan\_Change  108       1.00    0.25   
+         5             Complaints-T\_Troubleshooting\_Activation   35       0.67    0.25   
+         27            Service\_Management-T\_Activate\_Broadband  112       1.00    0.17   
+         15        Order\_Management-E\_Get\_Product\_Order\_Status   85       1.00    0.17   
+         19                                 Payment-E\_Recharge   91       1.00    0.17   
+         10  Flow\_Control\_Break\_Flow-That\_is\_not\_what\_we\_we{\ldots}   58       1.00    0.17   
+         30              Service\_Management-T\_Contract\_Details  119       1.00    0.14   
+         17               Payment-E\_Missing\_Misapplied\_Payment   89       0.33    0.12   
+         23         Service\_Management-E\_Activate\_Prepaid\_Plan   98       0.00    0.00   
+         22                         Sales-T\_Recontract\_Service   97       0.00    0.00   
+         1                           Billing-E\_Balance\_Inquiry   19       0.00    0.00   
+         13                       Information-E\_Store\_Products   72       0.00    0.00   
+         32                                        Avg / Total            0.66    0.54   
+         
+             f1\_score  roc\_auc  support  n\_examples  
+         9       0.95     1.00        9          76  
+         6       0.88     0.94        8          73  
+         8       0.86     0.88        8          74  
+         12      0.84     0.86       11         101  
+         0       0.83     0.91        6          57  
+         18      0.83     0.86        7          61  
+         28      0.83     0.91        6          58  
+         20      0.80     0.87        8          73  
+         29      0.73     0.79        7          60  
+         26      0.71     0.81        8          74  
+         14      0.66     0.96       20         177  
+         3       0.62     0.75        8          70  
+         7       0.57     0.82        9          83  
+         16      0.57     0.93       11         101  
+         11      0.55     0.69        8          68  
+         21      0.55     0.88       10          93  
+         4       0.50     0.67        6          57  
+         2       0.46     0.66        9          80  
+         24      0.45     0.75       13         112  
+         25      0.40     0.62        8          74  
+         5       0.36     0.62        8          67  
+         27      0.29     0.58        6          50  
+         15      0.29     0.58        6          53  
+         19      0.29     0.58        6          56  
+         10      0.29     0.58        6          54  
+         30      0.25     0.57        7          63  
+         17      0.18     0.56        8          70  
+         23      0.00     0.50        7          58  
+         22      0.00     0.50        6          51  
+         1       0.00     0.49        8          73  
+         13      0.00     0.50        6          58  
+         32      0.51     0.73      271        2427  
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}29}]:} \PY{k}{def} \PY{n+nf}{print\PYZus{}classification\PYZus{}report}\PY{p}{(}\PY{n}{y\PYZus{}true}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{,} \PY{n}{classes}\PY{p}{)}\PY{p}{:}
+             \PY{n}{labels} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{unique}\PY{p}{(}\PY{n}{y\PYZus{}true}\PY{p}{)}
+             \PY{n}{target\PYZus{}names} \PY{o}{=} \PY{p}{[}\PY{n}{classes}\PY{p}{[}\PY{n}{x}\PY{p}{]} \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{labels}\PY{p}{]}
+             \PY{n+nb}{print}\PY{p}{(}\PY{n}{classification\PYZus{}report}\PY{p}{(}\PY{n}{y\PYZus{}true}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{,} \PY{n}{labels}\PY{o}{=}\PY{n}{labels}\PY{p}{,} \PY{n}{target\PYZus{}names}\PY{o}{=}\PY{n}{target\PYZus{}names}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}30}]:} \PY{n}{print\PYZus{}classification\PYZus{}report}\PY{p}{(}\PY{n}{y\PYZus{}val}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{,} \PY{n}{classes}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+                                                                precision    recall  f1-score   support
+
+                        Account\_Management-T\_Telstra\_Air\_Login       0.83      0.83      0.83         6
+                                     Billing-E\_Balance\_Inquiry       0.00      0.00      0.00         8
+                                    Billing-E\_Bill\_Explanation       0.75      0.33      0.46         9
+                                             Billing-E\_Dispute       0.80      0.50      0.62         8
+                                           Billing-T\_Bill\_Copy       1.00      0.33      0.50         6
+                       Complaints-T\_Troubleshooting\_Activation       0.67      0.25      0.36         8
+                        Complaints-T\_Troubleshooting\_Broadband       0.88      0.88      0.88         8
+               Complaints-T\_Troubleshooting\_Credit\_or\_Recharge       0.50      0.67      0.57         9
+                            Complaints-T\_Troubleshooting\_Email       1.00      0.75      0.86         8
+                      Complaints-T\_Troubleshooting\_Telstra\_Air       0.90      1.00      0.95         9
+Flow\_Control\_Break\_Flow-That\_is\_not\_what\_we\_were\_talking\_about       1.00      0.17      0.29         6
+                                  Flow\_Control-It\_Did\_Not\_Work       1.00      0.38      0.55         8
+                                       Help-E\_Connect\_to\_Agent       1.00      0.73      0.84        11
+                                  Information-E\_Store\_Products       0.00      0.00      0.00         6
+                                     Information-T\_Definitions       0.49      1.00      0.66        20
+                   Order\_Management-E\_Get\_Product\_Order\_Status       1.00      0.17      0.29         6
+                                       Payment-E\_Defer\_Payment       0.42      0.91      0.57        11
+                          Payment-E\_Missing\_Misapplied\_Payment       0.33      0.12      0.18         8
+                                     Payment-E\_Payment\_History       1.00      0.71      0.83         7
+                                            Payment-E\_Recharge       1.00      0.17      0.29         6
+                           Payment-E\_Recurring\_Payment\_Autopay       0.86      0.75      0.80         8
+                                               Sales-E\_Port\_In       0.42      0.80      0.55        10
+                                    Sales-T\_Recontract\_Service       0.00      0.00      0.00         6
+                    Service\_Management-E\_Activate\_Prepaid\_Plan       0.00      0.00      0.00         7
+                     Service\_Management-E\_Add\_Service\_Features       0.39      0.54      0.45        13
+                        Service\_Management-E\_Price\_Plan\_Change       1.00      0.25      0.40         8
+                          Service\_Management-E\_Roaming\_Inquiry       0.83      0.62      0.71         8
+                       Service\_Management-T\_Activate\_Broadband       1.00      0.17      0.29         6
+                              Service\_Management-T\_Apple\_Music       0.83      0.83      0.83         6
+                          Service\_Management-T\_Carrier\_Billing       1.00      0.57      0.73         7
+                         Service\_Management-T\_Contract\_Details       1.00      0.14      0.25         7
+                        Service\_Management-T\_Price\_Plan\_Offers       0.24      0.82      0.37        17
+
+                                                   avg / total       0.66      0.54      0.51       271
+
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}31}]:} \PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{precision\PYZus{}weighted\PYZus{}avg}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{recall\PYZus{}weighted\PYZus{}avg}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f1\PYZus{}weighted\PYZus{}avg}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} 
+                    \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{accuracy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{roc\PYZus{}auc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}latency}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}32}]:} \PY{n}{mean\PYZus{}latency} \PY{o}{=} \PY{n+nb}{round}\PY{p}{(}\PY{n}{model}\PY{o}{.}\PY{n}{mean\PYZus{}latency}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Mean latency (secs):}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{mean\PYZus{}latency}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Mean latency (secs): 0.0008
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}33}]:} \PY{n}{data} \PY{o}{=} \PY{n+nb}{dict}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Multinomial Naive Bayes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}latency}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{mean\PYZus{}latency}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{o}{*}\PY{o}{*}\PY{n}{stats}\PY{p}{)}
+         \PY{n}{benchmarks} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{p}{,} \PY{n}{columns}\PY{o}{=}\PY{n}{columns}\PY{p}{,} \PY{n}{index}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}34}]:} \PY{n}{benchmarks}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}34}]:}                      model  precision\_weighted\_avg  recall\_weighted\_avg  \textbackslash{}
+         0  Multinomial Naive Bayes                0.656506             0.542435   
+         
+            f1\_weighted\_avg  accuracy   roc\_auc  mean\_latency  
+         0         0.514728  0.542435  0.733035        0.0008  
+\end{Verbatim}
+            
+    \subsection{Try multiple model types}\label{try-multiple-model-types}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Random Forest
+\item
+  Multinomimal Naive Bayes
+\item
+  Logistic Regression
+\item
+  Linear Support Vector Machine
+\end{enumerate}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}35}]:} \PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{ensemble} \PY{k}{import} \PY{n}{RandomForestClassifier}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{linear\PYZus{}model} \PY{k}{import} \PY{n}{LogisticRegression}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{model\PYZus{}selection} \PY{k}{import} \PY{n}{cross\PYZus{}val\PYZus{}score}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{naive\PYZus{}bayes} \PY{k}{import} \PY{n}{MultinomialNB}
+         \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{svm} \PY{k}{import} \PY{n}{LinearSVC}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}36}]:} \PY{n}{models} \PY{o}{=} \PY{p}{[}
+             \PY{n}{RandomForestClassifier}\PY{p}{(}\PY{n}{n\PYZus{}estimators}\PY{o}{=}\PY{l+m+mi}{200}\PY{p}{,} \PY{n}{max\PYZus{}depth}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}\PY{p}{,}
+             \PY{n}{MultinomialNB}\PY{p}{(}\PY{p}{)}\PY{p}{,}
+             \PY{n}{LogisticRegression}\PY{p}{(}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}\PY{p}{,}
+             \PY{n}{LinearSVC}\PY{p}{(}\PY{p}{)}
+         \PY{p}{]}
+         
+         \PY{n}{CV} \PY{o}{=} \PY{l+m+mi}{5}  \PY{c+c1}{\PYZsh{} number of folds in a (Stratified) KFold}
+         \PY{n}{cv\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{index}\PY{o}{=}\PY{n+nb}{range}\PY{p}{(}\PY{n}{CV} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{models}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+         \PY{n}{entries} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+         
+         \PY{k}{for} \PY{n}{model} \PY{o+ow}{in} \PY{n}{models}\PY{p}{:}
+             \PY{n}{model\PYZus{}name} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n+nv+vm}{\PYZus{}\PYZus{}class\PYZus{}\PYZus{}}\PY{o}{.}\PY{n+nv+vm}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}}
+             \PY{n}{accuracies} \PY{o}{=} \PY{n}{cross\PYZus{}val\PYZus{}score}\PY{p}{(}\PY{n}{model}\PY{p}{,} \PY{n}{features}\PY{p}{,} \PY{n}{labels}\PY{p}{,} \PY{n}{scoring}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f1\PYZus{}weighted}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{cv}\PY{o}{=}\PY{n}{CV}\PY{p}{)}
+             \PY{k}{for} \PY{n}{fold\PYZus{}idx}\PY{p}{,} \PY{n}{accuracy} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{accuracies}\PY{p}{)}\PY{p}{:}
+                 \PY{n}{entries}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{(}\PY{n}{model\PYZus{}name}\PY{p}{,} \PY{n}{fold\PYZus{}idx}\PY{p}{,} \PY{n}{accuracy}\PY{p}{)}\PY{p}{)}
+         
+         \PY{n}{cv\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{entries}\PY{p}{,} \PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fold\PYZus{}idx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f1\PYZus{}weighted}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+         
+         \PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{12}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}\PY{p}{)}
+         \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f1\PYZus{}weighted}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{cv\PYZus{}df}\PY{p}{)}
+         \PY{n}{sns}\PY{o}{.}\PY{n}{stripplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f1\PYZus{}weighted}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{cv\PYZus{}df}\PY{p}{,} 
+                       \PY{n}{size}\PY{o}{=}\PY{l+m+mi}{8}\PY{p}{,} \PY{n}{jitter}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{edgecolor}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{gray}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{linewidth}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_47_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}37}]:} \PY{n}{cv\PYZus{}df}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{f1\PYZus{}weighted}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}37}]:} model
+         LinearSVC                 0.526594
+         LogisticRegression        0.443169
+         MultinomialNB             0.276464
+         RandomForestClassifier    0.125507
+         Name: f1\_weighted, dtype: float64
+\end{Verbatim}
+            
+    LinearSVC is the pick. Lets continue with that...
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}38}]:} \PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{model\PYZus{}selection} \PY{k}{import} \PY{n}{train\PYZus{}test\PYZus{}split}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}39}]:} \PY{n}{model} \PY{o}{=} \PY{n}{LinearSVC}\PY{p}{(}\PY{p}{)}
+         \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{indices\PYZus{}train}\PY{p}{,} \PY{n}{indices\PYZus{}test} \PY{o}{=} \PYZbs{}
+             \PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{features}\PY{p}{,} \PY{n}{labels}\PY{p}{,} \PY{n}{indices}\PY{p}{,} \PY{n}{test\PYZus{}size}\PY{o}{=}\PY{l+m+mf}{0.33}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{42}\PY{p}{)}
+         
+         \PY{n}{model}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{)}
+         \PY{n}{y\PYZus{}pred} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}40}]:} \PY{n}{plot\PYZus{}confusion\PYZus{}matrix}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{,} \PY{n}{classes}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{20}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_52_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}41}]:} \PY{n}{print\PYZus{}perf\PYZus{}summary}\PY{p}{(}\PY{n}{perf\PYZus{}summary}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{)}\PY{p}{,} \PY{n}{rounded}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Precision (weighted avg): 0.53
+Recall (weighted avg)   : 0.5
+F1 Score (weighted avg) : 0.49
+Accuracy                : 0.5
+ROC AUC (macro avg)     : 0.72
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}42}]:} \PY{n}{stats} \PY{o}{=} \PY{n}{perf\PYZus{}by\PYZus{}label}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{,} \PY{n}{classes}\PY{p}{,} \PY{n}{counts\PYZus{}by\PYZus{}label}\PY{p}{)}
+         \PY{n}{print\PYZus{}perf\PYZus{}by\PYZus{}label}\PY{p}{(}\PY{n}{stats}\PY{p}{,} \PY{n}{rounded}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{sort\PYZus{}column}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f1\PYZus{}score}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}42}]:}                                                name  idx  precision  recall  \textbackslash{}
+         46               Complaints-T\_Troubleshooting\_Speed   46       1.00    0.90   
+         51                      Device\_Management-T\_SIM\_PIN   51       1.00    0.83   
+         120                     Service\_Management-T\_Foxtel  122       0.83    1.00   
+         112                Service\_Management-T\_Apple\_Music  114       0.86    0.95   
+         42            Complaints-T\_Troubleshooting\_Landline   42       0.76    1.00   
+         47         Complaints-T\_Troubleshooting\_Telstra\_Air   47       0.82    0.92   
+         138                   TEMP\_ChitChat-Are\_you\_kidding  142       1.00    0.75   
+         4             Account\_Management-E\_Profile\_Password    4       0.85    0.85   
+         118             Service\_Management-T\_Data\_Share\_SIM  120       0.83    0.83   
+         144                        TEMP\_ChitChat-I\_am\_sorry  148       1.00    0.71   
+         113               Service\_Management-T\_Benefits\_Add  115       0.83    0.83   
+         111         Service\_Management-T\_Activate\_Broadband  112       0.85    0.81   
+         41               Complaints-T\_Troubleshooting\_Email   41       0.79    0.88   
+         114            Service\_Management-T\_Carrier\_Billing  116       0.79    0.83   
+         170  TEMP\_Order\_Management-T\_NBN\_Change\_Appointment  185       1.00    0.67   
+         9     Account\_Management-T\_24x7App\_Technical\_Faults    9       1.00    0.67   
+         153    TEMP\_ChitChat-What\_do\_you\_think\_about\_movies  159       1.00    0.67   
+         53                           Device-T\_Wifi\_Password   53       0.90    0.69   
+         136              Service\_Management-T\_Return\_Device  138       0.75    0.82   
+         168           TEMP\_Information-T\_Credit\_Information  178       0.88    0.70   
+         126            Service\_Management-T\_MessageBank\_PIN  128       0.62    1.00   
+         77                     Information-T\_Internet\_Speed   77       0.60    1.00   
+         106             Service\_Management-E\_Network\_Unlock  107       0.70    0.78   
+         14           Account\_Management-T\_Telstra\_Air\_Login   14       0.76    0.73   
+         11                 Account\_Management-T\_Email\_Setup   11       0.77    0.71   
+         18                        Benefits-T\_Telstra\_Thanks   18       0.80    0.67   
+         10                 Account\_Management-T\_Bereavement   10       0.57    1.00   
+         91              Payment-E\_Recurring\_Payment\_Autopay   92       0.62    0.88   
+         103        Service\_Management-E\_De\_Activate\_Roaming  104       0.67    0.75   
+         86                          Payment-E\_Defer\_Payment   87       0.65    0.78   
+         ..                                              {\ldots}  {\ldots}        {\ldots}     {\ldots}   
+         83                         Off\_Topic-T\_Out\_of\_Scope   83       0.20    0.12   
+         12                Account\_Management-T\_Link\_Account   12       0.20    0.11   
+         44             Complaints-T\_Troubleshooting\_Profile   44       0.20    0.08   
+         160    TEMP\_ChitChat-Where\_were\_you\_originally\_from  166       0.00    0.00   
+         161                     TEMP\_ChitChat-You\_are\_funny  168       0.00    0.00   
+         55               Flow\_Control\_Break\_Flow-Good\_night   55       0.00    0.00   
+         82                           Information-T\_Valid\_ID   82       0.00    0.00   
+         54         Flow\_Control\_Break\_Flow-Another\_Question   54       0.00    0.00   
+         22                                   Billing-E\_Misc   22       0.00    0.00   
+         159                     TEMP\_ChitChat-Where\_are\_you  165       0.00    0.00   
+         59                       Flow\_Control-I\_do\_not\_know   59       0.00    0.00   
+         105                       Service\_Management-E\_Misc  106       0.00    0.00   
+         171        TEMP\_Payment-E\_Method\_Of\_Payment\_Inquiry  186       0.00    0.00   
+         167             TEMP\_Information-T\_Benefits\_Telstra  177       0.00    0.00   
+         28                              ChitChat-I\_am\_angry   28       0.00    0.00   
+         158             TEMP\_ChitChat-When\_is\_your\_birthday  164       0.00    0.00   
+         156                 TEMP\_ChitChat-What\_is\_your\_name  162       0.00    0.00   
+         155       TEMP\_ChitChat-What\_is\_the\_meaning\_of\_life  161       0.00    0.00   
+         139                 TEMP\_ChitChat-Ask\_me\_a\_question  143       0.00    0.00   
+         65                          Flow\_Control-No\_Problem   65       0.00    0.00   
+         39                Complaints-T\_Troubleshooting\_Data   39       0.00    0.00   
+         151                      TEMP\_ChitChat-This\_is\_good  156       0.00    0.00   
+         150            TEMP\_ChitChat-Tell\_me\_about\_yourself  155       0.00    0.00   
+         43             Complaints-T\_Troubleshooting\_Payment   43       0.00    0.00   
+         148                                TEMP\_ChitChat-Oh  153       0.00    0.00   
+         140                      TEMP\_ChitChat-Do\_not\_worry  144       0.00    0.00   
+         64                                  Flow\_Control-No   64       0.00    0.00   
+         143                     TEMP\_ChitChat-I\_am\_not\_well  147       0.00    0.00   
+         134  Service\_Management-T\_Recharge\_Service\_Features  136       0.00    0.00   
+         174                                     Avg / Total            0.53    0.50   
+         
+              f1\_score  roc\_auc  support  n\_examples  
+         46       0.95     0.95       10          31  
+         51       0.91     0.92        6          21  
+         120      0.91     1.00        5          19  
+         112      0.90     0.97       19          58  
+         42       0.87     1.00       13          44  
+         47       0.87     0.96       25          76  
+         138      0.86     0.88        4          12  
+         4        0.85     0.92       13          36  
+         118      0.83     0.92        6          18  
+         144      0.83     0.86        7          15  
+         113      0.83     0.92       12          38  
+         111      0.83     0.90       21          50  
+         41       0.83     0.94       25          74  
+         114      0.81     0.92       18          60  
+         170      0.80     0.83        3          13  
+         9        0.80     0.83        3          11  
+         153      0.80     0.83        3           8  
+         53       0.78     0.85       13          27  
+         136      0.78     0.91       11          36  
+         168      0.78     0.85       10          31  
+         126      0.77     1.00        5          22  
+         77       0.75     1.00        3          20  
+         106      0.74     0.89        9          33  
+         14       0.74     0.86       22          57  
+         11       0.74     0.86       14          41  
+         18       0.73     0.83        6          18  
+         10       0.73     1.00        4          14  
+         91       0.73     0.94       26          73  
+         103      0.71     0.87        8          28  
+         86       0.70     0.88       40         101  
+         ..        {\ldots}      {\ldots}      {\ldots}         {\ldots}  
+         83       0.15     0.56        8          20  
+         12       0.14     0.55        9          27  
+         44       0.11     0.54       13          34  
+         160      0.00     0.50        1           6  
+         161      0.00     0.50        8          22  
+         55       0.00     0.50        4           9  
+         82       0.00     0.50        2           8  
+         54       0.00     0.50        3           8  
+         22       0.00     0.50        9          26  
+         159      0.00     0.50        2          10  
+         59       0.00     0.50        6          14  
+         105      0.00     0.50        6          10  
+         171      0.00     0.50        4           9  
+         167      0.00     0.50        4           6  
+         28       0.00     0.50        6          16  
+         158      0.00     0.50        2           9  
+         156      0.00     0.50        1          13  
+         155      0.00     0.50        1          12  
+         139      0.00     0.50        4           8  
+         65       0.00     0.50        3          10  
+         39       0.00     0.50       12          35  
+         151      0.00     0.50        3          11  
+         150      0.00     0.50        8          17  
+         43       0.00     0.50        4          14  
+         148      0.00     0.50        1           7  
+         140      0.00     0.50        4          13  
+         64       0.00     0.50        4          23  
+         143      0.00     0.50        3           9  
+         134      0.00     0.50        4          15  
+         174      0.49     0.72     1953        5636  
+         
+         [174 rows x 8 columns]
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}43}]:} \PY{n}{print\PYZus{}classification\PYZus{}report}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{,} \PY{n}{classes}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+                                                                precision    recall  f1-score   support
+
+                     Account\_Management-E\_Close\_Cancel\_Account       0.29      0.20      0.24        10
+                             Account\_Management-E\_Email\_Change       0.67      0.40      0.50        10
+                                     Account\_Management-E\_Misc       0.45      0.50      0.48        10
+                              Account\_Management-E\_Name\_Change       0.50      0.60      0.55         5
+                         Account\_Management-E\_Profile\_Password       0.85      0.85      0.85        13
+                          Account\_Management-E\_Transfer\_Points       0.57      0.89      0.70         9
+                    Account\_Management-E\_Update\_Change\_Address       0.50      0.40      0.44        10
+       Account\_Management-E\_Update\_Change\_Contact\_Phone\_Number       0.43      0.75      0.55         4
+              Account\_Management-T\_24x7App\_Registration\_Faults       0.50      0.62      0.55        13
+                 Account\_Management-T\_24x7App\_Technical\_Faults       1.00      0.67      0.80         3
+                              Account\_Management-T\_Bereavement       0.57      1.00      0.73         4
+                              Account\_Management-T\_Email\_Setup       0.77      0.71      0.74        14
+                             Account\_Management-T\_Link\_Account       0.20      0.11      0.14         9
+                          Account\_Management-T\_Profile\_Inquiry       0.58      0.47      0.52        15
+                        Account\_Management-T\_Telstra\_Air\_Login       0.76      0.73      0.74        22
+                        Account\_Management-T\_Telstra\_Air\_Setup       0.67      0.44      0.53         9
+                            Account\_Management-T\_Usage\_History       0.55      0.46      0.50        13
+                                     Benefits-T\_Bigpond\_Movies       0.57      0.67      0.62         6
+                                     Benefits-T\_Telstra\_Thanks       0.80      0.67      0.73         6
+                                     Billing-E\_Balance\_Inquiry       0.39      0.52      0.45        25
+                                    Billing-E\_Bill\_Explanation       0.26      0.30      0.28        30
+                                             Billing-E\_Dispute       0.23      0.33      0.27        18
+                                                Billing-E\_Misc       0.00      0.00      0.00         9
+                                           Billing-T\_Bill\_Copy       0.52      0.57      0.54        23
+                                                ChitChat-Hello       0.40      0.25      0.31         8
+                                          ChitChat-Hello\_again       1.00      0.20      0.33         5
+                                           ChitChat-Hot\_Topics       0.43      0.60      0.50         5
+                                          ChitChat-How\_are\_you       0.33      0.25      0.29         4
+                                           ChitChat-I\_am\_angry       0.00      0.00      0.00         6
+                                            ChitChat-Thank\_you       0.50      0.60      0.55         5
+                                             Complaints-E\_Misc       0.67      0.22      0.33         9
+                                          Complaints-E\_Network       0.71      0.28      0.40        18
+                                  Complaints-E\_Troubleshooting       1.00      0.17      0.29         6
+                                             Complaints-T\_Scam       0.50      0.60      0.55         5
+                          Complaints-T\_Troubleshooting\_24x7App       0.54      0.47      0.50        15
+                       Complaints-T\_Troubleshooting\_Activation       0.54      0.50      0.52        30
+                        Complaints-T\_Troubleshooting\_Broadband       0.48      0.76      0.59        21
+                             Complaints-T\_Troubleshooting\_Call       0.55      0.35      0.43        17
+               Complaints-T\_Troubleshooting\_Credit\_or\_Recharge       0.48      0.47      0.47        30
+                             Complaints-T\_Troubleshooting\_Data       0.00      0.00      0.00        12
+                           Complaints-T\_Troubleshooting\_Device       0.38      0.33      0.35         9
+                            Complaints-T\_Troubleshooting\_Email       0.79      0.88      0.83        25
+                         Complaints-T\_Troubleshooting\_Landline       0.76      1.00      0.87        13
+                          Complaints-T\_Troubleshooting\_Payment       0.00      0.00      0.00         4
+                          Complaints-T\_Troubleshooting\_Profile       0.20      0.08      0.11        13
+                          Complaints-T\_Troubleshooting\_Roaming       0.25      0.11      0.15        18
+                            Complaints-T\_Troubleshooting\_Speed       1.00      0.90      0.95        10
+                      Complaints-T\_Troubleshooting\_Telstra\_Air       0.82      0.92      0.87        25
+                              Device\_Management-T\_Lodge\_Repair       0.75      0.33      0.46         9
+                         Device\_Management-T\_Phone\_Lost\_Stolen       0.50      1.00      0.67         4
+                               Device\_Management-T\_Replace\_SIM       0.53      0.56      0.55        16
+                                   Device\_Management-T\_SIM\_PIN       1.00      0.83      0.91         6
+                                          Device-T\_New\_Devices       1.00      0.50      0.67         6
+                                        Device-T\_Wifi\_Password       0.90      0.69      0.78        13
+                      Flow\_Control\_Break\_Flow-Another\_Question       0.00      0.00      0.00         3
+                            Flow\_Control\_Break\_Flow-Good\_night       0.00      0.00      0.00         4
+            Flow\_Control\_Break\_Flow-It\_Was\_Nice\_Talking\_To\_You       1.00      0.50      0.67         2
+                     Flow\_Control\_Break\_Flow-No\_More\_Questions       0.17      0.25      0.20         4
+Flow\_Control\_Break\_Flow-That\_is\_not\_what\_we\_were\_talking\_about       0.32      0.35      0.33        20
+                                    Flow\_Control-I\_do\_not\_know       0.00      0.00      0.00         6
+                                 Flow\_Control-I\_Need\_More\_Time       0.43      0.33      0.38         9
+                                  Flow\_Control-It\_Did\_Not\_Work       0.32      0.29      0.30        21
+                                        Flow\_Control-It\_Worked       0.50      0.33      0.40         3
+                                            Flow\_Control-Maybe       0.67      0.33      0.44         6
+                                               Flow\_Control-No       0.00      0.00      0.00         4
+                                       Flow\_Control-No\_Problem       0.00      0.00      0.00         3
+                                              Flow\_Control-Yes       0.10      0.85      0.18        13
+                                       Help-E\_Connect\_to\_Agent       0.65      0.60      0.62        47
+                                                 Help-E\_Ending       0.50      0.50      0.50         6
+                                        Information-E\_About\_Us       0.40      0.50      0.44        12
+                                      Information-E\_Contact\_Us       0.55      0.60      0.57        10
+                              Information-E\_Find\_Nearest\_Store       0.67      0.57      0.62         7
+                                  Information-E\_Store\_Products       0.53      0.32      0.40        25
+                                Information-T\_Benefits\_Prepaid       0.33      0.29      0.31         7
+                                Information-T\_Bot\_Capabilities       0.60      0.50      0.55         6
+                                     Information-T\_Definitions       0.52      0.54      0.53        67
+                       Information-T\_International\_Call\_Method       0.50      0.12      0.20         8
+                                  Information-T\_Internet\_Speed       0.60      1.00      0.75         3
+                                        Information-T\_Rollover       1.00      0.17      0.29         6
+                            Information-T\_Serviceability\_Check       0.67      0.29      0.40         7
+                                      Information-T\_Share\_Data       0.67      0.50      0.57         4
+                            Information-T\_Terms\_and\_Conditions       0.50      1.00      0.67         1
+                                        Information-T\_Valid\_ID       0.00      0.00      0.00         2
+                                      Off\_Topic-T\_Out\_of\_Scope       0.20      0.12      0.15         8
+                   Order\_Management-E\_Get\_Product\_Order\_Status       0.47      0.47      0.47        19
+                                       Order\_Management-E\_Misc       0.86      0.46      0.60        13
+                                       Payment-E\_Defer\_Payment       0.65      0.78      0.70        40
+                                      Payment-E\_Make\_A\_Payment       0.39      0.58      0.47        12
+                          Payment-E\_Missing\_Misapplied\_Payment       0.48      0.48      0.48        29
+                                     Payment-E\_Payment\_History       0.74      0.54      0.62        26
+                                            Payment-E\_Recharge       0.38      0.29      0.32        21
+                           Payment-E\_Recurring\_Payment\_Autopay       0.62      0.88      0.73        26
+                                      Payment-E\_Refund\_Payment       0.47      0.54      0.50        13
+                                    Payment-E\_Report\_A\_Payment       0.45      0.42      0.43        12
+                              Payment-T\_Update\_Payment\_Details       0.83      0.56      0.67         9
+                                               Sales-E\_Port\_In       0.51      0.50      0.51        38
+                                    Sales-T\_Recontract\_Service       0.48      0.50      0.49        20
+                    Service\_Management-E\_Activate\_Prepaid\_Plan       0.33      0.41      0.37        22
+                         Service\_Management-E\_Activate\_Roaming       0.40      0.40      0.40        10
+                            Service\_Management-E\_Add\_Insurance       0.50      0.67      0.57         3
+                     Service\_Management-E\_Add\_Service\_Features       0.47      0.61      0.53        38
+                    Service\_Management-E\_Coverage\_Area\_Inquiry       0.70      0.54      0.61        13
+                 Service\_Management-E\_De\_Activate\_Prepaid\_Plan       0.20      0.12      0.15         8
+                      Service\_Management-E\_De\_Activate\_Roaming       0.67      0.75      0.71         8
+          Service\_Management-E\_International\_Rate\_Plan\_Inquiry       0.15      0.25      0.19         8
+                                     Service\_Management-E\_Misc       0.00      0.00      0.00         6
+                           Service\_Management-E\_Network\_Unlock       0.70      0.78      0.74         9
+                        Service\_Management-E\_Price\_Plan\_Change       0.46      0.36      0.41        33
+                       Service\_Management-E\_Price\_Plan\_Inquiry       0.14      0.18      0.16        11
+                  Service\_Management-E\_Remove\_Service\_Features       0.69      0.60      0.64        15
+                          Service\_Management-E\_Roaming\_Inquiry       0.44      0.52      0.48        29
+                       Service\_Management-T\_Activate\_Broadband       0.85      0.81      0.83        21
+                              Service\_Management-T\_Apple\_Music       0.86      0.95      0.90        19
+                             Service\_Management-T\_Benefits\_Add       0.83      0.83      0.83        12
+                          Service\_Management-T\_Carrier\_Billing       0.79      0.83      0.81        18
+                         Service\_Management-T\_Change\_Ownership       0.25      0.50      0.33         6
+                          Service\_Management-T\_Claim\_Insurance       0.44      1.00      0.62         4
+                         Service\_Management-T\_Contract\_Details       0.45      0.45      0.45        20
+                           Service\_Management-T\_Data\_Share\_SIM       0.83      0.83      0.83         6
+                        Service\_Management-T\_Find\_Phone\_Number       0.67      0.67      0.67         9
+                                   Service\_Management-T\_Foxtel       0.83      1.00      0.91         5
+                  Service\_Management-T\_MessageBank\_Callforward       0.75      0.38      0.50         8
+                     Service\_Management-T\_MessageBank\_Greeting       1.00      0.25      0.40         4
+                Service\_Management-T\_MessageBank\_Hangupmessage       0.20      0.50      0.29         2
+                  Service\_Management-T\_MessageBank\_Message2Txt       0.50      0.67      0.57         3
+                         Service\_Management-T\_MessageBank\_Misc       0.50      0.50      0.50         8
+                          Service\_Management-T\_MessageBank\_PIN       0.62      1.00      0.77         5
+                 Service\_Management-T\_MessageBank\_Remoteaccess       0.67      0.25      0.36         8
+                     Service\_Management-T\_MessageBank\_Ringtime       0.60      0.50      0.55         6
+                        Service\_Management-T\_MessageBank\_Setup       1.00      0.29      0.44        14
+                      Service\_Management-T\_MessageBank\_Turnoff       0.31      0.50      0.38         8
+                              Service\_Management-T\_Moving\_Home       0.53      0.60      0.56        15
+                              Service\_Management-T\_Premium\_SMS       0.50      0.31      0.38        13
+                        Service\_Management-T\_Price\_Plan\_Offers       0.52      0.68      0.59        63
+                Service\_Management-T\_Recharge\_Service\_Features       0.00      0.00      0.00         4
+                        Service\_Management-T\_Reconnect\_Service       0.31      0.36      0.33        14
+                            Service\_Management-T\_Return\_Device       0.75      0.82      0.78        11
+                         Service\_Management-T\_Status\_Insurance       1.00      0.17      0.29         6
+                                 TEMP\_ChitChat-Are\_you\_kidding       1.00      0.75      0.86         4
+                               TEMP\_ChitChat-Ask\_me\_a\_question       0.00      0.00      0.00         4
+                                    TEMP\_ChitChat-Do\_not\_worry       0.00      0.00      0.00         4
+                                 TEMP\_ChitChat-How\_old\_are\_you       0.33      0.67      0.44         3
+                               TEMP\_ChitChat-I\_am\_just\_kidding       1.00      0.33      0.50         3
+                                   TEMP\_ChitChat-I\_am\_not\_well       0.00      0.00      0.00         3
+                                      TEMP\_ChitChat-I\_am\_sorry       1.00      0.71      0.83         7
+                                       TEMP\_ChitChat-I\_am\_well       0.25      0.17      0.20         6
+                               TEMP\_ChitChat-I\_do\_not\_like\_you       0.38      0.27      0.32        11
+                           TEMP\_ChitChat-I\_want\_to\_tell\_a\_joke       0.25      0.20      0.22         5
+                                              TEMP\_ChitChat-Oh       0.00      0.00      0.00         1
+                                      TEMP\_ChitChat-Talk\_to\_me       0.33      0.67      0.44         3
+                          TEMP\_ChitChat-Tell\_me\_about\_yourself       0.00      0.00      0.00         8
+                                    TEMP\_ChitChat-This\_is\_good       0.00      0.00      0.00         3
+                  TEMP\_ChitChat-What\_do\_you\_like\_to\_do\_for\_fun       0.25      0.50      0.33         2
+                  TEMP\_ChitChat-What\_do\_you\_think\_about\_movies       1.00      0.67      0.80         3
+                               TEMP\_ChitChat-What\_is\_happening       0.43      0.43      0.43         7
+                     TEMP\_ChitChat-What\_is\_the\_meaning\_of\_life       0.00      0.00      0.00         1
+                               TEMP\_ChitChat-What\_is\_your\_name       0.00      0.00      0.00         1
+                     TEMP\_ChitChat-What\_languages\_do\_you\_speak       1.00      0.50      0.67         2
+                           TEMP\_ChitChat-When\_is\_your\_birthday       0.00      0.00      0.00         2
+                                   TEMP\_ChitChat-Where\_are\_you       0.00      0.00      0.00         2
+                  TEMP\_ChitChat-Where\_were\_you\_originally\_from       0.00      0.00      0.00         1
+                                   TEMP\_ChitChat-You\_are\_funny       0.00      0.00      0.00         8
+                                    TEMP\_ChitChat-You\_are\_good       0.29      0.40      0.33         5
+                               TEMP\_ChitChat-You\_are\_not\_funny       0.40      0.33      0.36         6
+                            TEMP\_ChitChat-You\_have\_a\_nice\_name       0.33      0.50      0.40         2
+                        TEMP\_Complaints-T\_Troubleshooting\_Plan       0.33      0.20      0.25         5
+                                TEMP\_Help-E\_Reconnect\_to\_Agent       0.50      0.67      0.57         3
+                           TEMP\_Information-T\_Benefits\_Telstra       0.00      0.00      0.00         4
+                         TEMP\_Information-T\_Credit\_Information       0.88      0.70      0.78        10
+                            TEMP\_Information-T\_Unwelcome\_Calls       0.55      0.50      0.52        12
+                TEMP\_Order\_Management-T\_NBN\_Change\_Appointment       1.00      0.67      0.80         3
+                      TEMP\_Payment-E\_Method\_Of\_Payment\_Inquiry       0.00      0.00      0.00         4
+                              TEMP\_Sales-T\_Discontinued\_Offers       1.00      0.20      0.33         5
+                   TEMP\_Service\_Management-T\_Directory\_Listing       0.82      0.88      0.85        16
+
+                                                   avg / total       0.53      0.50      0.49      1953
+
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}44}]:} \PY{n}{print\PYZus{}best\PYZus{}worst}\PY{p}{(}\PY{n}{stats}\PY{p}{,} \PY{n}{rounded}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{sort\PYZus{}column}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f1\PYZus{}score}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{top\PYZus{}n}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{max\PYZus{}name\PYZus{}len}\PY{o}{=}\PY{l+m+mi}{35}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+name                                 idx    precision    recall    f1\_score    roc\_auc    support    n\_examples
+-----------------------------------  -----  -----------  --------  ----------  ---------  ---------  ------------
+Best 5:
+Complaints-T\_Troubleshooting\_Speed   46     1.0          0.9       0.95        0.95       10         31
+Device\_Management-T\_SIM\_PIN          51     1.0          0.83      0.91        0.92       6          21
+Service\_Management-T\_Foxtel          122    0.83         1.0       0.91        1.0        5          19
+Service\_Management-T\_Apple\_Music     114    0.86         0.95      0.9         0.97       19         58
+Complaints-T\_Troubleshooting\_Landli  42     0.76         1.0       0.87        1.0        13         44
+
+Worst 5:
+Complaints-T\_Troubleshooting\_Roamin  45     0.25         0.11      0.15        0.55       18         36
+Service\_Management-E\_De\_Activate\_Pr  103    0.2          0.12      0.15        0.56       8          23
+Off\_Topic-T\_Out\_of\_Scope             83     0.2          0.12      0.15        0.56       8          20
+Account\_Management-T\_Link\_Account    12     0.2          0.11      0.14        0.55       9          27
+Complaints-T\_Troubleshooting\_Profil  44     0.2          0.08      0.11        0.54       13         34
+
+Avg / Total                                 0.53         0.5       0.49        0.72       1953       5636
+
+    \end{Verbatim}
+
+    The reported averages are a prevalence-weighted macro-average across
+classes (equivalent to precision\_recall\_fscore\_support with
+average='weighted').
+
+    \section{Open Source Options}\label{open-source-options}
+
+    \subsection{RASA NLU}\label{rasa-nlu}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}45}]:} \PY{k+kn}{from} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{api\PYZus{}services}\PY{n+nn}{.}\PY{n+nn}{rasa\PYZus{}service} \PY{k}{import} \PY{n}{create\PYZus{}import\PYZus{}file}\PY{p}{,} \PY{n}{RasaService}
+\end{Verbatim}
+
+
+    \subsubsection{Create RASA NLU Training
+Set}\label{create-rasa-nlu-training-set}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}46}]:} \PY{c+c1}{\PYZsh{} create\PYZus{}import\PYZus{}file(train\PYZus{}df, classes)}
+\end{Verbatim}
+
+
+    \subsubsection{Call RASA NLU API
+Service}\label{call-rasa-nlu-api-service}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}47}]:} \PY{n}{max\PYZus{}api\PYZus{}calls} \PY{o}{=} \PY{l+m+mi}{500}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}48}]:} \PY{n}{rasa\PYZus{}service} \PY{o}{=} \PY{n}{RasaService}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{./models/current/nlu}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{classes}\PY{p}{,} \PY{n}{max\PYZus{}api\PYZus{}calls}\PY{o}{=}\PY{n}{max\PYZus{}api\PYZus{}calls}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+INFO:tensorflow:Restoring parameters from ./models/current/nlu/intent\_classifier\_tensorflow\_embedding.ckpt
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}49}]:} \PY{n}{y\PYZus{}pred} \PY{o}{=} \PY{n}{rasa\PYZus{}service}\PY{o}{.}\PY{n}{predict\PYZus{}batch}\PY{p}{(}\PY{n}{val\PYZus{}df}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}50}]:} \PY{n}{y\PYZus{}val} \PY{o}{=} \PY{n}{val\PYZus{}df}\PY{o}{.}\PY{n}{label}\PY{o}{.}\PY{n}{values}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}51}]:} \PY{n}{stats} \PY{o}{=} \PY{n}{perf\PYZus{}summary}\PY{p}{(}\PY{n}{y\PYZus{}val}\PY{p}{[}\PY{p}{:}\PY{n}{max\PYZus{}api\PYZus{}calls} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{)}
+         \PY{n}{print\PYZus{}perf\PYZus{}summary}\PY{p}{(}\PY{n}{stats}\PY{p}{,} \PY{n}{rounded}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Precision (weighted avg): 0.79
+Recall (weighted avg)   : 0.63
+F1 Score (weighted avg) : 0.68
+Accuracy                : 0.63
+ROC AUC (macro avg)     : 0.8
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}52}]:} \PY{n}{mean\PYZus{}latency} \PY{o}{=} \PY{n+nb}{round}\PY{p}{(}\PY{n}{rasa\PYZus{}service}\PY{o}{.}\PY{n}{mean\PYZus{}latency}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Mean latency (secs):}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{mean\PYZus{}latency}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Mean latency (secs): 0.001
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}53}]:} \PY{n}{data} \PY{o}{=} \PY{n+nb}{dict}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RASA NLU}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}latency}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{mean\PYZus{}latency}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{o}{*}\PY{o}{*}\PY{n}{stats}\PY{p}{)}
+         \PY{n}{benchmarks} \PY{o}{=} \PY{n}{benchmarks}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{data}\PY{p}{,} \PY{n}{ignore\PYZus{}index}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}54}]:} \PY{n}{benchmarks}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}54}]:}                      model  precision\_weighted\_avg  recall\_weighted\_avg  \textbackslash{}
+         0  Multinomial Naive Bayes                0.656506             0.542435   
+         1                 RASA NLU                0.785428             0.630996   
+         
+            f1\_weighted\_avg  accuracy   roc\_auc  mean\_latency  
+         0         0.514728  0.542435  0.733035        0.0008  
+         1         0.682865  0.630996  0.804886        0.0010  
+\end{Verbatim}
+            
+    \section{Commercial Options}\label{commercial-options}
+
+    \subsection{IBM Watson}\label{ibm-watson}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}55}]:} \PY{k+kn}{from} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{api\PYZus{}services}\PY{n+nn}{.}\PY{n+nn}{watson\PYZus{}service} \PY{k}{import} \PY{n}{create\PYZus{}import\PYZus{}file}\PY{p}{,} \PY{n}{WatsonService}
+\end{Verbatim}
+
+
+    \subsubsection{Create Import File}\label{create-import-file}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}56}]:} \PY{c+c1}{\PYZsh{} create\PYZus{}import\PYZus{}file(train\PYZus{}df, classes)}
+\end{Verbatim}
+
+
+    \subsubsection{Call Watson API Service}\label{call-watson-api-service}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}57}]:} \PY{o}{\PYZpc{}}\PY{k}{env} VAULT\PYZus{}TOKEN=4hn3XkC0ia8Lt37dn7EvBxwv
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+env: VAULT\_TOKEN=4hn3XkC0ia8Lt37dn7EvBxwv
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}58}]:} \PY{n}{watson\PYZus{}service} \PY{o}{=} \PY{n}{WatsonService}\PY{p}{(}\PY{n}{classes}\PY{p}{,} \PY{n}{max\PYZus{}api\PYZus{}calls}\PY{o}{=}\PY{n}{max\PYZus{}api\PYZus{}calls}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}59}]:} \PY{n}{y\PYZus{}pred} \PY{o}{=} \PY{n}{watson\PYZus{}service}\PY{o}{.}\PY{n}{predict\PYZus{}batch}\PY{p}{(}\PY{n}{val\PYZus{}df}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}60}]:} \PY{n}{stats} \PY{o}{=} \PY{n}{perf\PYZus{}summary}\PY{p}{(}\PY{n}{y\PYZus{}val}\PY{p}{[}\PY{p}{:}\PY{n}{max\PYZus{}api\PYZus{}calls} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{)}
+         \PY{n}{print\PYZus{}perf\PYZus{}summary}\PY{p}{(}\PY{n}{stats}\PY{p}{,} \PY{n}{rounded}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Precision (weighted avg): 0.86
+Recall (weighted avg)   : 0.69
+F1 Score (weighted avg) : 0.75
+Accuracy                : 0.69
+ROC AUC (macro avg)     : 0.84
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}61}]:} \PY{n}{mean\PYZus{}latency} \PY{o}{=} \PY{n+nb}{round}\PY{p}{(}\PY{n}{watson\PYZus{}service}\PY{o}{.}\PY{n}{mean\PYZus{}latency}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Mean latency (secs):}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{mean\PYZus{}latency}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Mean latency (secs): 0.1462
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}62}]:} \PY{n}{data} \PY{o}{=} \PY{n+nb}{dict}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{IBM Watson}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}latency}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{mean\PYZus{}latency}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{o}{*}\PY{o}{*}\PY{n}{stats}\PY{p}{)}
+         \PY{n}{benchmarks} \PY{o}{=} \PY{n}{benchmarks}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{data}\PY{p}{,} \PY{n}{ignore\PYZus{}index}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}63}]:} \PY{n}{benchmarks}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}63}]:}                      model  precision\_weighted\_avg  recall\_weighted\_avg  \textbackslash{}
+         0  Multinomial Naive Bayes                0.656506             0.542435   
+         1                 RASA NLU                0.785428             0.630996   
+         2               IBM Watson                0.857916             0.686347   
+         
+            f1\_weighted\_avg  accuracy   roc\_auc  mean\_latency  
+         0         0.514728  0.542435  0.733035        0.0008  
+         1         0.682865  0.630996  0.804886        0.0010  
+         2         0.751115  0.686347  0.837539        0.1462  
+\end{Verbatim}
+            
+    \subsection{Google Dialogflow}\label{google-dialogflow}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}72}]:} \PY{k+kn}{import} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{api\PYZus{}services}\PY{n+nn}{.}\PY{n+nn}{dialogflow\PYZus{}service} \PY{k}{as} \PY{n+nn}{dialogflow}
+         \PY{k+kn}{from} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{api\PYZus{}services}\PY{n+nn}{.}\PY{n+nn}{dialogflow\PYZus{}service} \PY{k}{import} \PY{n}{create\PYZus{}import\PYZus{}file}\PY{p}{,} \PY{n}{DialogflowService}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}71}]:} \PY{c+c1}{\PYZsh{} importlib.reload(dialogflow)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}71}]:} <module 'text\_classification\_benchmarks.api\_services.dialogflow\_service' from '../../text\_classification\_benchmarks/api\_services/dialogflow\_service.py'>
+\end{Verbatim}
+            
+    \subsubsection{Create Import File}\label{create-import-file}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}65}]:} \PY{c+c1}{\PYZsh{} create\PYZus{}import\PYZus{}file(train\PYZus{}df, classes, output\PYZus{}path=\PYZsq{}./import\PYZsq{})}
+\end{Verbatim}
+
+
+    \subsubsection{Call Dialogflow API
+Service}\label{call-dialogflow-api-service}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}73}]:} \PY{n}{dialogflow\PYZus{}service} \PY{o}{=} \PY{n}{dialogflow}\PY{o}{.}\PY{n}{DialogflowService}\PY{p}{(}\PY{n}{classes}\PY{p}{,} \PY{n}{max\PYZus{}api\PYZus{}calls}\PY{o}{=}\PY{n}{max\PYZus{}api\PYZus{}calls}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}74}]:} \PY{n}{y\PYZus{}pred} \PY{o}{=} \PY{n}{dialogflow\PYZus{}service}\PY{o}{.}\PY{n}{predict\PYZus{}batch}\PY{p}{(}\PY{n}{val\PYZus{}df}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}75}]:} \PY{n}{stats} \PY{o}{=} \PY{n}{perf\PYZus{}summary}\PY{p}{(}\PY{n}{y\PYZus{}val}\PY{p}{[}\PY{p}{:}\PY{n}{max\PYZus{}api\PYZus{}calls} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{)}
+         \PY{n}{print\PYZus{}perf\PYZus{}summary}\PY{p}{(}\PY{n}{stats}\PY{p}{,} \PY{n}{rounded}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Precision (weighted avg): 0.8
+Recall (weighted avg)   : 0.69
+F1 Score (weighted avg) : 0.73
+Accuracy                : 0.69
+ROC AUC (macro avg)     : 0.84
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}76}]:} \PY{n}{mean\PYZus{}latency} \PY{o}{=} \PY{n+nb}{round}\PY{p}{(}\PY{n}{dialogflow\PYZus{}service}\PY{o}{.}\PY{n}{mean\PYZus{}latency}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Mean latency (secs):}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{mean\PYZus{}latency}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Mean latency (secs): 0.5415
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}77}]:} \PY{n}{data} \PY{o}{=} \PY{n+nb}{dict}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Google Dialogflow}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}latency}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{mean\PYZus{}latency}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{o}{*}\PY{o}{*}\PY{n}{stats}\PY{p}{)}
+         \PY{n}{benchmarks} \PY{o}{=} \PY{n}{benchmarks}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{data}\PY{p}{,} \PY{n}{ignore\PYZus{}index}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}78}]:} \PY{n}{benchmarks}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}78}]:}                      model  precision\_weighted\_avg  recall\_weighted\_avg  \textbackslash{}
+         0  Multinomial Naive Bayes                0.656506             0.542435   
+         1                 RASA NLU                0.785428             0.630996   
+         2               IBM Watson                0.857916             0.686347   
+         3        Google Dialogflow                0.804371             0.690037   
+         
+            f1\_weighted\_avg  accuracy   roc\_auc  mean\_latency  
+         0         0.514728  0.542435  0.733035        0.0008  
+         1         0.682865  0.630996  0.804886        0.0010  
+         2         0.751115  0.686347  0.837539        0.1462  
+         3         0.732270  0.690037  0.838199        0.5415  
+\end{Verbatim}
+            
+    \subsection{Microsoft LUIS}\label{microsoft-luis}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}80}]:} \PY{k+kn}{import} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{api\PYZus{}services}\PY{n+nn}{.}\PY{n+nn}{luis\PYZus{}service} \PY{k}{as} \PY{n+nn}{luis}
+         \PY{k+kn}{from} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{api\PYZus{}services}\PY{n+nn}{.}\PY{n+nn}{luis\PYZus{}service} \PY{k}{import} \PY{n}{create\PYZus{}import\PYZus{}file}\PY{p}{,} \PY{n}{LuisService}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} importlib.reload(luis)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}83}]:} \PY{c+c1}{\PYZsh{} luis\PYZus{}service = luis.LuisService(classes.tolist(), max\PYZus{}api\PYZus{}calls=5, verbose=True)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}84}]:} \PY{c+c1}{\PYZsh{} y\PYZus{}pred = luis\PYZus{}service.predict\PYZus{}batch(val\PYZus{}df)}
+\end{Verbatim}
+
+
+    \subsubsection{Create Training Set}\label{create-training-set}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{c+c1}{\PYZsh{} create\PYZus{}import\PYZus{}file(train\PYZus{}df, classes)}
+\end{Verbatim}
+
+
+    \subsubsection{Call LUIS Service}\label{call-luis-service}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}85}]:} \PY{n}{luis\PYZus{}service} \PY{o}{=} \PY{n}{LuisService}\PY{p}{(}\PY{n}{classes}\PY{p}{,} \PY{n}{max\PYZus{}api\PYZus{}calls}\PY{o}{=}\PY{n}{max\PYZus{}api\PYZus{}calls}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}86}]:} \PY{n}{y\PYZus{}pred} \PY{o}{=} \PY{n}{luis\PYZus{}service}\PY{o}{.}\PY{n}{predict\PYZus{}batch}\PY{p}{(}\PY{n}{val\PYZus{}df}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}87}]:} \PY{n}{stats} \PY{o}{=} \PY{n}{perf\PYZus{}summary}\PY{p}{(}\PY{n}{y\PYZus{}val}\PY{p}{[}\PY{p}{:}\PY{n}{max\PYZus{}api\PYZus{}calls} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{)}
+         \PY{n}{print\PYZus{}perf\PYZus{}summary}\PY{p}{(}\PY{n}{stats}\PY{p}{,} \PY{n}{rounded}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Precision (weighted avg): 0.76
+Recall (weighted avg)   : 0.62
+F1 Score (weighted avg) : 0.67
+Accuracy                : 0.62
+ROC AUC (macro avg)     : 0.8
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}88}]:} \PY{n}{mean\PYZus{}latency} \PY{o}{=} \PY{n+nb}{round}\PY{p}{(}\PY{n}{luis\PYZus{}service}\PY{o}{.}\PY{n}{mean\PYZus{}latency}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Mean latency (secs):}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{mean\PYZus{}latency}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Mean latency (secs): 1.2942
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}89}]:} \PY{n}{data} \PY{o}{=} \PY{n+nb}{dict}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Microsoft LUIS}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}latency}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{mean\PYZus{}latency}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{o}{*}\PY{o}{*}\PY{n}{stats}\PY{p}{)}
+         \PY{n}{benchmarks} \PY{o}{=} \PY{n}{benchmarks}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{data}\PY{p}{,} \PY{n}{ignore\PYZus{}index}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}90}]:} \PY{n}{benchmarks}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}90}]:}                      model  precision\_weighted\_avg  recall\_weighted\_avg  \textbackslash{}
+         0  Multinomial Naive Bayes                0.656506             0.542435   
+         1                 RASA NLU                0.785428             0.630996   
+         2               IBM Watson                0.857916             0.686347   
+         3        Google Dialogflow                0.804371             0.690037   
+         4           Microsoft LUIS                0.762499             0.619926   
+         
+            f1\_weighted\_avg  accuracy   roc\_auc  mean\_latency  
+         0         0.514728  0.542435  0.733035        0.0008  
+         1         0.682865  0.630996  0.804886        0.0010  
+         2         0.751115  0.686347  0.837539        0.1462  
+         3         0.732270  0.690037  0.838199        0.5415  
+         4         0.672307  0.619926  0.804848        1.2942  
+\end{Verbatim}
+            
+    \subsection{Amazon Lex}\label{amazon-lex}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}98}]:} \PY{k+kn}{import} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{api\PYZus{}services}\PY{n+nn}{.}\PY{n+nn}{lex\PYZus{}service} \PY{k}{as} \PY{n+nn}{lex}
+         \PY{k+kn}{from} \PY{n+nn}{text\PYZus{}classification\PYZus{}benchmarks}\PY{n+nn}{.}\PY{n+nn}{api\PYZus{}services}\PY{n+nn}{.}\PY{n+nn}{lex\PYZus{}service} \PY{k}{import} \PY{n}{create\PYZus{}import\PYZus{}file}\PY{p}{,} \PY{n}{LexService}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}102}]:} \PY{c+c1}{\PYZsh{} importlib.reload(lex)}
+\end{Verbatim}
+
+
+    \subsubsection{Create Training Set}\label{create-training-set}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}92}]:} \PY{c+c1}{\PYZsh{} create\PYZus{}import\PYZus{}file(train\PYZus{}df, classes, output\PYZus{}path=\PYZsq{}./lex\PYZus{}import\PYZsq{})}
+\end{Verbatim}
+
+
+    \subsubsection{Call Lex API Service}\label{call-lex-api-service}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}100}]:} \PY{n}{lex\PYZus{}service} \PY{o}{=} \PY{n}{lex}\PY{o}{.}\PY{n}{LexService}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{intent\PYZus{}test}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Prod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{classes}\PY{p}{,} \PY{n}{max\PYZus{}api\PYZus{}calls}\PY{o}{=}\PY{n}{max\PYZus{}api\PYZus{}calls}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}101}]:} \PY{n}{y\PYZus{}pred} \PY{o}{=} \PY{n}{lex\PYZus{}service}\PY{o}{.}\PY{n}{predict\PYZus{}batch}\PY{p}{(}\PY{n}{val\PYZus{}df}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}103}]:} \PY{n}{y\PYZus{}val} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{n+nb}{filter}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{x} \PY{o}{\PYZlt{}} \PY{l+m+mi}{100}\PY{p}{,} \PY{n}{val\PYZus{}df}\PY{o}{.}\PY{n}{label}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}104}]:} \PY{n}{stats} \PY{o}{=} \PY{n}{perf\PYZus{}summary}\PY{p}{(}\PY{n}{y\PYZus{}val}\PY{p}{[}\PY{p}{:}\PY{n}{max\PYZus{}api\PYZus{}calls} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{y\PYZus{}pred}\PY{p}{)}
+          \PY{n}{print\PYZus{}perf\PYZus{}summary}\PY{p}{(}\PY{n}{stats}\PY{p}{,} \PY{n}{rounded}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Precision (weighted avg): 0.71
+Recall (weighted avg)   : 0.57
+F1 Score (weighted avg) : 0.62
+Accuracy                : 0.57
+ROC AUC (macro avg)     : 0.78
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}105}]:} \PY{n}{mean\PYZus{}latency} \PY{o}{=} \PY{n+nb}{round}\PY{p}{(}\PY{n}{lex\PYZus{}service}\PY{o}{.}\PY{n}{mean\PYZus{}latency}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Mean latency (secs):}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{mean\PYZus{}latency}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Mean latency (secs): 0.3801
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}106}]:} \PY{n}{data} \PY{o}{=} \PY{n+nb}{dict}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Amazon Lex}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}latency}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{mean\PYZus{}latency}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{o}{*}\PY{o}{*}\PY{n}{stats}\PY{p}{)}
+          \PY{n}{benchmarks} \PY{o}{=} \PY{n}{benchmarks}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{data}\PY{p}{,} \PY{n}{ignore\PYZus{}index}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+
+
+    \section{Rankings}\label{rankings}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}107}]:} \PY{n}{benchmarks}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{f1\PYZus{}weighted\PYZus{}avg}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{ascending}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}107}]:}                      model  precision\_weighted\_avg  recall\_weighted\_avg  \textbackslash{}
+          2               IBM Watson                0.857916             0.686347   
+          3        Google Dialogflow                0.804371             0.690037   
+          1                 RASA NLU                0.785428             0.630996   
+          4           Microsoft LUIS                0.762499             0.619926   
+          5               Amazon Lex                0.712986             0.572864   
+          0  Multinomial Naive Bayes                0.656506             0.542435   
+          
+             f1\_weighted\_avg  accuracy   roc\_auc  mean\_latency  
+          2         0.751115  0.686347  0.837539        0.1462  
+          3         0.732270  0.690037  0.838199        0.5415  
+          1         0.682865  0.630996  0.804886        0.0010  
+          4         0.672307  0.619926  0.804848        1.2942  
+          5         0.619189  0.572864  0.775990        0.3801  
+          0         0.514728  0.542435  0.733035        0.0008  
+\end{Verbatim}
+            
+    Notes:
+
+\begin{itemize}
+\tightlist
+\item
+  IBM API straightforward
+\item
+  Google documentation poor, e.g. session ID as hard-coded value not
+  mentioned, API formats not documented - had to refer to export as
+  sample
+\item
+  Microsoft - complex setup: need to assign resource groups from Azure,
+  lacking error details on JSON response - unhelpful messages such as
+  "Bad Format" for a large JSON input, annoying limits such as 50 char
+  limit on intent names and utterance text, (max limits on number of
+  intents, etc. have been increased though)
+\item
+  Amazon Lex - The number of intents exceeds the permissible value. A
+  bot can have a maximum of 100 intents. This bot has 175. Slow import
+  process. Intent names only alpha + underscores. Utterance length
+  limited to 200. Issues with a few duplicate utterances. Build failed -
+  "The rate of requests exceeds the throughput limit. Retry the
+  request." UI update issues on latest Chrome. Some save operations
+  strangely slow. Doesn't accept numbers. "An utterance can consist only
+  of Unicode characters, spaces, and valid punctuation marks. Valid
+  punctuation marks are: periods for abbreviations, underscores,
+  apostrophes, and hyphens." - However, doesn't accept examples with
+  underscores or apostrophes.
+\end{itemize}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+    \end{document}

@@ -1,0 +1,17 @@
+n_hidden: 128  # Number of hidden units in the LSTM cell
+n_layers: 2  # Number of the LSTM cells
+keep_prob: 0.5  # Dropout keep probability
+learning_rate: 0.001  # Learning rate
+l2_reg_lambda: 0.001  # L2 regularization lambda
+n_epochs: 50  # Number of epochs
+batch_size: 32  # Batch size
+test_batch_size: 64  # Test batch size
+decay_steps: 100000  # Learning rate decay steps
+decay_rate: 1  # Learning rate decay rate. Range: [0, 1]
+embedding_size: 128  # Word embedding size
+evaluate_every_steps: 100  # Evaluate the model on validation set after this many steps
+save_every_steps: 1000  # Save the model after this many steps
+num_checkpoint: 10  # Number of models to store
+min_frequency: 0  # Minimal word frequency
+outdir: '.'
+run_dir: '.'

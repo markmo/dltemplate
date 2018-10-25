@@ -1,0 +1,16 @@
+alphabet: abcdefghijklmnopqrstuvwxyz0123456789-,;.!?:'"/\|_@#$%^&*~`+-=<>()[]{}
+alphabet_size: 69
+input_size: 400
+n_epochs: 500
+batch_size: 128
+evaluate_every: 100
+checkpoint_every: 100
+embedding_size: 128
+conv_layers: [[256, 10], [256, 7], [256, 5], [256, 3]]
+fully_connected_layers: [1024, 1024]
+threshold: 0.000001
+keep_prob: 0.1
+optimizer: adam
+loss: categorical_crossentropy
+#model_filename: ./models/char_cnn_{epoch:02d}_{val_acc:.2f}.hdf5
+model_filename: ./models/weights.best.hdf5

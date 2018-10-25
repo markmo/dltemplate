@@ -7,9 +7,13 @@ of entities from text, such as persons, organizations, and locations.
 
 For example, we want to extract persons' and organizations' names from the text:
 
+::
+
     Ian Goodfellow works for Google Brain
 
 A NER model needs to provide the following sequence of tags:
+
+::
 
     B-PER I-PER    O     O   B-ORG  I-ORG
 

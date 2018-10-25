@@ -90,6 +90,11 @@ def load_crime_dataset():
     filename = DATA_DIR + 'text_classification/crime/train.csv.zip'
     df = pd.read_csv(filename, compression='zip')
     selected = ['Category', 'Descript']
+    x, y, vocab, vocab_inv, df, labels = prepare_classification_training_set(df, selected)
+    return x, y, vocab, vocab_inv, df, labels
+
+
+def prepare_classification_training_set(df, selected):
     non_selected = list(set(df.columns) - set(selected))
     df = df.drop(non_selected, axis=1)
     df = df.dropna(axis=0, how='any', subset=selected)
@@ -113,6 +118,11 @@ def load_crime_test_dataset(labels):
     filename = DATA_DIR + 'text_classification/crime/small_samples.csv'
     df = pd.read_csv(filename, sep='|')
     selected = ['Descript']
+    test_examples, y, df = prepare_classification_test_set(df, selected, labels, label_colname='Category')
+    return test_examples, y, df
+
+
+def prepare_classification_test_set(df, selected, labels, label_colname=None):
     df = df.dropna(axis=0, how='any', subset=selected)
     test_examples = df[selected[0]].apply(lambda x: clean_text(x).split(' ')).tolist()
     n_labels = len(labels)
@@ -120,8 +130,8 @@ def load_crime_test_dataset(labels):
     np.fill_diagonal(one_hot, 1)
     label_dict = dict(zip(labels, one_hot))
     y = None
-    if 'Category' in df.columns:
-        selected.append('Category')
+    if label_colname in df.columns:
+        selected.append(label_colname)
         y = df[selected[1]].apply(lambda x: label_dict[x]).tolist()
 
     non_selected = list(set(df.columns) - set(selected))

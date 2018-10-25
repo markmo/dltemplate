@@ -1,7 +1,6 @@
 from collections import Counter
 import cv2
 from itertools import chain, cycle
-import keras
 import logging
 import math
 import matplotlib.pyplot as plt
@@ -292,10 +291,10 @@ def pad_sentences(sentences, pad_token='<PAD>', forced_seq_len=None):
     if forced_seq_len is None:  # Train
         seq_len = max(len(sent) for sent in sentences)
     else:  # Prediction
-        logging.critical('In prediction, reading trained sequence length...')
+        logging.info('In prediction, reading trained sequence length...')
         seq_len = forced_seq_len
 
-    logging.critical('Max sequence length: {}'.format(seq_len))
+    logging.info('Max sequence length: {}'.format(seq_len))
     padded_sentences = []
     for sent in sentences:
         n_pad = seq_len - len(sent)
@@ -376,17 +375,6 @@ def plot_roc_auc(y_test, y_score, n_classes):
     plt.title('Some extension of ROC to multi-class')
     plt.legend(loc='lower right')
     plt.show()
-
-
-def prepare_raw_bytes_for_model(raw_bytes, img_size, normalize_for_model=True):
-    img = decode_image_from_raw_bytes(raw_bytes)  # decode image raw bytes to matrix
-    img = image_center_crop(img)  # take squared center crop
-    img = cv2.resize(img, (img_size, img_size))  # resize for our model
-    if normalize_for_model:
-        img = img.astype('float32')  # prepare for normalization
-        img = keras.applications.inception_v3.preprocess_input(img)  # normalize for model
-
-    return img
 
 
 def random_minibatches(x, y, batch_size=64, seed=0):
@@ -500,3 +488,12 @@ def to_token_id_matrix(names, token_to_id, max_len=None, pad=0, dtype='int32'):
         matrix[i, :len(idx)] = idx
 
     return matrix.T
+
+
+def zipdir(path, ziph):
+    # ziph is zipfile handle
+    length = len(path)
+    for root, dirs, files in os.walk(path):
+        folder = root[length:]  # path without "parent"
+        for file in files:
+            ziph.write(os.path.join(root, file), os.path.join(folder, file))

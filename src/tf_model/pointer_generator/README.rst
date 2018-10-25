@@ -17,6 +17,8 @@ p_gen is used to weight and combine the vocabulary distribution P_vocab (which w
 the attention distribution aa (which we use for pointing to source words w_i) into the final distribution
 P_final via the following formula:
 
+::
+
         P_final(w) = p_gen P_vocab(w) + (1 - p_gen) ​∑{i:w_i = w}a_i
 
 This formula just says that the probability of producing word w is equal to the probability of generating it

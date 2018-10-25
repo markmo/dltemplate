@@ -43,4 +43,4 @@ Predict
 ::
 
     export PYTHONPATH=.
-    python tf_model/text_classifier/__init__.py
+    python tf_model/text_classifier/__init__.py --training-dir <trained model dir created during training>

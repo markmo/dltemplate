@@ -1,4 +1,6 @@
 from collections import defaultdict
+from common.util import decode_image_from_raw_bytes, image_center_crop
+import cv2
 import keras
 import keras.backend as ke
 from keras.models import save_model
@@ -59,14 +61,25 @@ class TQDMProgressCallback(keras.callbacks.Callback):
 
 class ModelSaveCallback(keras.callbacks.Callback):
 
-    def __init__(self, file_name):
+    def __init__(self, filename):
         super().__init__()
-        self.file_name = file_name
+        self.filename = filename
 
     def on_epoch_end(self, epoch, logs=None):
-        model_filename = self.file_name.format(epoch)
+        model_filename = self.filename.format(epoch)
         save_model(self.model, model_filename)
         print("Model saved in {}".format(model_filename))
+
+
+def prepare_raw_bytes_for_model(raw_bytes, img_size, normalize_for_model=True):
+    img = decode_image_from_raw_bytes(raw_bytes)  # decode image raw bytes to matrix
+    img = image_center_crop(img)  # take squared center crop
+    img = cv2.resize(img, (img_size, img_size))  # resize for our model
+    if normalize_for_model:
+        img = img.astype('float32')  # prepare for normalization
+        img = keras.applications.inception_v3.preprocess_input(img)  # normalize for model
+
+    return img
 
 
 # remember to clear session/graph if you rebuild your graph to

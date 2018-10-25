@@ -174,3 +174,12 @@ readonly
 **/_vizdoom.ini
 **/*.bin
 **/*.ftz
+**/summaries
+**/import/intents/*
+**/import.zip
+**/intent_test_Bot_LEX_V1.zip
+**/intent_test_Export.json
+**/models
+nlu.md
+**/trained_results_*
+vocab

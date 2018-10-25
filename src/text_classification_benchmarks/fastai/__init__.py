@@ -113,7 +113,8 @@ def run(constant_overwrites):
         md = LanguageModelData(PATH, 1, vocab_size, dl_train, dl_val, batch_size=batch_size, bptt=bptt)
         drops = np.array([0.25, 0.1, 0.2, 0.02, 0.15]) * 0.7
         learner = md.get_model(optimizer_fn, emb_dim, n_hidden, n_layers,
-                               dropouti=drops[0], dropout=drops[1], wdrop=drops[2], dropoute=drops[3], dropouth=drops[4])
+                               dropouti=drops[0], dropout=drops[1], wdrop=drops[2],
+                               dropoute=drops[3], dropouth=drops[4])
         learner.metrics = [accuracy]
         learner.freeze_to(-1)
         learner.model.load_state_dict(w)

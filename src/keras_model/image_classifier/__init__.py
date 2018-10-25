@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from common.load_data import load_flowers
-from common.util import decode_image_from_raw_bytes, merge_dict, prepare_raw_bytes_for_model, read_raw_from_tar
-from common.util_keras import reset_tf_session
+from common.util import decode_image_from_raw_bytes, merge_dict, read_raw_from_tar
+from common.util_keras import prepare_raw_bytes_for_model, reset_tf_session
 from keras.models import load_model
 from keras_model.image_classifier.hyperparams import get_constants
 from keras_model.image_classifier.model_setup import model_builder

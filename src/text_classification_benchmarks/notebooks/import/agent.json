@@ -1,0 +1,44 @@
+{
+  "description": "",
+  "language": "en",
+  "activeAssistantAgents": [
+    "shopping-domain-on",
+    "smalltalk-fulfillment-on",
+    "smalltalk-domain-on"
+  ],
+  "disableInteractionLogs": false,
+  "disableStackdriverLogs": true,
+  "googleAssistant": {
+    "googleAssistantCompatible": true,
+    "invocationName": "Tombot",
+    "project": "tombot",
+    "welcomeIntentSignInRequired": false,
+    "startIntents": [],
+    "systemIntents": [],
+    "endIntentIds": [],
+    "oAuthLinking": {
+      "required": false,
+      "grantType": "AUTH_CODE_GRANT"
+    },
+    "voiceType": "MALE_1",
+    "capabilities": [],
+    "protocolVersion": "V1",
+    "isDeviceAgent": false
+  },
+  "defaultTimezone": "Australia/Melbourne",
+  "webhook": {
+    "available": false,
+    "useForDomains": false,
+    "cloudFunctionsEnabled": false,
+    "cloudFunctionsInitialized": false
+  },
+  "isPrivate": false,
+  "customClassifierMode": "use.after",
+  "mlMinConfidence": 0.2,
+  "supportedLanguages": [],
+  "onePlatformApiVersion": "v2",
+  "analyzeQueryTextSentiment": false,
+  "enabledKnowledgeBaseNames": [],
+  "knowledgeServiceConfidenceAdjustment": -0.4,
+  "dialogBuilderMode": false
+}

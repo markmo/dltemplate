@@ -1,4 +1,4 @@
-from common.load_data import load_crime_dataset, load_crime_test_dataset, pad_sentences
+from common.load_data import pad_sentences
 import json
 import logging
 import numpy as np
@@ -64,12 +64,14 @@ def map_words_to_index(examples, words_index):
     return x
 
 
-def predict(trained_dir):
-    if not trained_dir.endswith('/'):
-        trained_dir += '/'
-
-    params, words_index, labels, embedding_mat = load_trained_params(trained_dir)
-    x, y, df = load_crime_test_dataset(labels)
+def predict(x, y, df, params, words_index, labels, embedding_mat, trained_dir):
+    print('seq_len:', params['seq_len'])
+    print('non_static:', params['non_static'])
+    print('n_hidden:', params['n_hidden'])
+    print('filter_sizes:', params['filter_sizes'])
+    print('n_filters:', params['n_filters'])
+    print('emb_dim:', params['emb_dim'])
+    print('max_pool_size:', params['max_pool_size'])
     x = pad_sentences(x, forced_seq_len=params['seq_len'])
     x = map_words_to_index(x, words_index)
     x_test, y_test = np.asarray(x), None
@@ -113,8 +115,9 @@ def predict(trained_dir):
                 preds_ = sess.run([model.preds], feed_dict)
                 return preds_
 
-            sess.run(tf.global_variables_initializer())
             checkpoint_file = trained_dir + 'best_model'
+            # noinspection PyUnusedLocal
+            saver = tf.train.Saver(tf.global_variables())
             saver = tf.train.import_meta_graph(checkpoint_file + '.meta')
             saver.restore(sess, checkpoint_file)
             logging.critical('{} has been loaded'.format(checkpoint_file))
@@ -137,9 +140,10 @@ def predict(trained_dir):
 
             logging.critical('Prediction complete! Saved to {}.'.format(pred_dir))
 
+            return preds, pred_labels, df
 
-def train(constants):
-    x, y, vocab, vocab_inv, df, labels = load_crime_dataset()
+
+def train(x, y, vocab, vocab_inv, labels, constants):
     embeddings = load_embeddings(vocab)
     embedding_mat = [embeddings[word] for _, word in enumerate(vocab_inv)]
     embedding_mat = np.array(embedding_mat, dtype=np.float32)

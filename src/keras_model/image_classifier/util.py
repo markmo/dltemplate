@@ -1,5 +1,5 @@
-from common.util import batch_generator, prepare_raw_bytes_for_model, raw_generator_with_label_from_tar
-from common.util_keras import ModelSaveCallback, TQDMProgressCallback
+from common.util import batch_generator, raw_generator_with_label_from_tar
+from common.util_keras import ModelSaveCallback, prepare_raw_bytes_for_model, TQDMProgressCallback
 import keras
 import numpy as np
 
