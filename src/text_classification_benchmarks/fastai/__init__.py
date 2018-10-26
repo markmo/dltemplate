@@ -1,13 +1,22 @@
 from argparse import ArgumentParser
+import collections
 from common.load_data import DATA_DIR
 from common.util import load_hyperparams, merge_dict
-from fastai.text import *
+from fastai import lm_rnn
+import fastai.core as fastai
+import fastai.dataloader as dataloader
+import fastai.dataset as fdata
+import fastai.metrics as fmetrics
+import fastai.text as ftext
+import functools
 import logging
 import numpy as np
 import os
 import pandas as pd
+from pathlib import Path
 import pickle
 from text_classification_benchmarks.fastai.util import get_all, preprocess_csv
+import torch
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -49,9 +58,9 @@ def run(constant_overwrites):
         # x_train, y_train = train_df[0].values, train_df[1].values
         val_df = pd.read_csv(dir_path + '/val.csv', header=None, chunksize=CHUNKSIZE)
         # x_val, y_val = val_df[0].values, val_df[1].values
-        test_df = pd.read_csv(dir_path + '/test.csv', header=None, chunksize=CHUNKSIZE)
+        # test_df = pd.read_csv(dir_path + '/test.csv', header=None, chunksize=CHUNKSIZE)
         # x_test, y_test = test_df[0].values, test_df[1].values
-        classes = np.genfromtxt(dir_path + '/classes.txt', dtype=str)
+        # classes = np.genfromtxt(dir_path + '/classes.txt', dtype=str)
 
     # print('Counts x_train: {}, y_train: {}, x_val: {}, y_val: {}, x_test: {}, y_test: {}, classes: {}'
     #       .format(len(x_train), len(y_train), len(x_val), len(y_val), len(x_test), len(y_test), len(classes)))
@@ -74,7 +83,7 @@ def run(constant_overwrites):
             val_ids = np.load(LM_PATH / 'tmp' / 'val_ids.npy')
             itos = pickle.load(open(LM_PATH / 'tmp' / 'itos.pkl', 'rb'))
         else:
-            freq = Counter(t for ts in tok_train for t in ts)
+            freq = collections.Counter(t for ts in tok_train for t in ts)
             itos = [t for t, k in freq.most_common(MAX_VOCAB) if k > MIN_FREQ]  # int idx to str token
             itos.insert(0, '_pad_')
             itos.insert(1, '_unk_')
@@ -90,7 +99,7 @@ def run(constant_overwrites):
         pre_path = PATH / 'models' / 'wt103'
         pre_lm_path = pre_path / 'fwd_wt103.h5'
         w = torch.load(pre_lm_path, map_location=lambda storage, loc: storage)
-        enc_w = to_np(w['0.encoder.weight'])
+        enc_w = fastai.to_np(w['0.encoder.weight'])
         row_mean = enc_w.mean(0)
         itos_model = pickle.load((pre_path / 'itos_wt103.pkl').open('rb'))
         stoi_model = collections.defaultdict(lambda: -1, {t: i for i, t in enumerate(itos_model)})
@@ -99,23 +108,23 @@ def run(constant_overwrites):
             j = stoi_model[t]
             new_w[i] = enc_w[j] if j >= 0 else row_mean
 
-        w['0.encoder.weight'] = T(new_w)
-        w['0.encoder_with_dropout.embed.weight'] = T(np.copy(new_w))
-        w['1.decoder.weight'] = T(np.copy(new_w))
+        w['0.encoder.weight'] = fastai.T(new_w)
+        w['0.encoder_with_dropout.embed.weight'] = fastai.T(np.copy(new_w))
+        w['1.decoder.weight'] = fastai.T(np.copy(new_w))
 
         wd = 1e-7  # weight decay
         bptt = 70  # backpropagation through time, a.k.a. ngrams
         batch_size = 52
-        optimizer_fn = partial(optim.Adam, betas=(0.8, 0.99))
+        optimizer_fn = functools.partial(torch.optim.Adam, betas=(0.8, 0.99))
 
-        dl_train = LanguageModelLoader(np.concatenate(train_ids), batch_size, bptt)  # data loader
-        dl_val = LanguageModelLoader(np.concatenate(val_ids), batch_size, bptt)
-        md = LanguageModelData(PATH, 1, vocab_size, dl_train, dl_val, batch_size=batch_size, bptt=bptt)
+        dl_train = ftext.LanguageModelLoader(np.concatenate(train_ids), batch_size, bptt)  # data loader
+        dl_val = ftext.LanguageModelLoader(np.concatenate(val_ids), batch_size, bptt)
+        md = ftext.LanguageModelData(PATH, 1, vocab_size, dl_train, dl_val, batch_size=batch_size, bptt=bptt)
         drops = np.array([0.25, 0.1, 0.2, 0.02, 0.15]) * 0.7
         learner = md.get_model(optimizer_fn, emb_dim, n_hidden, n_layers,
                                dropouti=drops[0], dropout=drops[1], wdrop=drops[2],
                                dropoute=drops[3], dropouth=drops[4])
-        learner.metrics = [accuracy]
+        learner.metrics = [fmetrics.accuracy]
         learner.freeze_to(-1)
         learner.model.load_state_dict(w)
 
@@ -148,7 +157,7 @@ def run(constant_overwrites):
         val_ids = np.load(CLAS_PATH / 'tmp' / 'val_ids.npy')
         itos = pickle.load(open(CLAS_PATH / 'tmp' / 'itos.pkl', 'rb'))
     else:
-        freq = Counter(t for ts in tok_train for t in ts)
+        freq = collections.Counter(t for ts in tok_train for t in ts)
         itos = [t for t, k in freq.most_common(MAX_VOCAB) if k > MIN_FREQ]  # int idx to str token
         itos.insert(0, '_pad_')
         itos.insert(1, '_unk_')
@@ -162,7 +171,7 @@ def run(constant_overwrites):
     vocab_size = len(itos)
     bptt = 70  # backpropagation through time, a.k.a. ngrams
     emb_dim, n_hidden, n_layers = 400, 1150, 3
-    # optimizer_fn = partial(optim.Adam, betas=(0.8, 0.99))
+    # optimizer_fn = functools.partial(optim.Adam, betas=(0.8, 0.99))
     batch_size = 48
 
     min_label = min(labels_train)
@@ -170,25 +179,27 @@ def run(constant_overwrites):
     labels_val -= min_label
     k = int(max(labels_train)) + 1
 
-    ds_train = TextDataset(train_ids, labels_train)
-    ds_val = TextDataset(val_ids, labels_val)
-    sampler_train = SortishSampler(train_ids, key=lambda x: len(train_ids[x]), bs=batch_size // 2)
-    sampler_val = SortSampler(val_ids, key=lambda x: len(val_ids[x]))
-    dl_train = DataLoader(ds_train, batch_size // 2, transpose=True, num_workers=1, pad_idx=1, sampler=sampler_train)
-    dl_val = DataLoader(ds_val, batch_size // 2, transpose=True, num_workers=1, pad_idx=1, sampler=sampler_val)
-    md = ModelData(PATH, dl_train, dl_val)
+    ds_train = ftext.TextDataset(train_ids, labels_train)
+    ds_val = ftext.TextDataset(val_ids, labels_val)
+    sampler_train = ftext.SortishSampler(train_ids, key=lambda x: len(train_ids[x]), bs=batch_size // 2)
+    sampler_val = ftext.SortSampler(val_ids, key=lambda x: len(val_ids[x]))
+    dl_train = dataloader.DataLoader(ds_train, batch_size // 2, transpose=True, num_workers=1, pad_idx=1,
+                                     sampler=sampler_train)
+    dl_val = dataloader.DataLoader(ds_val, batch_size // 2, transpose=True, num_workers=1, pad_idx=1,
+                                   sampler=sampler_val)
+    md = fdata.ModelData(PATH, dl_train, dl_val)
 
     # drops = np.array([0.4, 0.5, 0.05, 0.3, 0.1])
     drops = np.array([0.4, 0.5, 0.05, 0.3, 0.4]) * 0.5
-    model = get_rnn_classifer(bptt, 20 * 70, k, vocab_size, emb_sz=emb_dim, n_hid=n_hidden, n_layers=n_layers,
-                              pad_token=1, layers=[emb_dim * 3, 50, k], drops=[drops[4], 0.1], dropouti=drops[0],
-                              wdrop=drops[1], dropoute=drops[2], dropouth=drops[3])
-    optimizer_fn = partial(optim.Adam, betas=(0.7, 0.99))
+    model = lm_rnn.get_rnn_classifer(bptt, 20 * 70, k, vocab_size, emb_sz=emb_dim, n_hid=n_hidden, n_layers=n_layers,
+                                     pad_token=1, layers=[emb_dim * 3, 50, k], drops=[drops[4], 0.1], dropouti=drops[0],
+                                     wdrop=drops[1], dropoute=drops[2], dropouth=drops[3])
+    optimizer_fn = functools.partial(torch.optim.Adam, betas=(0.7, 0.99))
     # learner = RNN_Learner(md, TextModel(to_gpu(model)), opt_fn=optimizer_fn)
-    learner = RNN_Learner(md, TextModel(model), opt_fn=optimizer_fn)
-    learner.reg_fn = partial(seq2seq_reg, alpha=2, beta=1)
+    learner = ftext.RNN_Learner(md, ftext.TextModel(model), opt_fn=optimizer_fn)
+    learner.reg_fn = functools.partial(lm_rnn.seq2seq_reg, alpha=2, beta=1)
     learner.clip = 25.0
-    learner.metrics = [accuracy]
+    learner.metrics = [fmetrics.accuracy]
 
     # lr = 3e-3
     # lrm = 2.6
