@@ -4,8 +4,6 @@ import pandas as pd
 import spacy
 from text_classification_benchmarks.fastai.util import fixup
 
-nlp = spacy.load('en_core_web_sm')
-
 
 def clean_data(data):
     df = data.copy()
@@ -41,6 +39,7 @@ def remove_classes_with_too_few_examples(data, min_examples=6):
 
 
 def tokenize(data):
+    nlp = spacy.load('en_core_web_sm')
     df = data.copy()
     df['tokens'] = df.utterance.apply(lambda x: [token.text for token in nlp(x)])
     df['length'] = df.tokens.apply(len)
@@ -48,4 +47,5 @@ def tokenize(data):
 
 
 def tokenize_text(text):
+    nlp = spacy.load('en_core_web_sm')
     return [token.text for token in nlp(text)]

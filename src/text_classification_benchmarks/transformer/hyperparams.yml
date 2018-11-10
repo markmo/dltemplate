@@ -1,0 +1,25 @@
+learning_rate: 0.01
+batch_size: 256  # batch size for training and evaluating
+decay_steps: 12000  # number steps before decay learning rate
+decay_rate: 1.0  # Rate of decay for learning rate
+checkpoint_dir: ./checkpoint_transformer_classification/  # checkpoint location for the model
+max_seq_len: 60  # maximum sentence length
+embed_size: 300  # embedding size; matching GoogleNews word2vec set
+is_training: true
+n_epochs: 10  # number of epochs to run
+validate_every: 1  # `validate_every` epochs
+validate_step: 2000  # number of steps to validate
+use_embedding: true  # whether to use embedding or not
+data_dir: ../fastai  # path to training data
+word2vec_filename: ../../../data/word2vec/GoogleNews-vectors-negative300.bin  # word2vec's vocabulary and vectors
+is_multi_label: false
+l2_lambda: 0.0001  # L2 regularization
+d_model: 300  # hidden size
+d_k: 64  # hidden size
+d_v: 64  # hidden size
+h: 10  # hidden size
+n_layers: 1
+is_multilabel: false
+vocab_labels_filename: ./labels.txt
+training_data_path: ../fasttext/train.txt
+test_file: ../fasttext/val.txt

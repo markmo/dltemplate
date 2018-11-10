@@ -183,3 +183,5 @@ readonly
 nlu.md
 **/trained_results_*
 vocab
+*_cache
+pretrained_models/

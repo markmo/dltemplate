@@ -191,9 +191,11 @@ def run(constant_overwrites):
 
     # drops = np.array([0.4, 0.5, 0.05, 0.3, 0.1])
     drops = np.array([0.4, 0.5, 0.05, 0.3, 0.4]) * 0.5
-    model = lm_rnn.get_rnn_classifer(bptt, 20 * 70, k, vocab_size, emb_sz=emb_dim, n_hid=n_hidden, n_layers=n_layers,
-                                     pad_token=1, layers=[emb_dim * 3, 50, k], drops=[drops[4], 0.1], dropouti=drops[0],
-                                     wdrop=drops[1], dropoute=drops[2], dropouth=drops[3])
+    model = lm_rnn.get_rnn_classifier(bptt, 20 * 70, k, vocab_size, emb_sz=emb_dim,
+                                      n_hid=n_hidden, n_layers=n_layers,
+                                      pad_token=1, layers=[emb_dim * 3, 50, k],
+                                      drops=[drops[4], 0.1], dropouti=drops[0],
+                                      wdrop=drops[1], dropoute=drops[2], dropouth=drops[3])
     optimizer_fn = functools.partial(torch.optim.Adam, betas=(0.7, 0.99))
     # learner = RNN_Learner(md, TextModel(to_gpu(model)), opt_fn=optimizer_fn)
     learner = ftext.RNN_Learner(md, ftext.TextModel(model), opt_fn=optimizer_fn)

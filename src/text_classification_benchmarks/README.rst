@@ -1,12 +1,16 @@
 Text Classification Benchmarks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. `fastText <fasttext/>`_
-2. `Fastai <fastai/>`_, based on the `Universal Language Model Fine-tuning for Text Classification <https://arxiv.org/pdf/1801.06146.pdf>`_ paper.
-3. `Multinomial Naive Bayes <multinomial_naive_bayes/>`_
-4. `NBSVM (SVM with Naive Bayes Features) <nbsvm/>`_
-5. `Bidirectional LSTM Classifier <bi_lstm/>`_
-6. `Combined CNN and RNN <../tf_model/text_classifier/>`_
+1. `Multinomial Naive Bayes <multinomial_naive_bayes/>`_
+2. `NBSVM (SVM with Naive Bayes Features) <nbsvm/>`_
+3. `fastText <fasttext/>`_
+4. `Word-level CNN <word_cnn/>`_
+5. `Word-level CNN initialized with Word2Vec Embeddings <word_cnn/>`_
+6. `Character-level CNN <char_cnn/>`_
+7. `Combined CNN and RNN <../tf_model/text_classifier/>`_
+8. `Bidirectional LSTM Classifier <bi_lstm/>`_
+9. `Transformer Model <transformer/>`_
+10. `Fastai UMLFit <fastai/>`_, based on the `Universal Language Model Fine-tuning for Text Classification <https://arxiv.org/pdf/1801.06146.pdf>`_ paper.
 
 
 Commercial API Services

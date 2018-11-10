@@ -17,11 +17,10 @@ always constitute a necessary construct regardless of whether segmentation into 
 Working on only characters also has the advantage that abnormal character combinations such as
 misspellings and emoticons may be naturally learnt.
 
-Dataset size forms a dichotomy between traditional and ConvNets models. The most obvious trend
-coming from all the plots in figure 3 is that the larger datasets tend to perform better.
-Traditional methods like n-grams TFIDF remain strong candidates for dataset of size up to
-several hundreds of thousands, and only until the dataset goes to the scale of several millions
-do we observe that character-level ConvNets start to do better.
+Dataset size forms a dichotomy between traditional and ConvNets models. Traditional methods like
+n-grams TFIDF remain strong candidates for dataset of size up to several hundreds of thousands,
+and only until the dataset goes to the scale of several millions do we observe that character-level
+ConvNets start to do better.
 
 ConvNets may work well for user-generated data. Further analysis is needed to validate the
 hypothesis that ConvNets are truly good at identifying exotic character combinations such as

@@ -31,8 +31,15 @@ def run(constant_overwrites):
                     model_filename=constants['model_filename'],
                     optimizer=constants['optimizer'],
                     loss=constants['loss'])
-    model.train(x_train, y_train, x_val, y_val, n_epochs=constants['n_epochs'],
-                batch_size=constants['batch_size'])  # , checkpoint_every=constants['checkpoint_every'])
+    batch_size = constants['batch_size']
+    if constants['test']:
+        print('Testing...')
+        loss, accuracy = model.test(x_val, y_val, batch_size)
+        print('Loss: {0:.4f}, Accuracy: {1:.0%}'.format(loss, accuracy))
+    else:
+        print('Training...')
+        model.train(x_train, y_train, x_val, y_val, n_epochs=constants['n_epochs'],
+                    batch_size=batch_size)  # , checkpoint_every=constants['checkpoint_every'])
 
 
 if __name__ == '__main__':

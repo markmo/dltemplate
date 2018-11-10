@@ -61,6 +61,7 @@ class CharCNN(object):
         preds = Dense(self.n_classes, activation='softmax')(x)
         model = Model(inputs=inputs, outputs=preds)
         if os.path.exists(self.model_filename):
+            print('Loading model at', self.model_filename)
             model.load_weights(self.model_filename)
 
         model.compile(optimizer=self.optimizer, loss=self.loss, metrics=['accuracy'])
@@ -99,7 +100,7 @@ class CharCNN(object):
         :return: None
         """
         # Evaluate inputs
-        self.model.evaluate(x_test, y_test, batch_size=batch_size, verbose=1)
+        return self.model.evaluate(x_test, y_test, batch_size=batch_size, verbose=1)
 
     def predict(self, x_test, batch_size):
         """

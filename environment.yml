@@ -29,7 +29,7 @@ dependencies:
   - ujson
   - wrapt
   - x264
-  - appnope
+  - appnope  # err in ubuntu
   - atomicwrites
   - attrs
   - backcall
@@ -77,7 +77,7 @@ dependencies:
   - jupyter_console
   - jupyter_core
   - libcxx
-  - libcxxabi
+  - libcxxabi  # err in ubuntu
   - libedit
   - libffi
   - libgfortran
@@ -180,7 +180,7 @@ dependencies:
     - cryptography
     - descartes
     - editdistance
-    - en-core-web-sm
+    - en-core-web-sm  # err in ubuntu
     - fastai
     - fasttext
     - feather-format
@@ -255,7 +255,7 @@ dependencies:
     - tzlocal
     - uritemplate
     - urllib3
-    - vizdoom
+    - vizdoom  # err in ubuntu
     - watson-developer-cloud
     - websocket-client
     - werkzeug

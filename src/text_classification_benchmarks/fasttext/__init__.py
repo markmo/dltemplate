@@ -17,7 +17,7 @@ if __name__ == '__main__':
         print('Counts x_train: {}, y_train: {}, x_val: {}, y_val: {}, x_test: {}, y_test: {}'
               .format(len(x_train), len(y_train), len(x_val), len(y_val), len(x_test), len(y_test)))
 
-    model = train_supervised(data_path, epoch=25, lr=1.0, wordNgrams=2, verbose=2, minCount=1, loss='hs')
+    model = train_supervised(data_path, epoch=25, lr=1.0, wordNgrams=3, verbose=2, minCount=1, loss='hs')
     print_results(*model.test(dir_path + '/val.txt'))
     model.save_model('classifier.bin')
 
