@@ -14,11 +14,12 @@ data_dir: ../fastai  # path to training data
 word2vec_filename: ../../../data/word2vec/GoogleNews-vectors-negative300.bin  # word2vec's vocabulary and vectors
 is_multi_label: false
 l2_lambda: 0.0001  # L2 regularization
+keep_prob: 0.5  # Dropout
 d_model: 300  # hidden size
 d_k: 64  # hidden size
 d_v: 64  # hidden size
 h: 10  # hidden size
-n_layers: 1
+n_layers: 6  # 1 seems to work better at smaller data volumes
 is_multilabel: false
 vocab_labels_filename: ./labels.txt
 training_data_path: ../fasttext/train.txt

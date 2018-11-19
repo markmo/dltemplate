@@ -4,7 +4,7 @@ from text_classification_benchmarks.api_services.api_service import ApiService
 from watson_developer_cloud import AssistantV1, WatsonApiException
 
 
-def create_import_file(train_df, classes, output_path):
+def create_import_file(train_df, classes, output_path='./watson_import.csv'):
     import_df = pd.DataFrame({
         'utterance': train_df.utterance.values,
         'label': train_df.label.apply(lambda x: classes[x]).values},
@@ -14,10 +14,10 @@ def create_import_file(train_df, classes, output_path):
 
 class WatsonService(ApiService):
 
-    def __init__(self, classes, max_api_calls=200, verbose=False):
+    def __init__(self, classes, max_api_calls=200, verbose=False, workspace_id=None):
         super().__init__(classes, max_api_calls, verbose)
         secrets = SecretsManager()
-        self.workspace_id = secrets.get_secret('watson/workspace_id')
+        self.workspace_id = workspace_id or secrets.get_secret('watson/workspace_id')
         self.assistant = AssistantV1(
             version='2018-09-20',
             iam_apikey=secrets.get_secret('watson/iam_apikey'),

@@ -55,14 +55,15 @@ Model Templates
 49. `Multi-class Text Classification using a CNN and RNN <src/tf_model/text_classifier/>`_ (TensorFlow)
 50. `Multi-class Text Classification using fastText <src/text_classification_benchmarks/fasttext/>`_ (fastText)
 51. `Multi-class Text Classification using Fastai <src/text_classification_benchmarks/fastai/>`_ (Fastai / PyTorch)
-52. `Multi-class Text Classification using Multinomial Naive Bayes <src/text_classification_benchmarks/multinomial_naive_bayes/>`_ (sklearn)
-53. `Multi-class Text Classification using NBSVM (SVM with Naive Bayes Features) <src/text_classification_benchmarks/nbsvm/>`_ (sklearn)
-54. `Multi-class Text Classification using BiLSTM <src/text_classification_benchmarks/bi_lstm/>`_ (TensorFlow)
-55. `Multi-class Text Classification using Word-level CNN <src/text_classification_benchmarks/word_cnn/>`_ (TensorFlow)
-56. `Multi-class Text Classification using Word-level CNN initialized with Word2Vec Embeddings <src/text_classification_benchmarks/word_cnn/>`_ (TensorFlow)
-57. `Multi-class Text Classification using Character-level CNN <src/text_classification_benchmarks/char_cnn/>`_ (Keras)
-58. `Multi-class Text Classification using a Transformer Model <src/text_classification_benchmarks/transformer/>`_ (TensorFlow)
-59. `Multi-class Text Classification using BERT - Transfer Learning using Deep Bidirectional Transformers <https://github.com/markmo/bert>`_ (TensorFlow)
+52. `Multi-class Text Classification using Logistic Regression <src/text_classification_benchmarks/logreg/>`_ (sklearn)
+53. `Multi-class Text Classification using Multinomial Naive Bayes <src/text_classification_benchmarks/multinomial_naive_bayes/>`_ (sklearn)
+54. `Multi-class Text Classification using NBSVM (SVM with Naive Bayes Features) <src/text_classification_benchmarks/nbsvm/>`_ (sklearn)
+55. `Multi-class Text Classification using BiLSTM <src/text_classification_benchmarks/bi_lstm/>`_ (TensorFlow)
+56. `Multi-class Text Classification using Word-level CNN <src/text_classification_benchmarks/word_cnn/>`_ (TensorFlow)
+57. `Multi-class Text Classification using Word-level CNN initialized with Word2Vec Embeddings <src/text_classification_benchmarks/word_cnn/>`_ (TensorFlow)
+58. `Multi-class Text Classification using Character-level CNN <src/text_classification_benchmarks/char_cnn/>`_ (Keras)
+59. `Multi-class Text Classification using a Transformer Model <src/text_classification_benchmarks/transformer/>`_ (TensorFlow)
+60. `Multi-class Text Classification using BERT - Transfer Learning using Deep Bidirectional Transformers <https://github.com/markmo/bert>`_ (TensorFlow)
 
 
 Special Topics

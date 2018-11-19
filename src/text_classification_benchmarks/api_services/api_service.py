@@ -36,7 +36,7 @@ class ApiService(object):
                 print('{}, {}, {}'.format(utterance, self.classes[label], self.classes[val_df.label.values[i]]))
                 print()
 
-            if self.max_api_calls and i > self.max_api_calls - 1:  # save on API calls
+            if self.max_api_calls and i == self.max_api_calls - 1:  # save on API calls
                 break
 
         return y_pred

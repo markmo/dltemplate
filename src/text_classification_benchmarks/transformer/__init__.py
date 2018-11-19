@@ -33,6 +33,7 @@ def run(constant_overwrites):
               constants['h'],
               constants['n_layers'],
               constants['l2_lambda'],
+              constants['keep_prob'],
               constants['checkpoint_dir'],
               constants['use_embedding'],
               vocab_labels_filename,
@@ -77,6 +78,7 @@ if __name__ == '__main__':
     parser.add_argument('--max-seq-len', dest='max_seq_len', type=int, help='maximum sequence length')
     parser.add_argument('--num-layers', dest='n_layers', type=int, help='number transformer layers')
     parser.add_argument('--learning-rate', dest='learning_rate', type=float, help='learning rate')
+    parser.add_argument('--keep-prob', dest='keep_prob', type=float, help='dropout keep probability')
     parser.add_argument('--training-data-path', dest='training_data_path', type=str,
                         help='path to training data')
     parser.add_argument('--test-data-path', dest='test_file', type=str,

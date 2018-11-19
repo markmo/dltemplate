@@ -14,8 +14,8 @@ ROOT = os.path.dirname(os.path.realpath(__file__))
 
 
 def train(training_data_path, n_classes, learning_rate, batch_size, n_epochs, decay_steps, decay_rate,
-          seq_len, embed_size, d_model, d_k, d_v, h, n_layers, l2_lambda, checkpoint_dir, use_embedding,
-          vocab_labels_filename, word2vec_filename, validate_step, is_multilabel):
+          seq_len, embed_size, d_model, d_k, d_v, h, n_layers, l2_lambda, keep_prob, checkpoint_dir,
+          use_embedding, vocab_labels_filename, word2vec_filename, validate_step, is_multilabel):
     word2idx, idx2word = create_vocab(word2vec_filename, name_scope='transformer_classification')
     vocab_size = len(word2idx)
     print('vocab_size:', vocab_size)
@@ -58,7 +58,7 @@ def train(training_data_path, n_classes, learning_rate, batch_size, n_epochs, de
                 feed_dict = {
                     model.input_x: x_train[start:end],
                     model.input_y_label: y_train[start:end],
-                    model.keep_prob: 0.5
+                    model.keep_prob: keep_prob
                 }
                 curr_loss, curr_acc, _ = sess.run([model.loss_val, model.accuracy, model.train_op], feed_dict)
                 loss, counter, acc = loss + curr_loss, counter + 1, acc + curr_acc

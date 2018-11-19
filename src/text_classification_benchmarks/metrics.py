@@ -6,7 +6,7 @@ import scipy as sp
 import seaborn as sns
 from sklearn.exceptions import UndefinedMetricWarning
 from sklearn.metrics import auc, confusion_matrix, precision_recall_fscore_support, roc_curve
-from sklearn.preprocessing import label_binarize
+from sklearn.preprocessing import label_binarize, MultiLabelBinarizer
 from tabulate import tabulate
 from typing import Union
 import warnings
@@ -176,9 +176,14 @@ def calc_f1_micro_avg(y_true, y_pred):
     return 0 if denom == 0 else 2 * pre * rec / denom
 
 
-def calc_multiclass_roc_auc(y_true, y_pred, average: Union[str, None]='macro'):
+def calc_multiclass_roc_auc(y_true, y_pred, average: Union[str, None]='macro', is_multilabel=False):
     labels = sorted(np.unique(y_true))
     n_classes = len(labels)
+    if is_multilabel:
+        binarizer = MultiLabelBinarizer()
+        y_true = binarizer.fit_transform(y_true)
+        y_pred = binarizer.fit_transform(y_pred)
+
     y_true_bin = label_binarize(y_true, classes=labels)
     y_pred_bin = label_binarize(y_pred, classes=labels)
 

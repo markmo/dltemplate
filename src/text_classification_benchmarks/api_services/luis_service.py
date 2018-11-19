@@ -9,10 +9,10 @@ import urllib.parse
 import urllib.request
 
 BASE_URL = 'https://westus.api.cognitive.microsoft.com/luis/v2.0'
-VERSION_ID = '0.2'
+VERSION_ID = '0.1'
 
 
-def create_import_file(train_df, classes, output_path=None):
+def create_import_file(train_df, classes, output_path=None, app_name='intent_test'):
     intents = []
     utterances_json = []
     grouped = train_df.groupby(['label'])
@@ -36,8 +36,8 @@ def create_import_file(train_df, classes, output_path=None):
     # query_params = {'appName': 'intent_test'}
     body = {
         'luis_schema_version': '3.0.0',
-        'versionId': '0.2',
-        'name': 'intent_test',
+        'versionId': '0.1',
+        'name': app_name,
         'desc': 'Benchmark Short Text Classification',
         'culture': 'en-us',
         'intents': intents,
@@ -58,7 +58,7 @@ def create_import_file(train_df, classes, output_path=None):
 
     # response = requests.post(BASE_URL + '/apps/import', params=query_params, data=body, headers=headers)
     # pprint(vars(response))
-    query_params = urllib.parse.urlencode({'appName': 'intent_test'})
+    query_params = urllib.parse.urlencode({'appName': app_name})
     try:
         conn = http.client.HTTPSConnection('westus.api.cognitive.microsoft.com')
         conn.request('POST', '/luis/api/v2.0/apps/import?%s' % query_params, json.dumps(body), headers)
@@ -72,7 +72,7 @@ def create_import_file(train_df, classes, output_path=None):
 
 class LuisService(ApiService):
 
-    def __init__(self, classes, max_api_calls=200, verbose=False):
+    def __init__(self, classes, max_api_calls=200, verbose=False, app_id=None):
         if type(classes) is np.ndarray:
             classes = classes.tolist()
 
@@ -80,7 +80,7 @@ class LuisService(ApiService):
         super().__init__(classes, max_api_calls, verbose)
         secrets = SecretsManager()
         sub_key = secrets.get_secret('luis/Ocp-Apim-Subscription-Key')
-        app_id = secrets.get_secret('luis/app_id')
+        app_id = app_id or secrets.get_secret('luis/app_id')
         self.url = '{}/apps/{}?subscription-key={}&timezoneOffset=-360&q=%s'.format(BASE_URL, app_id, sub_key)
 
     def predict(self, utterance):

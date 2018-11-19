@@ -15,11 +15,11 @@ def clean_data(data):
     return df
 
 
-def load_data():
+def load_data(dirname='.'):
     current_dir = os.path.dirname(os.path.realpath(__file__))
-    train_csv = current_dir + '/fastai/train.csv'
-    val_csv = current_dir + '/fastai/val.csv'
-    test_csv = current_dir + '/fastai/test.csv'
+    train_csv = '{}/fastai/{}/train.csv'.format(current_dir, dirname)
+    val_csv = '{}/fastai/{}/val.csv'.format(current_dir, dirname)
+    test_csv = '{}/fastai/{}/test.csv'.format(current_dir, dirname)
     classes_txt = current_dir + '/fastai/classes.txt'
     train_df = pd.read_csv(train_csv, header=None)
     val_df = pd.read_csv(val_csv, header=None)
@@ -30,7 +30,7 @@ def load_data():
     return train_df, val_df, test_df, classes
 
 
-def remove_classes_with_too_few_examples(data, min_examples=6):
+def remove_classes_with_too_few_examples(data, min_examples=5):
     counts_by_label = data.groupby('label').utterance.count()
     excluded_labels = counts_by_label[counts_by_label < min_examples].index
     df = data[~data['label'].isin(excluded_labels)]

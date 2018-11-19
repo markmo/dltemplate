@@ -9,7 +9,7 @@ from nlp.multilabel_classification.util import print_evaluation_scores, print_la
 from sklearn.preprocessing import MultiLabelBinarizer
 
 
-def train_and_test(x_train, y_train, x_val, y_val, x_test, dict_size, print_metrics=False):
+def train_and_test(x_train, y_train, x_val, y_val, x_test, dict_size, classes=None, print_metrics=False):
     tag_counts = get_counts(y_train)
     word_counts = get_counts(x_train)
     top_words = top_n(word_counts, dict_size)
@@ -24,8 +24,10 @@ def train_and_test(x_train, y_train, x_val, y_val, x_test, dict_size, print_metr
     x_train_tfidf, x_val_tfidf, x_test_tfidf, tfidf_vocab = tfidf_features(x_train, x_val, x_test)
     tfidf_vocab_reverse = {i: word for word, i in tfidf_vocab.items()}
 
-    classes = sorted(tag_counts.keys())
-    n_classes = len(tag_counts)
+    if classes is None:
+        classes = sorted(tag_counts.keys())
+
+    n_classes = len(classes)
     binarizer = MultiLabelBinarizer(classes=classes)
     y_train = binarizer.fit_transform(y_train)
     y_val = binarizer.fit_transform(y_val)

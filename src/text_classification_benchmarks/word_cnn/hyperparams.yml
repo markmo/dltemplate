@@ -1,7 +1,7 @@
 embed_size: 300  # Dimensionality of character embedding (default: 128)
 filter_sizes: [3, 4, 5]  # Filter sizes (default: [3, 4, 5])
 n_filters: 128  # Number of filters per filter size (default: 128)
-keep_prob: 0.25  # Dropout keep probability (default: 0.5)
+keep_prob: 0.5  # Dropout keep probability (default: 0.5)
 l2_reg_lambda: 0.0  # L2 regularization lambda (default: 0.0)
 batch_size: 64  # Batch Size (default: 64)
 n_epochs: 100  # Number of training epochs (default: 200)
@@ -12,3 +12,4 @@ allow_soft_placement: True  # Allow soft device placement
 log_device_placement: False  # Log placement of ops on devices
 learning_rate: 0.001  # learning rate
 checkpoint_dir: ./checkpoints  # Checkpoint directory from training run
+data_dir: .

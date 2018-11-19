@@ -41,8 +41,8 @@ def batch_iter(data, labels, lengths, batch_size, n_epochs):
         yield x, y, seq_len
 
 
-def load_dataset(outdir, min_frequency=0):
-    train_df, val_df, test_df, classes = load_data()
+def load_dataset(outdir, min_frequency=0, dirname='.'):
+    train_df, val_df, test_df, classes = load_data(dirname=dirname)
     train_df = remove_classes_with_too_few_examples(clean_data(train_df))
     val_df = remove_classes_with_too_few_examples(clean_data(val_df))
     train_labels, train_utterances, train_lengths = prepare_data(train_df)
@@ -97,11 +97,11 @@ def train(train_data, x_val, y_val, val_lengths, n_classes, vocab_size, n_hidden
             accuracy_summary = tf.summary.scalar('Accuracy', model.accuracy)
 
             train_summary_op = tf.summary.merge_all()
-            train_summary_dir = os.path.join(outdir, 'summaries', 'train')
+            train_summary_dir = os.path.join(outdir, 'summaries_bal', 'train')
             train_summary_writer = tf.summary.FileWriter(train_summary_dir, sess.graph)
 
             val_summary_op = tf.summary.merge_all()
-            val_summary_dir = os.path.join(outdir, 'summaries', 'valid')
+            val_summary_dir = os.path.join(outdir, 'summaries_bal', 'valid')
             val_summary_writer = tf.summary.FileWriter(val_summary_dir, sess.graph)
 
             saver = tf.train.Saver(max_to_keep=num_checkpoint)
@@ -159,7 +159,7 @@ def train(train_data, x_val, y_val, val_lengths, n_classes, vocab_size, n_hidden
                     print('')
 
                 if current_step % save_every_steps == 0:
-                    saver.save(sess, os.path.join(outdir, 'model/clf'), current_step)
+                    saver.save(sess, os.path.join(outdir, 'model_bal/clf'), current_step)
 
             print('\nAll files have been saved to {}\n'.format(outdir))
 
@@ -190,10 +190,10 @@ def test(data, labels, lengths, batch_size, run_dir, checkpoint):
         sess = tf.Session()
 
         # Restore metagraph
-        saver = tf.train.import_meta_graph('{}.meta'.format(os.path.join(run_dir, 'model', checkpoint)))
+        saver = tf.train.import_meta_graph('{}.meta'.format(os.path.join(run_dir, 'model_bal', checkpoint)))
 
         # Restore weights
-        saver.restore(sess, os.path.join(run_dir, 'model', checkpoint))
+        saver.restore(sess, os.path.join(run_dir, 'model_bal', checkpoint))
 
         # Get tensors
         input_x = graph.get_tensor_by_name('input_x:0')
@@ -218,7 +218,7 @@ def test(data, labels, lengths, batch_size, run_dir, checkpoint):
             sum_accuracy += batch_accuracy
             all_preds = np.concatenate([all_preds, batch_preds])
 
-        final_accuracy = sum_accuracy / n_batches
+        final_accuracy = (sum_accuracy / n_batches) if n_batches > 0 else 0
 
     print('Test accuracy:', final_accuracy)
 

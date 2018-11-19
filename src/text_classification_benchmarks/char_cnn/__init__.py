@@ -9,7 +9,7 @@ from text_classification_benchmarks.data_loader import clean_data, load_data, re
 def run(constant_overwrites):
     config_path = os.path.join(os.path.dirname(__file__), 'hyperparams.yml')
     constants = merge_dict(load_hyperparams(config_path), constant_overwrites)
-    train_df, val_df, test_df, classes = load_data()
+    train_df, val_df, test_df, classes = load_data(dirname=constants['data_dir'])
     train_df = remove_classes_with_too_few_examples(clean_data(train_df))
     val_df = remove_classes_with_too_few_examples(clean_data(val_df))
     n_classes = len(classes)
@@ -48,6 +48,8 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')
     parser.add_argument('--batch-size', dest='batch_size', type=int, help='batch size')
     parser.add_argument('--embedding-size', dest='embedding_size', type=int, help='embedding size')
+    parser.add_argument('--model-filename', dest='model_filename', type=str, help='path to model file')
+    parser.add_argument('--data-dir', dest='data_dir', type=str, help='relative path to data')
     parser.add_argument('--test', dest='test',
                         help='run eval on the test dataset using a fixed checkpoint', action='store_true')
     parser.set_defaults(test=False)

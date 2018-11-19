@@ -10,7 +10,9 @@ def run(constant_overwrites):
     constants = merge_dict(load_hyperparams(config_path), constant_overwrites)
     outdir = constants['outdir']
     run_dir = constants['run_dir']
-    x_train, y_train, train_lengths, x_val, y_val, val_lengths, max_length, vocab_size, classes = load_dataset(outdir)
+    x_train, y_train, train_lengths, x_val, y_val, val_lengths, max_length, vocab_size, classes = \
+        load_dataset(outdir, dirname=constants['data_dir'])
+
     if constants['test']:
         print('\nTesting...')
         preds = test(x_val, y_val, val_lengths, constants['test_batch_size'], run_dir, constants['checkpoint'])
@@ -46,6 +48,7 @@ if __name__ == '__main__':
     parser.add_argument('--learning-rate', dest='learning_rate', type=float, help='learning rate')
     parser.add_argument('--outdir', dest='outdir', type=str, help='save directory')
     parser.add_argument('--rundir', dest='run_dir', type=str, help='run directory')
+    parser.add_argument('--data-dir', dest='data_dir', type=str, help='relative path to data')
     parser.add_argument('--checkpoint', dest='checkpoint', type=str,
                         help='restore the graph from this model checkpoint')
     parser.add_argument('--test', dest='test',

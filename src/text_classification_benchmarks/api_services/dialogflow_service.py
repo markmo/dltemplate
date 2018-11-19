@@ -10,7 +10,7 @@ import zipfile
 BASE_URL = 'https://api.dialogflow.com/v1/'
 
 
-def create_import_file(train_df, classes, output_path):
+def create_import_file(train_df, classes, output_path, import_filename='dialogflow_import'):
     os.makedirs('{}/intents'.format(output_path), exist_ok=True)
     grouped = train_df.groupby(['label'])
     for label, indices in grouped.groups.items():
@@ -65,7 +65,7 @@ def create_import_file(train_df, classes, output_path):
 
             json.dump(utterances_json, f)
 
-    zip_path = '{}/dialogflow_import.zip'.format(os.path.abspath(os.path.join(output_path, os.pardir)))
+    zip_path = '{}/{}.zip'.format(os.path.abspath(os.path.join(output_path, os.pardir)), import_filename)
     zipf = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
     zipdir(output_path, zipf)
     zipf.close()
@@ -73,10 +73,10 @@ def create_import_file(train_df, classes, output_path):
 
 class DialogflowService(ApiService):
 
-    def __init__(self, classes, max_api_calls=200, verbose=False):
+    def __init__(self, classes, max_api_calls=200, verbose=False, client_access_token=None):
         super().__init__(classes, max_api_calls, verbose)
         secrets = SecretsManager()
-        client_access_token = secrets.get_secret('dialogflow/client_access_token')
+        client_access_token = client_access_token or secrets.get_secret('dialogflow/client_access_token')
         self.headers = {'Authorization': 'Bearer {}'.format(client_access_token)}
 
     def predict(self, utterance):

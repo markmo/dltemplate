@@ -11,7 +11,7 @@ from text_classification_benchmarks.word_cnn.util import preprocess, save_eval_t
 def run(constant_overwrites):
     config_path = os.path.join(os.path.dirname(__file__), 'hyperparams.yml')
     constants = merge_dict(load_hyperparams(config_path), constant_overwrites)
-    train_df, val_df, test_df, classes = load_data()
+    train_df, val_df, test_df, classes = load_data(dirname=constants['data_dir'])
     train_df = remove_classes_with_too_few_examples(clean_data(train_df))
     val_df = remove_classes_with_too_few_examples(clean_data(val_df))
     n_classes = len(classes)
@@ -59,6 +59,7 @@ if __name__ == '__main__':
     parser.add_argument('--embedding-size', dest='embed_size', type=int, help='embedding size')
     parser.add_argument('--filter-sizes', dest='filter_sizes', type=str, help='comma-separated filter sizes')
     parser.add_argument('--learning-rate', dest='learning_rate', type=float, help='learning rate')
+    parser.add_argument('--data-dir', dest='data_dir', type=str, help='relative path to data')
     parser.add_argument('--checkpoint-dir', dest='checkpoint_dir', type=str,
                         help='checkpoint directory from training run')
     parser.add_argument('--word2vec-filename', dest='word2vec_filename', type=str,

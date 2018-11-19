@@ -164,6 +164,7 @@ def train(x, y, vocab, vocab_inv, labels, constants):
     # Create a directory, everything related to the training will be saved in this directory
     ts = str(int(time.time()))
     trained_dir = 'trained_results_{}/'.format(ts)
+    print('trained_dir:', trained_dir)
     if os.path.exists(trained_dir):
         shutil.rmtree(trained_dir)
 
@@ -282,3 +283,5 @@ def train(x, y, vocab, vocab_inv, labels, constants):
         constants['seq_len'] = x_train.shape[1]
         with open(trained_dir + 'trained_params.json', 'w') as f:
             json.dump(constants, f, indent=4, sort_keys=True, ensure_ascii=False)
+
+    return trained_dir

@@ -103,6 +103,7 @@ def tfidf_features(x_train, x_val, x_test, min_df=5, max_df=0.9, ngram_range=Non
     vectorizer = TfidfVectorizer(min_df=min_df, max_df=max_df, ngram_range=ngram_range)
     x_train = vectorizer.fit_transform(x_train)
     x_val = vectorizer.transform(x_val)
-    x_test = vectorizer.transform(x_test)
+    if x_test is not None:
+        x_test = vectorizer.transform(x_test)
 
     return x_train, x_val, x_test, vectorizer.vocabulary_

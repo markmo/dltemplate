@@ -12,6 +12,9 @@ def create_import_file(train_df, classes, output_path, bot_name):
     os.makedirs(output_path, exist_ok=True)
     intents_json = []
     grouped = train_df.groupby(['label'])
+    all_utterances = {}
+    too_long_count = 0
+    duplicate_count = 0
     for label, indices in grouped.groups.items():
         intent = safe_list_get(classes[:100], label)
         if intent:
@@ -24,10 +27,15 @@ def create_import_file(train_df, classes, output_path, bot_name):
                 utter = re.sub(r'\s([.\-])', r'\1', utter)
                 utter = re.sub(r'((^|\s)[.\-]+(\s|$))', '', utter)
                 utter = utter.strip()[:200]
-                if 1 < len(utter) <= 200:
+                if utter in all_utterances:
+                    print('Utterance duplicated across intents, ignoring.')
+                    duplicate_count += 1
+                elif 1 < len(utter) <= 200:
                     utterances_json.append(utter)
+                    all_utterances[utter] = True
                 else:
-                    print('ERROR!')
+                    print('Utterance too long, ignoring.')
+                    too_long_count += 1
 
             intent_json = {
                 'description': intent,
@@ -58,6 +66,8 @@ def create_import_file(train_df, classes, output_path, bot_name):
             }
             intents_json.append(intent_json)
 
+    del all_utterances
+    print('Total duplicates:', duplicate_count, 'too long:', too_long_count)
     with open('{}/{}_Export.json'.format(output_path, bot_name), 'w') as f:
         import_json = {
             'metadata': {
@@ -66,7 +76,7 @@ def create_import_file(train_df, classes, output_path, bot_name):
                 'importFormat': 'JSON'
             },
             'resource': {
-                'name': 'intent_test',
+                'name': bot_name,
                 'version': '1',
                 'intents': intents_json,
                 'voiceId': '0',
@@ -136,7 +146,7 @@ class LexService(ApiService):
                 label = self.predict_label(utterance)
                 y_pred.append(label)
                 if self.verbose:
-                    print('{}, {}, {}'.format(utterance, self.classes[label], y_true))
+                    print('Utterance: {}, Pred: {}, True: {}'.format(utterance, self.classes[label], y_true))
                     print()
 
                 if self.max_api_calls and j > self.max_api_calls - 1:  # save on API calls
