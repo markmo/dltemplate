@@ -1,0 +1,39 @@
+__label__BURGLARY
+__label__OTHER OFFENSES
+__label__LARCENY/THEFT
+__label__ASSAULT
+__label__DRUG/NARCOTIC
+__label__NON-CRIMINAL
+__label__SUSPICIOUS OCC
+__label__VEHICLE THEFT
+__label__DRUNKENNESS
+__label__WARRANTS
+__label__MISSING PERSON
+__label__PROSTITUTION
+__label__FORGERY/COUNTERFEITING
+__label__ROBBERY
+__label__FRAUD
+__label__STOLEN PROPERTY
+__label__WEAPON LAWS
+__label__SECONDARY CODES
+__label__VANDALISM
+__label__SEX OFFENSES FORCIBLE
+__label__TRESPASS
+__label__LIQUOR LAWS
+__label__DRIVING UNDER THE INFLUENCE
+__label__KIDNAPPING
+__label__FAMILY OFFENSES
+__label__DISORDERLY CONDUCT
+__label__RUNAWAY
+__label__LOITERING
+__label__RECOVERED VEHICLE
+__label__ARSON
+__label__BRIBERY
+__label__EMBEZZLEMENT
+__label__BAD CHECKS
+__label__SEX OFFENSES NON FORCIBLE
+__label__SUICIDE
+__label__GAMBLING
+__label__EXTORTION
+__label__PORNOGRAPHY/OBSCENE MAT
+__label__TREA

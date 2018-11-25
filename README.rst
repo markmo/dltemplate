@@ -66,6 +66,7 @@ Model Templates
 60. `Multi-class Text Classification using BERT - Transfer Learning using Deep Bidirectional Transformers <https://github.com/markmo/bert>`_ (TensorFlow)
 
 
+
 Special Topics
 ^^^^^^^^^^^^^^
 

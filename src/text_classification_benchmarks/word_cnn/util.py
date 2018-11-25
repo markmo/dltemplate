@@ -68,7 +68,7 @@ def preprocess(train_df, val_df, n_classes):
     x_train = np.array(list(vocab_processor.transform(x_train)))
     x_val = np.array(list(vocab_processor.transform(x_val)))
 
-    # Randomly shuffle data
+    # Shuffle data
     np.random.seed(42)
     shuffle_indices_train = np.random.permutation(np.arange(len(y_train)))
     x_train_shuffled = x_train[shuffle_indices_train]

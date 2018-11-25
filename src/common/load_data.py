@@ -329,6 +329,13 @@ def load_pix2pix_dataset(category):
         )
 
 
+def load_question_pairs_dataset(test_size=1000):
+    train_df = pd.read_csv(DATA_DIR + 'question_pairs/train.csv', header=0)
+    test_df = pd.read_csv(DATA_DIR + 'question_pairs/test.csv', header=0)
+    return (train_df[['qid1', 'qid2', 'question1', 'question2', 'is_duplicate']],
+            test_df[['question1', 'question2']][:test_size])
+
+
 def load_quickdraw_dataset(category, target_dir, fmt='npy'):
     """
     The Quick Draw Dataset is a collection of 50 million drawings across 345 categories,

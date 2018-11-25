@@ -116,7 +116,7 @@ class LexService(ApiService):
         super().__init__(classes, max_api_calls, verbose)
         self.bot_name = bot_name
         self.bot_alias = bot_alias
-        self.short_classes = list(map(lambda x: x.replace('-', '_'), classes[:100].tolist()))
+        self.short_classes = list(map(lambda x: re.sub(r'[0-9]', 'D', x.replace('-', '_')), classes[:100].tolist()))
         self.client = boto3.client('lex-runtime', region_name='us-east-1')
 
     def predict(self, utterance):
@@ -133,14 +133,18 @@ class LexService(ApiService):
         intent = self.predict(utterance)
         toc = time.time()
         self.elapsed.append(toc - tic)
-        return self.short_classes.index(intent) if intent else -1
+        try:
+            return self.short_classes.index(intent) if intent else -1
+        except Exception as e:
+            print('ERR:', e)
+            return -1
 
     def predict_batch(self, val_df):
         y_pred = []
         j = 0
         for i, utterance in enumerate(val_df.utterance.values):
             y_true = self.classes[val_df.label.values[i]]
-            y_true = y_true.replace('-', '_')
+            y_true = re.sub(r'[0-9]', 'D', y_true.replace('-', '_'))
             if y_true in self.short_classes:
                 j += 1
                 label = self.predict_label(utterance)
@@ -151,6 +155,9 @@ class LexService(ApiService):
 
                 if self.max_api_calls and j > self.max_api_calls - 1:  # save on API calls
                     break
+            else:
+                print('ERR: true label not found in classes sublist')
+                y_pred.append(-1)
 
         return y_pred
 

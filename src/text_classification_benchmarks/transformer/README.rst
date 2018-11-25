@@ -1,6 +1,8 @@
 Transformer - Attention is all you need
 ---------------------------------------
 
+See `Attention Is All You Need <https://arxiv.org/pdf/1706.03762.pdf>`_.
+
 Self-attention, sometimes called intra-attention is an attention mechanism relating
 different positions of a single sequence in order to compute a representation of the
 sequence. Self-attention has been used successfully in a variety of tasks including

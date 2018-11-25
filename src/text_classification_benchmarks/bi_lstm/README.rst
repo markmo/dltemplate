@@ -11,3 +11,4 @@ network and result in faster and even fuller learning on the problem.
 
 
 --test --checkpoint=clf-6000
+--data-dir=balanced --model-name=model_bal --vocab-name=vocab_bal --summaries-name=summaries_bal

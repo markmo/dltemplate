@@ -25,7 +25,11 @@ class ApiService(object):
         intent = self.predict(utterance)
         toc = time.time()
         self.elapsed.append(toc - tic)
-        return self.classes.index(intent) if intent else -1
+        try:
+            return self.classes.index(intent) if intent else -1
+        except Exception as e:
+            print('ERR:', e)
+            return -1
 
     def predict_batch(self, val_df):
         y_pred = []

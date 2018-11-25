@@ -15,3 +15,7 @@ num_checkpoint: 10  # Number of models to store
 min_frequency: 0  # Minimal word frequency
 outdir: '.'
 run_dir: '.'
+summaries_name: summaries
+model_name: model
+vocab_name: vocab
+data_dir: ''

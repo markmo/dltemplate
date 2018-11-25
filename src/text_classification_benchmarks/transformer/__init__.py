@@ -10,7 +10,7 @@ def run(constant_overwrites):
     config_path = os.path.join(os.path.dirname(__file__), 'hyperparams.yml')
     constants = merge_dict(load_hyperparams(config_path), constant_overwrites)
     classes_txt = '/Users/d777710/src/DeepLearning/dltemplate/src/text_classification_benchmarks/fastai/classes.txt'
-    classes = np.genfromtxt(classes_txt, dtype=str)
+    classes = np.genfromtxt(classes_txt, dtype=str, delimiter='\t')
     n_classes = len(classes)
     vocab_labels_filename = constants['vocab_labels_filename']
     if not os.path.exists(vocab_labels_filename):

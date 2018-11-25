@@ -25,3 +25,6 @@ ConvNets start to do better.
 ConvNets may work well for user-generated data. Further analysis is needed to validate the
 hypothesis that ConvNets are truly good at identifying exotic character combinations such as
 misspellings and emoticons.
+
+--model-filename=./models_bal/weights.best.hdf5
+--data-dir=balanced

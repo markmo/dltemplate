@@ -11,6 +11,29 @@ import urllib.request
 BASE_URL = 'https://westus.api.cognitive.microsoft.com/luis/v2.0'
 VERSION_ID = '0.1'
 
+"""
+Setup information:
+------------------
+1. Create an Azure resource and resource group. Sign up for an Azure account.
+   * Create new resource: search for 'luis', select 'Language Understanding', click 'Create'
+   * Enter Name, Subscription: 'Pay-As-You-Go', Location: (must be a region supported by
+     LUIS, 'Australia East' no good, I selected 'US West'), Pricing Tier: 'F0 (5 Calls per second,
+     10K Calls per month)', Select or create new Resource Group, then click 'Create'
+2. Sign up for LUIS at https://www.luis.ai/ using the same Microsoft account and
+   email address
+3. Under 'My Apps', click 'Import new app'
+4. After import, click 'Train'
+5. Click 'Manage':
+   * Note the 'Application ID' under 'Application Information'. This will be needed
+     to call the service.
+   * Click on 'Keys and Endpoints' in the left menu
+   * At the bottom, click on 'Assign resource'
+   * Enter Tenant name: your Azure account, Subscription Name: 'Pay-As-You-Go',
+     LUIS resource name: the name of resource created above, then click 'Assign resource'
+6. The resource is added to the table below. Copy one of the keys. This will be needed
+   to call the service. Also note the URL endpoint: use this to call the service.
+"""
+
 
 def create_import_file(train_df, classes, output_path=None, app_name='intent_test'):
     intents = []
@@ -86,4 +109,5 @@ class LuisService(ApiService):
     def predict(self, utterance):
         response = requests.get(self.url % utterance)
         response_json = response.json()
+        # time.sleep(.2)  # LUIS rate limit of 5TPS
         return response_json.get('topScoringIntent', {}).get('intent')

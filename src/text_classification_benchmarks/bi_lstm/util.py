@@ -1,6 +1,7 @@
 from datetime import datetime
 import numpy as np
 import os
+import pandas as pd
 import re
 import tensorflow as tf
 from tensorflow.contrib import learn
@@ -41,18 +42,20 @@ def batch_iter(data, labels, lengths, batch_size, n_epochs):
         yield x, y, seq_len
 
 
-def load_dataset(outdir, min_frequency=0, dirname='.'):
+def load_dataset(outdir, min_frequency=0, dirname='.', vocab_name='vocab'):
     train_df, val_df, test_df, classes = load_data(dirname=dirname)
     train_df = remove_classes_with_too_few_examples(clean_data(train_df))
     val_df = remove_classes_with_too_few_examples(clean_data(val_df))
-    train_labels, train_utterances, train_lengths = prepare_data(train_df)
-    val_labels, val_utterances, val_lengths = prepare_data(val_df)
+    test_df = clean_data(test_df)
+    train_val_df = pd.concat([train_df, val_df])
+    train_labels, train_utterances, train_lengths = prepare_data(train_val_df)
+    val_labels, val_utterances, val_lengths = prepare_data(test_df)
     (train_data, train_labels, train_lengths,
      val_data, val_labels, val_lengths,
      max_length, vocab_size, vocab_processor) = \
         process_data(train_labels, train_utterances, train_lengths,
                      val_labels, val_utterances, val_lengths, min_frequency)
-    vocab_processor.save(os.path.join(outdir, 'vocab'))
+    vocab_processor.save(os.path.join(outdir, vocab_name))
     return (train_data, train_labels, train_lengths,
             val_data, val_labels, val_lengths,
             max_length, vocab_size, classes)
@@ -82,7 +85,7 @@ def process_data(train_labels, train_utterances, train_lengths, val_labels, val_
 # noinspection PyUnusedLocal
 def train(train_data, x_val, y_val, val_lengths, n_classes, vocab_size, n_hidden, n_layers,
           l2_reg_lambda, learning_rate, decay_steps, decay_rate, keep_prob, outdir, num_checkpoint,
-          evaluate_every_steps, save_every_steps):
+          evaluate_every_steps, save_every_steps, summaries_name='summaries', model_name='model'):
     with tf.Graph().as_default():
         with tf.Session() as sess:
             model = BiLSTM(n_classes, vocab_size, n_hidden, n_layers, l2_reg_lambda)
@@ -97,11 +100,11 @@ def train(train_data, x_val, y_val, val_lengths, n_classes, vocab_size, n_hidden
             accuracy_summary = tf.summary.scalar('Accuracy', model.accuracy)
 
             train_summary_op = tf.summary.merge_all()
-            train_summary_dir = os.path.join(outdir, 'summaries_bal', 'train')
+            train_summary_dir = os.path.join(outdir, summaries_name, 'train')
             train_summary_writer = tf.summary.FileWriter(train_summary_dir, sess.graph)
 
             val_summary_op = tf.summary.merge_all()
-            val_summary_dir = os.path.join(outdir, 'summaries_bal', 'valid')
+            val_summary_dir = os.path.join(outdir, summaries_name, 'valid')
             val_summary_writer = tf.summary.FileWriter(val_summary_dir, sess.graph)
 
             saver = tf.train.Saver(max_to_keep=num_checkpoint)
@@ -150,6 +153,7 @@ def train(train_data, x_val, y_val, val_lengths, n_classes, vocab_size, n_hidden
                 return accuracy
 
             print('Start training...')
+            current_step = 0
             for train_input in train_data:
                 run_step(train_input, is_training=True)
                 current_step = tf.train.global_step(sess, global_step)
@@ -159,8 +163,9 @@ def train(train_data, x_val, y_val, val_lengths, n_classes, vocab_size, n_hidden
                     print('')
 
                 if current_step % save_every_steps == 0:
-                    saver.save(sess, os.path.join(outdir, 'model_bal/clf'), current_step)
+                    saver.save(sess, os.path.join(outdir, model_name + '/clf'), current_step)
 
+            saver.save(sess, os.path.join(outdir, model_name + '/clf'), current_step)
             print('\nAll files have been saved to {}\n'.format(outdir))
 
 
@@ -183,17 +188,17 @@ def _clean_data(text):
     return text
 
 
-def test(data, labels, lengths, batch_size, run_dir, checkpoint):
+def test(data, labels, lengths, batch_size, run_dir, checkpoint, model_name='model'):
     # Restore graph
     graph = tf.Graph()
     with graph.as_default():
         sess = tf.Session()
 
         # Restore metagraph
-        saver = tf.train.import_meta_graph('{}.meta'.format(os.path.join(run_dir, 'model_bal', checkpoint)))
+        saver = tf.train.import_meta_graph('{}.meta'.format(os.path.join(run_dir, model_name, checkpoint)))
 
         # Restore weights
-        saver.restore(sess, os.path.join(run_dir, 'model_bal', checkpoint))
+        saver.restore(sess, os.path.join(run_dir, model_name, checkpoint))
 
         # Get tensors
         input_x = graph.get_tensor_by_name('input_x:0')

@@ -20,11 +20,11 @@ def load_data(dirname='.'):
     train_csv = '{}/fastai/{}/train.csv'.format(current_dir, dirname)
     val_csv = '{}/fastai/{}/val.csv'.format(current_dir, dirname)
     test_csv = '{}/fastai/{}/test.csv'.format(current_dir, dirname)
-    classes_txt = current_dir + '/fastai/classes.txt'
+    classes_txt = '{}/fastai/{}/classes.txt'.format(current_dir, dirname)
     train_df = pd.read_csv(train_csv, header=None)
     val_df = pd.read_csv(val_csv, header=None)
     test_df = pd.read_csv(test_csv, header=None)
-    classes = np.genfromtxt(classes_txt, dtype=str)
+    classes = np.genfromtxt(classes_txt, dtype=str, delimiter='\t')
     print('Lengths Train: {}, Val: {}, Test: {}, Classes: {}'
           .format(len(train_df), len(val_df), len(test_df), len(classes)))
     return train_df, val_df, test_df, classes

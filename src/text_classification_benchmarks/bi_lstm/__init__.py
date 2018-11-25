@@ -11,11 +11,12 @@ def run(constant_overwrites):
     outdir = constants['outdir']
     run_dir = constants['run_dir']
     x_train, y_train, train_lengths, x_val, y_val, val_lengths, max_length, vocab_size, classes = \
-        load_dataset(outdir, dirname=constants['data_dir'])
+        load_dataset(outdir, dirname=constants['data_dir'], vocab_name=constants['vocab_name'])
 
     if constants['test']:
         print('\nTesting...')
-        preds = test(x_val, y_val, val_lengths, constants['test_batch_size'], run_dir, constants['checkpoint'])
+        preds = test(x_val, y_val, val_lengths, constants['test_batch_size'], run_dir, constants['checkpoint'],
+                     constants['model_name'])
 
         # Save all predictions
         with open(os.path.join(run_dir, 'predictions.csv'), 'w', encoding='utf-8', newline='') as f:
@@ -34,7 +35,8 @@ def run(constant_overwrites):
               constants['l2_reg_lambda'], constants['learning_rate'],
               constants['decay_steps'], constants['decay_rate'],
               constants['keep_prob'], outdir, constants['num_checkpoint'],
-              constants['evaluate_every_steps'], constants['save_every_steps'])
+              constants['evaluate_every_steps'], constants['save_every_steps'],
+              constants['summaries_name'], constants['model_name'])
 
 
 if __name__ == '__main__':
@@ -49,6 +51,9 @@ if __name__ == '__main__':
     parser.add_argument('--outdir', dest='outdir', type=str, help='save directory')
     parser.add_argument('--rundir', dest='run_dir', type=str, help='run directory')
     parser.add_argument('--data-dir', dest='data_dir', type=str, help='relative path to data')
+    parser.add_argument('--model-name', dest='model_name', type=str, help='model name')
+    parser.add_argument('--vocab-name', dest='vocab_name', type=str, help='vocab name')
+    parser.add_argument('--summaries-name', dest='summaries_name', type=str, help='summaries name')
     parser.add_argument('--checkpoint', dest='checkpoint', type=str,
                         help='restore the graph from this model checkpoint')
     parser.add_argument('--test', dest='test',

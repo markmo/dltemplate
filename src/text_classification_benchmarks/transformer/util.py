@@ -15,11 +15,12 @@ ROOT = os.path.dirname(os.path.realpath(__file__))
 
 def train(training_data_path, n_classes, learning_rate, batch_size, n_epochs, decay_steps, decay_rate,
           seq_len, embed_size, d_model, d_k, d_v, h, n_layers, l2_lambda, keep_prob, checkpoint_dir,
-          use_embedding, vocab_labels_filename, word2vec_filename, validate_step, is_multilabel):
-    word2idx, idx2word = create_vocab(word2vec_filename, name_scope='transformer_classification')
+          use_embedding, vocab_labels_filename, word2vec_filename, validate_step, is_multilabel,
+          name_scope='transformer_classification'):
+    word2idx, idx2word = create_vocab(word2vec_filename, name_scope=name_scope)
     vocab_size = len(word2idx)
     print('vocab_size:', vocab_size)
-    word2idx_label, idx2word_label = create_vocab_labels(vocab_labels_filename, name_scope='transformer_classification')
+    word2idx_label, idx2word_label = create_vocab_labels(vocab_labels_filename, name_scope=name_scope)
     (x_train, y_train), (x_test, y_test), _ = \
         load_data_multilabel_new(training_data_path, word2idx, word2idx_label, is_multilabel=is_multilabel)
     x_train = pad_sequences(x_train, maxlen=seq_len, value=0.)
@@ -64,7 +65,7 @@ def train(training_data_path, n_classes, learning_rate, batch_size, n_epochs, de
                 loss, counter, acc = loss + curr_loss, counter + 1, acc + curr_acc
                 if counter % 50 == 0:
                     print('Epoch: %d\tBatch: %d\tTrain Loss: %.3f\tTrain Accuracy: %.3f' %
-                          (epoch, counter, loss / float(counter), acc / float(counter)))
+                          (epoch + 1, counter, loss / float(counter), acc / float(counter)))
 
                 if batch_size != 0 and start % (validate_step * batch_size) == 0:
                     eval_loss, eval_acc = do_eval(sess, model, x_test, y_test, batch_size)
@@ -234,11 +235,11 @@ def sort_by_value(d):
 
 def predict(test_file, n_classes, learning_rate, batch_size, decay_steps, decay_rate, seq_len,
             embed_size, d_model, d_k, d_v, h, n_layers, l2_lambda, checkpoint_dir,
-            vocab_labels_filename, word2vec_filename):
-    word2idx, idx2word = create_vocab(word2vec_filename, name_scope='transformer_classification')
+            vocab_labels_filename, word2vec_filename, name_scope='transformer_classification'):
+    word2idx, idx2word = create_vocab(word2vec_filename, name_scope=name_scope)
     vocab_size = len(word2idx)
     print('Transformer Classification Vocab size:', vocab_size)
-    word2idx_label, idx2word_label = create_vocab_labels(vocab_labels_filename, name_scope='transformer_classification')
+    word2idx_label, idx2word_label = create_vocab_labels(vocab_labels_filename, name_scope=name_scope)
     test_raw = load_final_test_data(test_file)
     test_data = load_data_predict(word2idx, test_raw)
     x = []
@@ -275,7 +276,7 @@ def predict(test_file, n_classes, learning_rate, batch_size, decay_steps, decay_
 
 
 def get_label_using_logits_batch(indices_batch, logits_batch, idx2word_label, top=5):
-    print('logits_batch shape:', np.array(logits_batch).shape)
+    # print('logits_batch shape:', np.array(logits_batch).shape)
     result = []
     for i, logits in enumerate(logits_batch):
         labels = get_label_using_logits(logits, idx2word_label, top=top)
