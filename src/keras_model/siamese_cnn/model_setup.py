@@ -1,7 +1,7 @@
 # noinspection PyPep8Naming
 from keras import backend as K
-from keras.layers import Activation, Add, BatchNormalization, Concatenate, Conv1D, Dense, Dropout, Embedding
-from keras.layers import GlobalMaxPooling1D, Input, Lambda, Multiply
+from keras.layers import Activation, BatchNormalization, Concatenate, Conv1D, Dense, Dropout, Embedding
+from keras.layers import GlobalMaxPooling1D, Input, Lambda, Multiply, Subtract
 from keras.models import Model
 
 
@@ -84,7 +84,9 @@ def build_siamese_cnn_model(vocab_size, embed_dim, embeddings, has_shared_embedd
     # Mix
     t_prod = Multiply(name='product')([doc1_output, doc2_output])
     # Keras 2.0.6 doesn't have keras.layers.Subtract, add a negative instead
-    t_diff = Add(name='diff')([doc1_output, -doc2_output])
+    # Negative sign causes "attributeError: 'Tensor' object has no attribute '_keras_history'"!!
+    # t_diff = Add(name='diff')([doc1_output, -doc2_output])
+    t_diff = Subtract(name='diff')([doc1_output, doc2_output])
 
     # Merge
     X = Concatenate(name='merged')([t_diff, t_prod, doc1_output, doc2_output])
@@ -94,7 +96,7 @@ def build_siamese_cnn_model(vocab_size, embed_dim, embeddings, has_shared_embedd
     # Fully connected
     for fc in range(n_fc_layers):
         X = Dense(fc_layer_dims[fc], activation=None, name='fc_{}'.format(fc + 1))(X)
-        X = BatchNormalization(name='bn_fc_'.format(fc + 1))(X)
+        X = BatchNormalization(name='bn_fc_{}'.format(fc + 1))(X)
         X = Activation('relu', name='relu_{}'.format(fc + 1))(X)
 
     # Output

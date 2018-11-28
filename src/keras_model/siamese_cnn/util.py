@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 import gensim
 import keras
 import math
@@ -7,73 +8,103 @@ import pandas as pd
 import pickle
 import spacy
 import sys
+import time
 
 PAD = '__PAD__'
 UNK = '__UNK__'
 
 
-def create_vocab(train_df):
-    print('Creating vocab')
-    if os.path.exists('./vocab_cache/train_df.pkl'):
-        train_df = pd.read_pickle('./vocab_cache/train_df.pkl')
+@contextmanager
+def timed(activity):
+    print('\nStart', activity)
+    tic = time.time()
+    yield
+    toc = time.time()
+    print('End {}, duration: {:.5f}'.format(activity, toc - tic))
+
+
+def prepare_training_data(train_df):
+    if os.path.exists('doc1_tokens.npy'):
+        with timed('loading tokens'):
+            q1_tokens = np.load('doc1_tokens.npy')
+            q2_tokens = np.load('doc2_tokens.npy')
+            q1_length = np.vectorize(len)(q1_tokens)
+            q2_length = np.vectorize(len)(q1_tokens)
     else:
-        tokenize = spacy.load('en_core_web_sm')
-        print('Start tokenizing')
-        train_df = train_df.assign(q1_tokens=train_df.question1.apply(tokenize).values,
-                                   q2_tokens=train_df.question2.apply(tokenize).values)
-        train_df = train_df.assign(q1_length=train_df.q1_tokens.apply(len).values,
-                                   q2_length=train_df.q2_tokens.apply(len).values)
-        train_df.to_pickle('./vocab_cache/train_df.pkl')
-        print('End tokenizing')
+        with timed('loading spacy'):
+            tokenize = spacy.load('en_core_web_sm')
 
-    docs = np.concatenate([train_df.q1_tokens, train_df.q2_tokens])
-    max_length = 0
-    unique_tokens = set()
-    for doc in docs:
-        n_tokens = len(doc)
-        if n_tokens > max_length:
-            max_length = n_tokens
+        with timed('tokenizing'):
+            q1_tokens = train_df.question1.apply(lambda q: [t.text for t in tokenize(q)]).values
+            q2_tokens = train_df.question2.apply(lambda q: [t.text for t in tokenize(q)]).values
+            q1_length = np.vectorize(len)(q1_tokens)
+            q2_length = np.vectorize(len)(q1_tokens)
 
-        for token in doc:
-            unique_tokens.add(token)
+    return train_df.assign(q1_tokens=q1_tokens, q2_tokens=q2_tokens, q1_length=q1_length, q2_length=q2_length)
 
-    word2idx = {word: i + 2 for i, word in enumerate(unique_tokens)}
-    word2idx[PAD] = 0
-    word2idx[UNK] = 1
-    idx2word = {i: word for word, i in word2idx.items()}
-    print('Vocab size: {:d}'.format(len(word2idx)))
-    docs1 = train_df.q1_tokens.apply(lambda xs: [word2idx[x] for x in xs]).values
-    docs2 = train_df.q2_tokens.apply(lambda xs: [word2idx[x] for x in xs]).values
-    train_df = train_df.assign(q1_encoded=docs1, q2_encoded=docs2)
+
+def create_vocab(train_df):
+    with timed('creating vocab'):
+        docs = np.concatenate([train_df.q1_tokens, train_df.q2_tokens])
+        max_length = 0
+        unique_tokens = set()
+        for doc in docs:
+            n_tokens = len(doc)
+            if n_tokens > max_length:
+                max_length = n_tokens
+
+            for token in doc:
+                unique_tokens.add(token)
+
+        word2idx = {word: i + 2 for i, word in enumerate(unique_tokens)}
+        word2idx[PAD] = 0
+        word2idx[UNK] = 1
+        idx2word = {i: word for word, i in word2idx.items()}
+        print('Vocab size: {:,}'.format(len(word2idx)))
+
+        return word2idx, idx2word
+
+
+def encode(train_df, word2idx):
+    with timed('encoding'):
+        q1_encoded = train_df.q1_tokens.apply(lambda xs: [word2idx[x] for x in xs]).values
+        q2_encoded = train_df.q2_tokens.apply(lambda xs: [word2idx[x] for x in xs]).values
+
+    return train_df.assign(q1_encoded=q1_encoded, q2_encoded=q2_encoded)
 
     # Shuffle data
-    np.random.seed(42)
-    shuffle_indices = np.random.permutation(np.arange(len(train_df)))
-    docs1_shuffled = docs1[shuffle_indices]
-    docs2_shuffled = docs2[shuffle_indices]
-    y_shuffled = train_df.is_duplicate[shuffle_indices].values
-
-    return docs1_shuffled, docs2_shuffled, y_shuffled, word2idx, idx2word, train_df
+    # np.random.seed(42)
+    # shuffle_indices = np.random.permutation(np.arange(len(train_df)))
+    # docs1_shuffled = docs1[shuffle_indices]
+    # docs2_shuffled = docs2[shuffle_indices]
+    # y_shuffled = train_df.is_duplicate[shuffle_indices].values
+    #
+    # return docs1_shuffled, docs2_shuffled, y_shuffled, train_df
 
 
 def load_embeddings(idx2word, embed_size, word2vec_filename):
-    word2vec = gensim.models.KeyedVectors.load_word2vec_format(word2vec_filename, binary=True, limit=500000)
-    embedding_lookup = {}
-    for word, vector in zip(word2vec.vocab, word2vec.vectors):
-        embedding_lookup[word] = vector
+    with timed('loading word2vec'):
+        word2vec = gensim.models.KeyedVectors.load_word2vec_format(word2vec_filename, binary=True, limit=500000)
+        print('word2vec shape:', word2vec.shape)
 
-    vocab_size = len(idx2word)
-    bound = np.sqrt(6.0) / np.sqrt(vocab_size)
-    embeddings = np.zeros([vocab_size, embed_size])
-    embeddings[0] = np.zeros(embed_size)
-    for i in range(1, vocab_size):
-        embedding = embedding_lookup.get(idx2word[i], None)
-        if embedding is None:
-            embeddings[i] = np.random.uniform(-bound, bound, embed_size)
-        else:
-            embeddings[i] = embedding
+    with timed('building embeddings'):
+        embedding_lookup = {}
+        for word, vector in zip(word2vec.vocab, word2vec.vectors):
+            embedding_lookup[word] = vector
 
-    return embeddings
+        vocab_size = len(idx2word)
+        bound = np.sqrt(6.0) / np.sqrt(vocab_size)
+        embeddings = np.zeros([vocab_size, embed_size])
+        print('embeddings shape:', embeddings.shape)
+        embeddings[0] = np.zeros(embed_size)
+        for i in range(1, vocab_size):
+            embedding = embedding_lookup.get(idx2word[i], None)
+            if embedding is None:
+                embeddings[i] = np.random.uniform(-bound, bound, embed_size)
+            else:
+                embeddings[i] = embedding
+
+        return embeddings
 
 
 class BucketedBatchGenerator(keras.utils.Sequence):
@@ -163,19 +194,17 @@ def bucket_cases(train_df, n_doc1_quantile, n_doc2_quantile):
     doc1_quantiles = [float(x) / n_doc1_quantile for x in range(0, n_doc1_quantile + 1)]
     doc2_quantile_labels = ['q2_' + str(x) for x in range(1, n_doc2_quantile + 1)]
     doc2_quantiles = [float(x) / n_doc2_quantile for x in range(0, n_doc2_quantile + 1)]
-    train_df = train_df.assign('q1_quantiles',
-                               pd.qcut(train_df.q1_length, q=doc1_quantiles, labels=doc1_quantile_labels))
+    train_df = train_df.assign(q1_quantiles=pd.qcut(train_df.q1_length, q=doc1_quantiles, labels=doc1_quantile_labels))
     for ql in doc1_quantile_labels:
         train_df.loc[train_df.q1_quantiles == ql, 'q2_quantiles'] = \
             pd.qcut(train_df[train_df.q1_quantiles == ql].q2_length, q=doc2_quantiles, labels=doc2_quantile_labels)
 
-    return train_df.assign('bucket',
-                           train_df.apply(lambda x: '{}_{}'.format(x.q2_quantiles, x.q1_quantiles), axis=1))
+    return train_df.assign(bucket=train_df.apply(lambda x: '{}_{}'.format(x.q2_quantiles, x.q1_quantiles), axis=1))
 
 
 def write_bucket(df, dirname, bucket_id=None):
     bucket_dir = dirname
-    if not bucket_id.endswith('/'):
+    if not bucket_dir.endswith('/'):
         bucket_dir += '/'
 
     if bucket_id:
@@ -198,6 +227,8 @@ def write_bucket(df, dirname, bucket_id=None):
 
 
 def encoded_series_to_matrix_with_padding(encoded_series, pad_to):
+    print('\nencoded_series shape:', encoded_series.shape)
+    print('pad_to:', pad_to)
     return np.vstack([np.pad(x, (0, pad_to - len(x)), mode='constant').reshape(pad_to, 1).T for x in encoded_series])
 
 

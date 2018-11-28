@@ -527,5 +527,7 @@ def load_word2vec_embeddings(limit=500000):
     """
     url = 'https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing'
     file_path = DATA_DIR + 'word2vec/GoogleNews-vectors-negative300.bin'
-    util_download.download_file(url, file_path)
+    if not os.path.exists(file_path):
+        util_download.download_file(url, file_path)
+
     return gensim.models.KeyedVectors.load_word2vec_format(file_path, binary=True, limit=limit)

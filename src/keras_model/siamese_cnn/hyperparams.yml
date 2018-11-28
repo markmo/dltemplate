@@ -1,4 +1,4 @@
-embed_size: 3000  # embedding size; matching GoogleNews word2vec set
+embed_size: 300  # embedding size; matching GoogleNews word2vec set
 word2vec_filename: ../../../data/word2vec/GoogleNews-vectors-negative300.bin  # word2vec's vocabulary and vectors
 has_shared_embedding: true
 has_shared_filters: true
@@ -7,9 +7,10 @@ n_filters_per_size: 200
 is_normalized: true
 n_fc_layers: 2  # not including output layer
 model_path: ./model
-output_dir: ./encoded_data_arrays/
+output_dir: ./encoded_data_arrays
 output_dataset_name: bucketed
 n_epochs: 10
 dropout_prob: 0.5
 batch_size: 256
 n_gpus: 1
+cache_dir: ./cache

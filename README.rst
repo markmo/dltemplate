@@ -64,7 +64,7 @@ Model Templates
 58. `Multi-class Text Classification using Character-level CNN <src/text_classification_benchmarks/char_cnn/>`_ (Keras)
 59. `Multi-class Text Classification using a Transformer Model <src/text_classification_benchmarks/transformer/>`_ (TensorFlow)
 60. `Multi-class Text Classification using BERT - Transfer Learning using Deep Bidirectional Transformers <https://github.com/markmo/bert>`_ (TensorFlow)
-
+61. `Siamese CNN for document matching <src/keras_model/siamese_cnn>`_ (Keras)
 
 
 Special Topics

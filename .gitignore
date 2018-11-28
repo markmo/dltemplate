@@ -211,3 +211,5 @@ set_env_vars_balanced.sh
 **/fasttext/*.txt
 crime
 ~*
+cache
+encoded_data_arrays

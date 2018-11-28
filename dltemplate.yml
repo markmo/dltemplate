@@ -111,7 +111,7 @@ dependencies:
   - qt=5.9.5=h02808f3_0
   - qtconsole=4.3.1=py36hd96c0ff_0
   - readline=7.0=hc1231fa_4
-  - requests=2.12.4=py36_0
+  - requests=2.20.1=py36_0
   - s3transfer=0.1.13=py36_0
   - scikit-learn=0.18.2=np112py36_nomkl_0
   - scipy=0.18.1=np112py36_nomkl_1
