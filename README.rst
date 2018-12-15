@@ -65,6 +65,9 @@ Model Templates
 59. `Multi-class Text Classification using a Transformer Model <src/text_classification_benchmarks/transformer/>`_ (TensorFlow)
 60. `Multi-class Text Classification using BERT - Transfer Learning using Deep Bidirectional Transformers <https://github.com/markmo/bert>`_ (TensorFlow)
 61. `Siamese CNN for document matching <src/keras_model/siamese_cnn>`_ (Keras)
+62. `Text Generation via Adversarial Training <src/tf_model/leakgan>`_ (TensorFlow)
+63. `Question Detector using Word CNN <src/tf_model/question_detector>`_ (TensorFlow)
+64. `Decomposable Attention to identify question pairs that have the same intent <src/keras_model/decomposable_attention>`_ (Keras)
 
 
 Special Topics

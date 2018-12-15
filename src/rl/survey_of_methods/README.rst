@@ -20,6 +20,27 @@ Reinforcement Learning is a third type of machine learning:
 2. Unsupervised Learning
 3. Reinforcement Learning
 
+Why the interest in RL? Using John Boyd's [OODA Loop](https://en.wikipedia.org/wiki/OODA_loop)
+as an end-to-end process view of analytics, the Observe (data engineering) and Orient (analytics,
+insights, data science) phases receive a lot of attention. Decide and Act is often through a
+human agent (insight to dashboard to human perception to some assumed decision and action), or
+automated through simple rules/policies of the if-then-else variety.
+
+.. image:: ../../../images/ooda_loop.png
+
+Reinforcement learning is the application of machine learning to policy to automate decisions
+and actions taking into account feedback from the environment.
+
+Another way of looking at RL is as the study of agents and how they learn by trial and error.
+It formalizes the idea that rewarding or punishing an agent for its behaviour is more likely to
+repeat or forgo that behaviour in the future.
+
+Side note: RL is a form of operant conditioning (or instrumental conditioning) [Skinner, 1938],
+versus classical conditioning whereby events that occur together positively reinforce each other
+[Pavlov, 1927]. Both could be considered forms of Hebbian learning: development of formal models
+of how the synaptic weights between neurons are reinforced by simultaneous activation - "Cells
+that fire together, wire together." [Hebb, 1961]
+
 
 Approach to Learning
 ^^^^^^^^^^^^^^^^^^^^

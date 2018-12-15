@@ -29,7 +29,7 @@ def prepare_training_data(train_df):
             q1_tokens = np.load('doc1_tokens.npy')
             q2_tokens = np.load('doc2_tokens.npy')
             q1_length = np.vectorize(len)(q1_tokens)
-            q2_length = np.vectorize(len)(q1_tokens)
+            q2_length = np.vectorize(len)(q2_tokens)
     else:
         with timed('loading spacy'):
             tokenize = spacy.load('en_core_web_sm')
@@ -38,7 +38,7 @@ def prepare_training_data(train_df):
             q1_tokens = train_df.question1.apply(lambda q: [t.text for t in tokenize(q)]).values
             q2_tokens = train_df.question2.apply(lambda q: [t.text for t in tokenize(q)]).values
             q1_length = np.vectorize(len)(q1_tokens)
-            q2_length = np.vectorize(len)(q1_tokens)
+            q2_length = np.vectorize(len)(q2_tokens)
 
     return train_df.assign(q1_tokens=q1_tokens, q2_tokens=q2_tokens, q1_length=q1_length, q2_length=q2_length)
 
@@ -85,7 +85,6 @@ def encode(train_df, word2idx):
 def load_embeddings(idx2word, embed_size, word2vec_filename):
     with timed('loading word2vec'):
         word2vec = gensim.models.KeyedVectors.load_word2vec_format(word2vec_filename, binary=True, limit=500000)
-        print('word2vec shape:', word2vec.shape)
 
     with timed('building embeddings'):
         embedding_lookup = {}
@@ -137,11 +136,11 @@ class BucketedBatchGenerator(keras.utils.Sequence):
             batch_indexes = self.bucket_indexes[bucket][i * self.batch_size:i * self.batch_size + self.batch_size]
 
         docs1 = list_encoded_arrays_to_matrix_with_padding(
-            [self.input_data['docs1'][x]
-             for x in self.input_data[self.split][bucket]['docs1'][batch_indexes]], self.max_doc1_length)
+            np.array([np.array(self.input_data['docs1'][x])
+                      for x in self.input_data[self.split][bucket]['docs1'][batch_indexes]]), self.max_doc1_length)
         docs2 = list_encoded_arrays_to_matrix_with_padding(
-            [self.input_data['docs2'][x]
-             for x in self.input_data[self.split][bucket]['docs2'][batch_indexes]], self.max_doc2_length)
+            np.array([np.array(self.input_data['docs2'][x])
+                      for x in self.input_data[self.split][bucket]['docs2'][batch_indexes]]), self.max_doc2_length)
         outcomes = [self.input_data[self.split][bucket]['outcomes'][x] for x in batch_indexes]
         return [docs1, docs2], np.array(outcomes)
 
@@ -196,8 +195,19 @@ def bucket_cases(train_df, n_doc1_quantile, n_doc2_quantile):
     doc2_quantiles = [float(x) / n_doc2_quantile for x in range(0, n_doc2_quantile + 1)]
     train_df = train_df.assign(q1_quantiles=pd.qcut(train_df.q1_length, q=doc1_quantiles, labels=doc1_quantile_labels))
     for ql in doc1_quantile_labels:
+        train_df.loc[train_df.q1_quantiles == ql, 'q1_bucket_max'] = train_df.loc[train_df.q1_quantiles == ql].max()
         train_df.loc[train_df.q1_quantiles == ql, 'q2_quantiles'] = \
             pd.qcut(train_df[train_df.q1_quantiles == ql].q2_length, q=doc2_quantiles, labels=doc2_quantile_labels)
+
+    for ql in doc1_quantile_labels:
+        print('quartile:', ql)
+        train_df.loc[train_df.q1_quantiles == ql, 'q1_bucket_max'] = \
+            min(60, train_df.loc[train_df.q1_quantiles == ql].q1_length.max())
+
+    for ql in doc2_quantile_labels:
+        print('quartile:', ql)
+        train_df.loc[train_df.q2_quantiles == ql, 'q2_bucket_max'] = \
+            min(60, train_df.loc[train_df.q2_quantiles == ql].q2_length.max())
 
     return train_df.assign(bucket=train_df.apply(lambda x: '{}_{}'.format(x.q2_quantiles, x.q1_quantiles), axis=1))
 
@@ -218,11 +228,25 @@ def write_bucket(df, dirname, bucket_id=None):
         print('Error writing encoded arrays:', e, file=sys.stderr)
         return
 
-    np.save(bucket_dir + 'docs1.npy', encoded_series_to_matrix_with_padding(df.q1_encoded, df.q1_length.max()))
-    np.save(bucket_dir + 'docs2.npy', encoded_series_to_matrix_with_padding(df.q2_encoded, df.q2_length.max()))
-    np.save(bucket_dir + 'outcomes.npy', ((df.is_duplicate is True) * 1).values.reshape(-1, 1))
-    np.save(bucket_dir + 'doc1_ids.npy', df.q1id.values.reshape(-1, 1))
-    np.save(bucket_dir + 'doc2_ids.npy', df.q2id.values.reshape(-1, 1))
+    print('')
+    print('q1 max length:', df.q1_encoded.apply(len).max())
+    print('q2 max length:', df.q2_encoded.apply(len).max())
+
+    # with open(bucket_dir + 'docs1.pkl', 'wb') as f:
+    #     pickle.dump(df.q1_encoded.tolist(), f)
+
+    # with open(bucket_dir + 'docs2.pkl', 'wb') as f:
+    #     pickle.dump(df.q2_encoded.tolist(), f)
+
+    np.save(bucket_dir + 'docs1.npy', df[df.bucket == bucket_id].qid1.values)
+    np.save(bucket_dir + 'docs2.npy', df[df.bucket == bucket_id].qid2.values)
+    np.save(bucket_dir + 'outcomes.npy', (df[df.bucket == bucket_id].is_duplicate == True).astype(int).values)
+
+    # np.save(bucket_dir + 'docs1.npy', encoded_series_to_matrix_with_padding(df.q1_encoded, df.q1_length.max()))
+    # np.save(bucket_dir + 'docs2.npy', encoded_series_to_matrix_with_padding(df.q2_encoded, df.q2_length.max()))
+    # np.save(bucket_dir + 'outcomes.npy', ((df.is_duplicate == True) * 1).values.reshape(-1, 1))
+    # np.save(bucket_dir + 'doc1_ids.npy', df.qid1.values.reshape(-1, 1))
+    # np.save(bucket_dir + 'doc2_ids.npy', df.qid2.values.reshape(-1, 1))
     print('\rSaving numpy arrays to {dir:{width}}'.format(dir=bucket_dir, width=len(bucket_dir) + 10), end='')
 
 
@@ -256,10 +280,10 @@ def fully_padded_batch(input_data, split, max_doc1_length, max_doc2_length):
     docs2 = []
     outcomes = []
     for b in input_data[split].keys():
-        docs1.extend([input_data['docs1'][x] for x in input_data[split][b]['docs1']])
-        docs2.extend([input_data['docs2'][x] for x in input_data[split][b]['docs2']])
+        docs1.extend([np.array(input_data['docs1'][x]) for x in input_data[split][b]['docs1']])
+        docs2.extend([np.array(input_data['docs2'][x]) for x in input_data[split][b]['docs2']])
         outcomes.extend(input_data[split][b]['outcomes'].tolist())
 
-    docs1_array = list_encoded_arrays_to_matrix_with_padding(docs1, max_doc1_length)
-    docs2_array = list_encoded_arrays_to_matrix_with_padding(docs2, max_doc2_length)
+    docs1_array = list_encoded_arrays_to_matrix_with_padding(np.array(docs1), max_doc1_length)
+    docs2_array = list_encoded_arrays_to_matrix_with_padding(np.array(docs2), max_doc2_length)
     return [docs1_array, docs2_array], outcomes
