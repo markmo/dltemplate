@@ -1,7 +1,10 @@
 from argparse import ArgumentParser
-from common.util import load_hyperparams, merge_dict
+from common.model_util import load_hyperparams, merge_dict
+import gensim
 import numpy as np
 import os
+import pandas as pd
+import spacy
 from tensorflow.contrib import learn
 from tf_model.question_detector.util import load_data, preprocess, save_eval_to_csv, test, train
 
@@ -9,23 +12,71 @@ from tf_model.question_detector.util import load_data, preprocess, save_eval_to_
 DATA_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/data/')
 
 
+def convert_text_to_pos(text, nlp):
+    doc = nlp(text)
+    pos = [token.pos_ for token in doc]
+    return ' '.join(pos)
+
+
+def train_word2vec_model(x):
+    model = gensim.models.Word2Vec(x, min_count=1, size=300)
+    return model
+
+
 def run(constant_overwrites):
     config_path = os.path.join(os.path.dirname(__file__), 'hyperparams.yml')
     constants = merge_dict(load_hyperparams(config_path), constant_overwrites)
-    train_df, val_df, test_df, classes = load_data(DATA_DIR + 'yahoo_non_factoid_qa/nfL6.json')
+    classes = np.array([0, 1])
+    if os.path.exists(os.path.join(os.path.dirname(__file__), 'train_pos.csv')):
+        print('Loading POS data')
+        train_df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'train_pos.csv'), header=0, index_col=0)
+        val_df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'val_pos.csv'), header=0, index_col=0)
+        test_df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'test_pos.csv'), header=0, index_col=0)
+    else:
+        if os.path.exists(os.path.join(os.path.dirname(__file__), 'train.csv')):
+            print('Loading text data')
+            train_df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'train.csv'), header=0, index_col=0)
+            val_df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'val.csv'), header=0, index_col=0)
+            test_df = pd.read_csv(os.path.join(os.path.dirname(__file__), 'test.csv'), header=0, index_col=0)
+        else:
+            print('Creating text data from Yahoo dataset')
+            train_df, val_df, test_df, _ = load_data(DATA_DIR + 'yahoo_non_factoid_qa/nfL6.json')
+            train_df.to_csv(os.path.join(os.path.dirname(__file__), 'train.csv'))
+            val_df.to_csv(os.path.join(os.path.dirname(__file__), 'val.csv'))
+            test_df.to_csv(os.path.join(os.path.dirname(__file__), 'test.csv'))
+
+        # Convert text to POS tags
+        # Learning on one domain (Yahoo dataset) is not transferring well
+        # to another domain (Onesource). However, POS should be more
+        # universal (in English).
+        print('Creating POS data')
+        nlp = spacy.load('en_core_web_sm')
+        train_df = train_df.assign(x=train_df.x.apply(lambda x: convert_text_to_pos(x, nlp)))
+        val_df = val_df.assign(x=val_df.x.apply(lambda x: convert_text_to_pos(x, nlp)))
+        test_df = test_df.assign(x=test_df.x.apply(lambda x: convert_text_to_pos(x, nlp)))
+        train_df.to_csv(os.path.join(os.path.dirname(__file__), 'train_pos.csv'))
+        val_df.to_csv(os.path.join(os.path.dirname(__file__), 'val_pos.csv'))
+        test_df.to_csv(os.path.join(os.path.dirname(__file__), 'test_pos.csv'))
+
+    word2vec_filename = os.path.join(os.path.dirname(__file__), 'word2vec.bin')
+    constants['word2vec_filename'] = word2vec_filename
+    if not os.path.exists(word2vec_filename):
+        print('Training word2vec model using POS data')
+        model = train_word2vec_model(np.concatenate((train_df.x.values, val_df.x.values)))
+        model.save(word2vec_filename)
+
     n_classes = len(classes)
     batch_size = constants['batch_size']
     allow_soft_placement = constants['allow_soft_placement']
     log_device_placement = constants['log_device_placement']
     if constants['test']:
         print('\nTesting...')
-        x_raw = val_df.x.values
+        x_raw = test_df.x.values
         checkpoint_dir = constants['checkpoint_dir']
         vocab_path = os.path.join(checkpoint_dir, '..', 'vocab')
         vocab_processor = learn.preprocessing.VocabularyProcessor.restore(vocab_path)
         x_test = np.array(list(vocab_processor.transform(x_raw)))
-        # y_test = one_hot_encode(val_df.y.values, n_classes)
-        y_test = val_df.y.values
+        y_test = test_df.y.values
         preds = test(x_test, batch_size, checkpoint_dir, allow_soft_placement, log_device_placement, y_test)
         save_eval_to_csv(x_raw, preds, checkpoint_dir)
     else:

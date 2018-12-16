@@ -31,7 +31,9 @@ To test:
 
 ::
 
-        python text_classification_benchmarks/word_cnn/__init__.py --test --checkpoint-dir=text_classification_benchmarks/word_cnn/runs/<run_id>/checkpoints
+    python text_classification_benchmarks/word_cnn/__init__.py --test --checkpoint-dir=text_classification_benchmarks/word_cnn/runs/<run_id>/checkpoints
+
+    --word2vec-filename=/Users/d777710/src/DeepLearning/dltemplate/data/word2vec/GoogleNews-vectors-negative300.bin --test --checkpoint-dir=./runs/1544887555/checkpoints
 
 
 Word-level CNN initialised with Word2Vec Embeddings

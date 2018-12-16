@@ -1,40 +1,50 @@
 from common.util import one_hot_encode
 import csv
 import datetime
-import json
+from gensim.models import KeyedVectors
+from naya.json import stream_array, tokenize
 import numpy as np
 import os
 import pandas as pd
 import re
 from sklearn.model_selection import train_test_split
+import spacy
 import tensorflow as tf
 from tensorflow.contrib import learn
 from text_classification_benchmarks.word_cnn.model_setup import TextCNN
 import time
 
 
-# noinspection SpellCheckingInspection
 def load_data(filename):
-    with open(filename, 'r') as f:
-        data = json.load(f)
-        x = []
-        y = []
-        for item in data:
-            x.append(item['question'])
-            y.append(1)
-            if len(item['nbestanswers']) > 0:
-                x.append(item['nbestanswers'][0])
-                y.append(0)
+    print('Loading data from:', filename)
+    x = []
+    y = []
+    nlp = spacy.load('en_core_web_sm')
 
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.1, shuffle=True)
-        x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.1, shuffle=True)
-        train_df = pd.DataFrame({'x': x_train, 'y': y_train})
-        val_df = pd.DataFrame({'x': x_val, 'y': y_val})
-        test_df = pd.DataFrame({'x': x_test, 'y': y_test})
-        classes = np.array([0, 1])
-        print('Lengths Train: {}, Val: {}, Test: {}, Classes: {}'
-              .format(len(train_df), len(val_df), len(test_df), len(classes)))
-        return train_df, val_df, test_df, classes
+    # noinspection SpellCheckingInspection
+    def handle_message(item):
+        x.append(item['question'])
+        y.append(1)
+        doc = nlp(item['answer'])
+        first_sent = next(doc.sents)
+        x.append(first_sent.string.strip())
+        y.append(0)
+
+    with open(filename, 'r') as f:
+        print('Processing stream...')
+        messages = stream_array(tokenize(f))
+        for message in messages:
+            handle_message(message)
+
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.1, shuffle=True)
+    x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.1, shuffle=True)
+    train_df = pd.DataFrame({'x': x_train, 'y': y_train})
+    val_df = pd.DataFrame({'x': x_val, 'y': y_val})
+    test_df = pd.DataFrame({'x': x_test, 'y': y_test})
+    classes = np.array([0, 1])
+    print('Lengths Train: {}, Val: {}, Test: {}, Classes: {}'
+          .format(len(train_df), len(val_df), len(test_df), len(classes)))
+    return train_df, val_df, test_df, classes
 
 
 def batch_iter(data, batch_size, n_epochs, shuffle=True):
@@ -90,6 +100,7 @@ def preprocess(train_df, val_df, n_classes):
 
     # Build vocabulary
     max_length = max([len(x.split(' ')) for x in x_all])
+    print('max_length:', max_length)
     vocab_processor = learn.preprocessing.VocabularyProcessor(max_length)
     vocab_processor.fit(x_all)
     x_train = np.array(list(vocab_processor.transform(x_train)))
@@ -231,28 +242,34 @@ def train(x_train, y_train, x_val, y_val, vocab_processor, model, learning_rate,
             if word2vec_filename:
                 print('Loading word2vec embeddings...')
                 init_w = np.random.uniform(-0.25, 0.25, (vocab_size, embed_size))
-                print('Loading word2vec file', word2vec_filename)
-                with open(word2vec_filename, 'rb') as f:
-                    header = f.readline()
-                    vocab_size, layer1_size = map(int, header.split())
-                    bin_length = np.dtype('float32').itemsize * layer1_size
-                    for line in range(vocab_size):
-                        word = []
-                        while True:
-                            ch = f.read(1).decode('latin-1')
-                            if ch == ' ':
-                                word = ''.join(word)
-                                break
+                print('Loading word2vec file:', word2vec_filename)
+                word2vec_model = KeyedVectors.load(word2vec_filename, mmap='r')
+                for word, vector in zip(word2vec_model.wv.vocab, word2vec_model.wv.vectors):
+                    idx = vocab_processor.vocabulary_.get(word)
+                    if idx != 0:
+                        init_w[idx] = vector
 
-                            if ch != '\n':
-                                word.append(ch)
-
-                        idx = vocab_processor.vocabulary_.get(word)
-                        if idx != 0:
-                            # noinspection PyTypeChecker
-                            init_w[idx] = np.fromstring(f.read(bin_length), dtype='float32')
-                        else:
-                            f.read(bin_length)
+                # with open(word2vec_filename, 'rb') as f:
+                #     header = f.readline()
+                #     vocab_size, layer1_size = map(int, header.split())
+                #     bin_length = np.dtype('float32').itemsize * layer1_size
+                #     for line in range(vocab_size):
+                #         word = []
+                #         while True:
+                #             ch = f.read(1).decode('latin-1')
+                #             if ch == ' ':
+                #                 word = ''.join(word)
+                #                 break
+                #
+                #             if ch != '\n':
+                #                 word.append(ch)
+                #
+                #         idx = vocab_processor.vocabulary_.get(word)
+                #         if idx != 0:
+                #             # noinspection PyTypeChecker
+                #             init_w[idx] = np.fromstring(f.read(bin_length), dtype='float32')
+                #         else:
+                #             f.read(bin_length)
 
                 sess.run(model.w.assign(init_w))
 

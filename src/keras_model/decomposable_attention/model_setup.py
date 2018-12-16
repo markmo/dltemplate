@@ -1,7 +1,7 @@
 from keras.layers import *
 from keras.activations import softmax
 from keras.models import Model
-from keras.optimizers import Nadam, Adam
+from keras.optimizers import Adam
 
 MAX_LEN = 30
 
@@ -10,7 +10,7 @@ def create_pretrained_embedding(pretrained_weights_path, trainable=False, **kwar
     """Create embedding layer from a pretrained weights array"""
     pretrained_weights = np.load(pretrained_weights_path)
     in_dim, out_dim = pretrained_weights.shape
-    embedding = Embedding(in_dim, out_dim, weights=[pretrained_weights], trainable=False, **kwargs)
+    embedding = Embedding(in_dim, out_dim, weights=[pretrained_weights], trainable=trainable, **kwargs)
     return embedding
 
 
@@ -48,7 +48,6 @@ def apply_multiple(input_, layers):
 
 def time_distributed(input_, layers):
     """Apply a list of layers in TimeDistributed mode"""
-    out_ = []
     node_ = input_
     for layer_ in layers:
         node_ = TimeDistributed(layer_)(node_)
@@ -59,28 +58,25 @@ def time_distributed(input_, layers):
 def soft_attention_alignment(input_1, input_2):
     """Align text representation with neural soft attention"""
     attention = Dot(axes=-1)([input_1, input_2])
-    w_att_1 = Lambda(lambda x: softmax(x, axis=1),
-                     output_shape=unchanged_shape)(attention)
-    w_att_2 = Permute((2, 1))(Lambda(lambda x: softmax(x, axis=2),
-                                     output_shape=unchanged_shape)(attention))
+    w_att_1 = Lambda(lambda x: softmax(x, axis=1), output_shape=unchanged_shape)(attention)
+    w_att_2 = Permute((2, 1))(Lambda(lambda x: softmax(x, axis=2), output_shape=unchanged_shape)(attention))
     in1_aligned = Dot(axes=1)([w_att_1, input_1])
     in2_aligned = Dot(axes=1)([w_att_2, input_2])
     return in1_aligned, in2_aligned
 
 
-def decomposable_attention(pretrained_embedding='../data/fasttext_matrix.npy',
+def decomposable_attention(pretrained_embedding='./fasttext_matrix.npy',
                            projection_dim=300, projection_hidden=0, projection_dropout=0.2,
                            compare_dim=500, compare_dropout=0.2,
                            dense_dim=300, dense_dropout=0.2,
-                           lr=1e-3, activation='elu', maxlen=MAX_LEN):
+                           lr=1e-3, activation='elu', max_len=MAX_LEN):
     # Based on: https://arxiv.org/abs/1606.01933
 
-    q1 = Input(name='q1', shape=(maxlen,))
-    q2 = Input(name='q2', shape=(maxlen,))
+    q1 = Input(name='q1', shape=(max_len,))
+    q2 = Input(name='q2', shape=(max_len,))
 
     # Embedding
-    embedding = create_pretrained_embedding(pretrained_embedding,
-                                            mask_zero=False)
+    embedding = create_pretrained_embedding(pretrained_embedding, mask_zero=False)
     q1_embed = embedding(q1)
     q2_embed = embedding(q2)
 
@@ -133,14 +129,14 @@ def decomposable_attention(pretrained_embedding='../data/fasttext_matrix.npy',
     return model
 
 
-def esim(pretrained_embedding='../data/fasttext_matrix.npy',
-         maxlen=MAX_LEN,
+def esim(pretrained_embedding='./fasttext_matrix.npy',
+         max_len=MAX_LEN,
          lstm_dim=300,
          dense_dim=300,
          dense_dropout=0.5):
     # Based on arXiv:1609.06038
-    q1 = Input(name='q1', shape=(maxlen,))
-    q2 = Input(name='q2', shape=(maxlen,))
+    q1 = Input(name='q1', shape=(max_len,))
+    q2 = Input(name='q2', shape=(max_len,))
 
     # Embedding
     embedding = create_pretrained_embedding(pretrained_embedding, mask_zero=False)
@@ -181,5 +177,7 @@ def esim(pretrained_embedding='../data/fasttext_matrix.npy',
     out_ = Dense(1, activation='sigmoid')(dense)
 
     model = Model(inputs=[q1, q2], outputs=out_)
-    model.compile(optimizer=Adam(lr=1e-3), loss='binary_crossentropy', metrics=['binary_crossentropy', 'accuracy'])
+    model.compile(optimizer=Adam(lr=1e-3), loss='binary_crossentropy',
+                  metrics=['binary_crossentropy', 'accuracy'])
+
     return model
