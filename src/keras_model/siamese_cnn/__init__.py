@@ -14,14 +14,14 @@ import pickle
 from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 
-DATA_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/data/')
+DATA_DIR = os.path.join(os.path.dirname(__file__), '../../../data/')
 
 
 def load_question_pairs_dataset(test_size=1000):
-    train_df = pd.read_csv(DATA_DIR + 'question_pairs/train.csv', header=0)
-    test_df = pd.read_csv(DATA_DIR + 'question_pairs/test.csv', header=0)
+    train_df = pd.read_csv(DATA_DIR + 'question_pairs/train_full.csv', header=0)
+    # test_df = pd.read_csv(DATA_DIR + 'question_pairs/test.csv', header=0)
     return (train_df[['qid1', 'qid2', 'question1', 'question2', 'is_duplicate']],
-            test_df[['question1', 'question2']][:test_size])
+            None)  # test_df[['question1', 'question2']][:test_size])
 
 
 def load_data():
@@ -71,7 +71,6 @@ def run(constant_overwrites):
                                  'q1_encoded', 'q2_encoded', 'is_duplicate']
 
         train_df = None
-        test_df = None
         if os.path.exists(embeddings_path):
             with timed('restoring embeddings'):
                 embeddings = np.load(embeddings_path)
@@ -81,7 +80,7 @@ def run(constant_overwrites):
                     with open(idx2word_path, 'rb') as f:
                         idx2word = pickle.load(f)
             else:
-                train_df, test_df = load_data()
+                train_df, _ = load_data()
                 word2idx, idx2word = create_vocab(train_df)
                 if os.path.exists(doc1_encoded_path):
                     with timed('loading encoding'):
@@ -206,7 +205,9 @@ def run(constant_overwrites):
         with timed('fitting model'):
             train_history = model.fit_generator(training_generator, steps_per_epoch=len(training_generator),
                                                 epochs=n_epochs, use_multiprocessing=True, workers=6,
-                                                validation_data=(validation_data), callbacks=[tb, checkpoint],
+                                                validation_data=validation_data,
+                                                validation_steps=len(validation_data) / batch_size,
+                                                callbacks=[tb, checkpoint],
                                                 verbose=1,
                                                 initial_epoch=0  # use when restarting training (*zero* based)
                                                 )

@@ -176,7 +176,7 @@ def calc_f1_micro_avg(y_true, y_pred):
     return 0 if denom == 0 else 2 * pre * rec / denom
 
 
-def calc_multiclass_roc_auc(y_true, y_pred, average: Union[str, None]='macro', is_multilabel=False):
+def calc_multiclass_roc_auc(y_true, y_pred, average: Union[str, None] = 'macro', is_multilabel=False):
     labels = sorted(np.unique(y_true))
     n_classes = len(labels)
     if is_multilabel:

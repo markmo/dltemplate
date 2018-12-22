@@ -36,6 +36,8 @@ def run(constant_overwrites):
     train_df, test_df = train_test_split(train_df, test_size=0.1, shuffle=True)
     train_df, val_df = train_test_split(train_df, test_size=0.1, shuffle=True)
 
+    test_df.to_pickle('test_df.pkl')
+
     if constants['model_type'] == 'decom_attn':
         model = decomposable_attention(pretrained_embedding=ft_matrix_filename, max_len=max_len)
         checkpoint_dir = os.path.join(root_dir, 'decom_attn_checkpoint')
