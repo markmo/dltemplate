@@ -47,3 +47,11 @@ between `a` and `b`.
 A Bidirectional-LSTM (BiLSTM) is used to encode the input premise and hypothesis. Later we will also
 use BiLSTM to perform inference composition to construct the final prediction, where BiLSTM encodes
 local inference information and its interaction.
+
+
+Create embeddings file
+^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+    ~/src/DeepLearning/fastText/fasttext skipgram -input data.txt -output ft -dim 300

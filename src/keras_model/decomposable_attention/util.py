@@ -194,8 +194,17 @@ def load_embeddings(embed_filename):
 
 
 def load_question_pairs_dataset(test_size=1000):
-    train_df = pd.read_csv(DATA_DIR + 'question_pairs/train_med.csv', header=0)
+    train_df = pd.read_csv(DATA_DIR + 'question_pairs/train_full.csv', header=0)
+    train_df = train_df.astype({
+        'id': int,
+        'qid1': int,
+        'qid2': int,
+        'question1': str,
+        'question2': str,
+        'is_duplicate': int
+    })
     test_df = pd.read_csv(DATA_DIR + 'question_pairs/test.csv', header=0)
+    test_df = test_df.astype({'test_id': int, 'question1': str, 'question2': str})
     return (train_df[['qid1', 'qid2', 'question1', 'question2', 'is_duplicate']],
             test_df[['question1', 'question2']][:test_size])
 
@@ -215,7 +224,6 @@ def preprocess(train_df, word2idx, max_len):
     q1 = train_df.question1.values
     q2 = train_df.question2.values
 
-    # Don't need to pad as using an RNN
     pad_idx = word2idx[PAD]
     q1_encoded, q1_lengths = convert_to_onehot(q1, word2idx, max_len, pad_idx)
     q2_encoded, q2_lengths = convert_to_onehot(q2, word2idx, max_len, pad_idx)
