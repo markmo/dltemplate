@@ -1,127 +1,97 @@
 from argparse import ArgumentParser
 from common.model_util import load_hyperparams, merge_dict
 from keras.callbacks import ModelCheckpoint
-from keras_model.decomposable_attention.model_setup import decomposable_attention
-from keras_model.decomposable_attention.util import BatchGenerator
+from keras.models import load_model
+from keras_model.decomposable_attention.model_setup import decomposable_attention, esim
+from keras_model.decomposable_attention.util import BatchGenerator, BucketedBatchGenerator, bucket_cases
+from keras_model.decomposable_attention.util import load_bucketed_data, load_embeddings
+from keras_model.decomposable_attention.util import load_question_pairs_dataset, preprocess
+from keras_model.layers import MaskedGlobalAveragePooling1D, MaskedGlobalMaxPooling1D
 import numpy as np
 import os
-import pandas as pd
-import re
+from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.model_selection import train_test_split
-
-
-DATA_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/data/')
-PAD = '__PAD__'
-UNK = '__UNK__'
-
-
-def load_question_pairs_dataset(test_size=1000):
-    train_df = pd.read_csv(DATA_DIR + 'question_pairs/train_med.csv', header=0)
-    test_df = pd.read_csv(DATA_DIR + 'question_pairs/test.csv', header=0)
-    return (train_df[['qid1', 'qid2', 'question1', 'question2', 'is_duplicate']],
-            test_df[['question1', 'question2']][:test_size])
-
-
-def create_data_file(train_df):
-    q1 = train_df.question1.values
-    q2 = train_df.question2.values
-    combined = np.concatenate((q1, q2))
-    filename = os.path.join(os.path.dirname(__file__), 'data.txt')
-    np.savetxt(filename, combined, fmt='%s')
-
-
-def load_embeddings_dict(embed_filename):
-    embeddings = []
-    embeddings_dict = {}
-    word2idx = {PAD: 0, UNK: 1}
-    with open(embed_filename, 'r') as f:
-        for i, line in enumerate(f):
-            values = line.split()
-            word = values[0]
-            word2idx[word] = i + 2
-            coefs = np.asarray(values[1:], dtype='float32')
-            embeddings_dict[word] = coefs
-            embeddings.append(coefs)
-
-    return np.array(embeddings), embeddings_dict, word2idx
-
-
-def convert_to_onehot(x_raw, word2idx):
-    unk_idx = word2idx[UNK]
-    encoded = []
-    for line in x_raw:
-        words = re.split(r'\s+', line.strip())
-        onehot = [word2idx.get(w, unk_idx) for w in words]
-        encoded.append(onehot)
-
-    return encoded
-
-
-def pad(x_encoded, max_len, pad_idx):
-    n = len(x_encoded)
-    if n < max_len:
-        padded = x_encoded + [pad_idx] * (max_len - n)
-    else:
-        padded = x_encoded[:max_len]
-
-    return padded
-
-
-def preprocess(train_df, word2idx, max_len):
-    q1 = train_df.question1.values
-    q2 = train_df.question2.values
-
-    # Don't need to pad as using an RNN
-    # pad_idx = word2idx[PAD]
-    # q1_encoded = pad(convert_to_onehot(q1, word2idx), max_len, pad_idx)
-    # q2_encoded = pad(convert_to_onehot(q2, word2idx), max_len, pad_idx)
-
-    q1_encoded = convert_to_onehot(q1, word2idx)
-    q2_encoded = convert_to_onehot(q2, word2idx)
-    return train_df.assign(q1_encoded=q1_encoded, q2_encoded=q2_encoded)
 
 
 def run(constant_overwrites):
     print('Running')
-    config_path = os.path.join(os.path.dirname(__file__), 'hyperparams.yml')
+    root_dir = os.path.dirname(__file__)
+    config_path = os.path.join(root_dir, 'hyperparams.yml')
     constants = merge_dict(load_hyperparams(config_path), constant_overwrites)
-    max_len = 30
-    checkpoint_dir = os.path.join(os.path.dirname(__file__), 'checkpoint')
     n_epochs = constants['n_epochs']
     batch_size = constants['batch_size']
+    max_len = constants['max_len']
 
-    embeddings, _, word2idx = load_embeddings_dict(os.path.join(os.path.dirname(__file__), 'ft.vec'))
-    ft_matrix_filename = os.path.join(os.path.dirname(__file__), 'fasttext_matrix.npy')
+    embeddings, word2idx, _, _ = load_embeddings(os.path.join(root_dir, 'ft.vec'))
+    print('embeddings length:', len(embeddings))
+    print('word2idx length:', len(word2idx))
+    ft_matrix_filename = os.path.join(root_dir, 'fasttext_matrix.npy')
     if not os.path.exists(ft_matrix_filename):
         np.save(ft_matrix_filename, embeddings)
 
-    train_df, test_df = load_question_pairs_dataset()
+    train_df, _ = load_question_pairs_dataset()
+    print('train_df length:', len(train_df))
     train_df = preprocess(train_df, word2idx, max_len)
+    train_df = bucket_cases(train_df, n_doc1_quantile=5, n_doc2_quantile=5)
+    train_df, test_df = train_test_split(train_df, test_size=0.1, shuffle=True)
     train_df, val_df = train_test_split(train_df, test_size=0.1, shuffle=True)
-    test_df = preprocess(test_df, word2idx, max_len)
 
-    model = decomposable_attention(ft_matrix_filename)
-    print('\nModel summary:')
-    print(model.summary())
+    if constants['model_type'] == 'decom_attn':
+        model = decomposable_attention(pretrained_embedding=ft_matrix_filename, max_len=max_len)
+        checkpoint_dir = os.path.join(root_dir, 'decom_attn_checkpoint')
+    else:
+        model = esim(pretrained_embedding=ft_matrix_filename, max_len=max_len)
+        checkpoint_dir = os.path.join(root_dir, 'esim_checkpoint')
+
+    # print('\nModel summary:')
+    # print(model.summary())
 
     checkpoint = ModelCheckpoint(checkpoint_dir, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 
-    training_generator = BatchGenerator(train_df.q1_encoded.values, train_df.q2_encoded.values,
-                                        train_df.y.values, batch_size)
-    validation_data = BatchGenerator(val_df.q1_encoded.values, val_df.q2_encoded.values,
-                                     val_df.y.values, batch_size)
-    train_history = model.fit_generator(training_generator, steps_per_epoch=len(training_generator),
-                                        epochs=n_epochs, use_multiprocessing=True, workers=6,
-                                        validation_data=(validation_data), callbacks=[checkpoint],
-                                        verbose=1,
-                                        initial_epoch=0  # use when restarting training (*zero* based)
-                                        )
+    if constants['train']:
+        bucketed_train = load_bucketed_data(train_df)
+        # training_generator = BatchGenerator(np.asarray(train_df.q1_encoded.tolist()),
+        #                                     np.asarray(train_df.q2_encoded.tolist()),
+        #                                     train_df.is_duplicate.values, batch_size)
+        training_generator = BucketedBatchGenerator(bucketed_train, batch_size,
+                                                    max_doc1_length=max_len, max_doc2_length=max_len, shuffle=True)
+
+        bucketed_val = load_bucketed_data(val_df)
+        # validation_data = BatchGenerator(np.asarray(val_df.q1_encoded.tolist()),
+        #                                  np.asarray(val_df.q2_encoded.tolist()),
+        #                                  val_df.is_duplicate.values, batch_size)
+        validation_data = BucketedBatchGenerator(bucketed_val, batch_size,
+                                                 max_doc1_length=max_len, max_doc2_length=max_len, shuffle=True)
+
+        # noinspection PyUnusedLocal
+        train_history = model.fit_generator(training_generator, steps_per_epoch=len(training_generator),
+                                            epochs=n_epochs, use_multiprocessing=True, workers=6,
+                                            validation_data=validation_data, callbacks=[checkpoint],
+                                            verbose=1,
+                                            initial_epoch=0  # use when restarting training (*zero* based)
+                                            )
+    else:
+        model = load_model(checkpoint_dir, custom_objects={
+            'MaskedGlobalAveragePooling1D': MaskedGlobalAveragePooling1D(),
+            'MaskedGlobalMaxPooling1D': MaskedGlobalMaxPooling1D()
+        })
+        preds = model.predict([np.asarray(test_df.q1_encoded.tolist()),
+                               np.asarray(test_df.q2_encoded.tolist())],
+                              batch_size=batch_size, verbose=1)
+        y_test = test_df.is_duplicate.values
+        dev_auc = roc_auc_score(y_test, preds)
+        dev_acc = accuracy_score(y_test, (preds > 0.5).astype(int))
+        print('\nTest set AUC: {:.6f}, accuracy: {:.6f}'.format(dev_auc, dev_acc))
+        print('Test majority class baseline accuracy: {:.6f}'.format(1 - sum(y_test) / len(y_test)))
 
 
 if __name__ == '__main__':
     # read args
     parser = ArgumentParser(description='Run Decomposable Attention Model')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')
+    parser.add_argument('--batch-size', dest='batch_size', type=int, help='batch size')
+    parser.add_argument('--length', dest='max_len', type=int, help='maximum sequence length')
+    parser.add_argument('--model', dest='model_type', type=int, help='model type: "decom_attn" (default), "esim"')
     parser.add_argument('--train', dest='train', help='run training', action='store_true')
     parser.set_defaults(train=False)
     args = parser.parse_args()

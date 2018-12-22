@@ -1,0 +1,4 @@
+n_epochs: 100
+batch_size: 256
+max_len: 60
+model_type: decom_attn  # or esim

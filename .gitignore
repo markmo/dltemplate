@@ -218,3 +218,8 @@ logs
 *.bin
 *.vec
 data.txt
+labels.txt
+labels_crime.txt
+*checkpoint
+checkpoint.*
+fasttext_matrix.npy

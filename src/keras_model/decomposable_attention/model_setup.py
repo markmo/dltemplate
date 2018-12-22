@@ -1,9 +1,10 @@
 from keras.layers import *
 from keras.activations import softmax
 from keras.models import Model
-from keras.optimizers import Adam
+from keras.optimizers import Adagrad, Adam
+from keras_model.layers import MaskedGlobalAvgPool1D, MaskedGlobalMaxPool1D
 
-MAX_LEN = 30
+MAX_LEN = 60
 
 
 def create_pretrained_embedding(pretrained_weights_path, trainable=False, **kwargs):
@@ -58,8 +59,10 @@ def time_distributed(input_, layers):
 def soft_attention_alignment(input_1, input_2):
     """Align text representation with neural soft attention"""
     attention = Dot(axes=-1)([input_1, input_2])
-    w_att_1 = Lambda(lambda x: softmax(x, axis=1), output_shape=unchanged_shape)(attention)
-    w_att_2 = Permute((2, 1))(Lambda(lambda x: softmax(x, axis=2), output_shape=unchanged_shape)(attention))
+    # w_att_1 = Lambda(lambda x: softmax(x, axis=1), output_shape=unchanged_shape)(attention)
+    # w_att_2 = Permute((2, 1))(Lambda(lambda x: softmax(x, axis=2), output_shape=unchanged_shape)(attention))
+    w_att_1 = Activation('softmax')(attention)
+    w_att_2 = Permute((2, 1))(Activation('softmax')(attention))
     in1_aligned = Dot(axes=1)([w_att_1, input_1])
     in2_aligned = Dot(axes=1)([w_att_2, input_2])
     return in1_aligned, in2_aligned
@@ -76,7 +79,7 @@ def decomposable_attention(pretrained_embedding='./fasttext_matrix.npy',
     q2 = Input(name='q2', shape=(max_len,))
 
     # Embedding
-    embedding = create_pretrained_embedding(pretrained_embedding, mask_zero=False)
+    embedding = create_pretrained_embedding(pretrained_embedding, mask_zero=True)
     q1_embed = embedding(q1)
     q2_embed = embedding(q2)
 
@@ -110,8 +113,8 @@ def decomposable_attention(pretrained_embedding='./fasttext_matrix.npy',
     q2_compare = time_distributed(q2_combined, compare_layers)
 
     # Aggregate
-    q1_rep = apply_multiple(q1_compare, [GlobalAvgPool1D(), GlobalMaxPool1D()])
-    q2_rep = apply_multiple(q2_compare, [GlobalAvgPool1D(), GlobalMaxPool1D()])
+    q1_rep = apply_multiple(q1_compare, [MaskedGlobalAvgPool1D(), MaskedGlobalMaxPool1D()])
+    q2_rep = apply_multiple(q2_compare, [MaskedGlobalAvgPool1D(), MaskedGlobalMaxPool1D()])
 
     # Classifier
     merged = Concatenate()([q1_rep, q2_rep])
@@ -124,7 +127,7 @@ def decomposable_attention(pretrained_embedding='./fasttext_matrix.npy',
     out_ = Dense(1, activation='sigmoid')(dense)
 
     model = Model(inputs=[q1, q2], outputs=out_)
-    model.compile(optimizer=Adam(lr=lr), loss='binary_crossentropy',
+    model.compile(optimizer=Adagrad(lr=lr), loss='binary_crossentropy',
                   metrics=['binary_crossentropy', 'accuracy'])
     return model
 
@@ -139,7 +142,7 @@ def esim(pretrained_embedding='./fasttext_matrix.npy',
     q2 = Input(name='q2', shape=(max_len,))
 
     # Embedding
-    embedding = create_pretrained_embedding(pretrained_embedding, mask_zero=False)
+    embedding = create_pretrained_embedding(pretrained_embedding, mask_zero=True)
     bn = BatchNormalization(axis=2)
     q1_embed = bn(embedding(q1))
     q2_embed = bn(embedding(q2))
@@ -161,8 +164,8 @@ def esim(pretrained_embedding='./fasttext_matrix.npy',
     q2_compare = compose(q2_combined)
 
     # Aggregate
-    q1_rep = apply_multiple(q1_compare, [GlobalAvgPool1D(), GlobalMaxPool1D()])
-    q2_rep = apply_multiple(q2_compare, [GlobalAvgPool1D(), GlobalMaxPool1D()])
+    q1_rep = apply_multiple(q1_compare, [MaskedGlobalAvgPool1D(), MaskedGlobalMaxPool1D()])
+    q2_rep = apply_multiple(q2_compare, [MaskedGlobalAvgPool1D(), MaskedGlobalMaxPool1D()])
 
     # Classifier
     merged = Concatenate()([q1_rep, q2_rep])
