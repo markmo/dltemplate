@@ -66,7 +66,9 @@ def run(constant_overwrites):
         # noinspection PyUnusedLocal
         train_history = model.fit_generator(training_generator, steps_per_epoch=len(training_generator),
                                             epochs=n_epochs, use_multiprocessing=True, workers=6,
-                                            validation_data=validation_data, callbacks=[checkpoint],
+                                            validation_data=validation_data,
+                                            validation_steps=len(validation_data) / batch_size,
+                                            callbacks=[checkpoint],
                                             verbose=1,
                                             initial_epoch=0  # use when restarting training (*zero* based)
                                             )
