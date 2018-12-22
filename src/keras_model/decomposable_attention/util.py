@@ -203,10 +203,10 @@ def load_question_pairs_dataset(test_size=1000):
         'question2': str,
         'is_duplicate': int
     })
-    test_df = pd.read_csv(DATA_DIR + 'question_pairs/test.csv', header=0)
-    test_df = test_df.astype({'test_id': int, 'question1': str, 'question2': str})
+    # test_df = pd.read_csv(DATA_DIR + 'question_pairs/test.csv', header=0)
+    # test_df = test_df.astype({'test_id': int, 'question1': str, 'question2': str})
     return (train_df[['qid1', 'qid2', 'question1', 'question2', 'is_duplicate']],
-            test_df[['question1', 'question2']][:test_size])
+            None)  # test_df[['question1', 'question2']][:test_size])
 
 
 def pad(x_encoded, max_len, pad_idx):
