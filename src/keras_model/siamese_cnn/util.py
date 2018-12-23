@@ -35,8 +35,8 @@ def prepare_training_data(train_df):
             tokenize = spacy.load('en_core_web_sm')
 
         with timed('tokenizing'):
-            q1_tokens = train_df.question1.apply(lambda q: [t.text for t in tokenize(q)]).values
-            q2_tokens = train_df.question2.apply(lambda q: [t.text for t in tokenize(q)]).values
+            q1_tokens = train_df.question1.apply(lambda q: [t.text for t in tokenize(str(q))]).values
+            q2_tokens = train_df.question2.apply(lambda q: [t.text for t in tokenize(str(q))]).values
             q1_length = np.vectorize(len)(q1_tokens)
             q2_length = np.vectorize(len)(q2_tokens)
 

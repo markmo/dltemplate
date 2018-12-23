@@ -8,7 +8,6 @@ import spacy
 from tensorflow.contrib import learn
 from tf_model.question_detector.util import load_data, preprocess, save_eval_to_csv, test, train
 
-
 DATA_DIR = os.path.expanduser('~/src/DeepLearning/dltemplate/data/')
 
 

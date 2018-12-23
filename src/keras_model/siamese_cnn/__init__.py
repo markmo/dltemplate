@@ -15,8 +15,10 @@ from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), '../../../data/')
+ROOT_DIR = os.path.dirname(__file__)
 
 
+# noinspection PyUnusedLocal
 def load_question_pairs_dataset(test_size=1000):
     train_df = pd.read_csv(DATA_DIR + 'question_pairs/train_full.csv', header=0)
     # test_df = pd.read_csv(DATA_DIR + 'question_pairs/test.csv', header=0)
@@ -37,8 +39,8 @@ def run(constant_overwrites):
     config_path = os.path.join(os.path.dirname(__file__), 'hyperparams.yml')
     constants = merge_dict(load_hyperparams(config_path), constant_overwrites)
 
-    model_path = constants['model_path']
-    output_dir = constants['output_dir']
+    model_path = os.path.join(ROOT_DIR, constants['model_path'])
+    output_dir = os.path.join(ROOT_DIR, constants['output_dir'])
     output_dataset_name = constants['output_dataset_name']
     max_doc1_length = 60
     max_doc2_length = 60
@@ -48,7 +50,7 @@ def run(constant_overwrites):
 
     if constants['train']:
         embed_size = constants['embed_size']
-        word2vec_filename = constants['word2vec_filename']
+        word2vec_filename = os.path.join(ROOT_DIR, constants['word2vec_filename'])
         has_shared_embedding = constants['has_shared_embedding']
         has_shared_filters = constants['has_shared_filters']
         filter_sizes = constants['filter_sizes']
@@ -61,7 +63,7 @@ def run(constant_overwrites):
         assert len(fc_layer_dims) == n_fc_layers
         n_gpus = constants['n_gpus']
         n_epochs = constants['n_epochs']
-        cache_dir = constants['cache_dir']
+        cache_dir = os.path.join(ROOT_DIR, constants['cache_dir'])
         idx2word_path = '{}/idx2word.pkl'.format(cache_dir)
         doc1_encoded_path = '{}/doc1_encoded.npy'.format(cache_dir)
         doc2_encoded_path = '{}/doc2_encoded.npy'.format(cache_dir)
@@ -145,7 +147,7 @@ def run(constant_overwrites):
             # temp_df = train_df.assign(not_duplicate=train_df.is_duplicate.apply(lambda x: not x))
             # summary = temp_df.groupby('qid2').agg({'qid1': 'count', 'is_duplicate': 'sum', 'not_duplicate': 'sum'})
             # summary = summary.assign(balance=(summary.is_duplicate / summary.qid1))
-            # summary.to_csv('summary.csv', header=True, index=True)
+            # summary.to_csv(os.path.join(ROOT_DIR, 'summary.csv'), header=True, index=True)
 
             # filtered_q2 = summary[(summary.qid1 > 4) &
             #                       (summary.balance >= 0.1) &
@@ -199,10 +201,11 @@ def run(constant_overwrites):
                                                         gpus=n_gpus)
 
         checkpoint = ModelCheckpoint(model_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
-        tb = TensorBoard(log_dir='./logs/' + model_path, histogram_freq=2, write_grads=True,
-                         batch_size=batch_size, write_graph=True)
+        tb = TensorBoard(log_dir='{}/logs/{}'.format(ROOT_DIR, constants['model_path']), histogram_freq=2,
+                         write_grads=True, batch_size=batch_size, write_graph=True)
 
         with timed('fitting model'):
+            # noinspection PyUnusedLocal
             train_history = model.fit_generator(training_generator, steps_per_epoch=len(training_generator),
                                                 epochs=n_epochs, use_multiprocessing=True, workers=6,
                                                 validation_data=validation_data,

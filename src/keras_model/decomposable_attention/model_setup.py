@@ -142,7 +142,7 @@ def esim(pretrained_embedding='./fasttext_matrix.npy',
     q2 = Input(name='q2', shape=(max_len,))
 
     # Embedding
-    embedding = create_pretrained_embedding(pretrained_embedding, mask_zero=True)
+    embedding = create_pretrained_embedding(pretrained_embedding, mask_zero=False)
     bn = BatchNormalization(axis=2)
     q1_embed = bn(embedding(q1))
     q2_embed = bn(embedding(q2))
@@ -164,8 +164,8 @@ def esim(pretrained_embedding='./fasttext_matrix.npy',
     q2_compare = compose(q2_combined)
 
     # Aggregate
-    q1_rep = apply_multiple(q1_compare, [MaskedGlobalAvgPool1D(), MaskedGlobalMaxPool1D()])
-    q2_rep = apply_multiple(q2_compare, [MaskedGlobalAvgPool1D(), MaskedGlobalMaxPool1D()])
+    q1_rep = apply_multiple(q1_compare, [GlobalAvgPool1D(), GlobalMaxPool1D()])
+    q2_rep = apply_multiple(q2_compare, [GlobalAvgPool1D(), GlobalMaxPool1D()])
 
     # Classifier
     merged = Concatenate()([q1_rep, q2_rep])

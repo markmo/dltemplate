@@ -36,12 +36,14 @@ def run(constant_overwrites):
     train_df, test_df = train_test_split(train_df, test_size=0.1, shuffle=True)
     train_df, val_df = train_test_split(train_df, test_size=0.1, shuffle=True)
 
-    test_df.to_pickle('test_df.pkl')
+    test_df.to_csv(os.path.join(root_dir, 'test_df.csv'), header=True, index=True)
 
     if constants['model_type'] == 'decom_attn':
+        print('Using Decomposable Attention model')
         model = decomposable_attention(pretrained_embedding=ft_matrix_filename, max_len=max_len)
         checkpoint_dir = os.path.join(root_dir, 'decom_attn_checkpoint')
     else:
+        print('Using Enhanced Sequential Inference Model (ESIM)')
         model = esim(pretrained_embedding=ft_matrix_filename, max_len=max_len)
         checkpoint_dir = os.path.join(root_dir, 'esim_checkpoint')
 
@@ -95,7 +97,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')
     parser.add_argument('--batch-size', dest='batch_size', type=int, help='batch size')
     parser.add_argument('--length', dest='max_len', type=int, help='maximum sequence length')
-    parser.add_argument('--model', dest='model_type', type=int, help='model type: "decom_attn" (default), "esim"')
+    parser.add_argument('--model', dest='model_type', type=str, help='model type: "decom_attn" (default), "esim"')
     parser.add_argument('--train', dest='train', help='run training', action='store_true')
     parser.set_defaults(train=False)
     args = parser.parse_args()
