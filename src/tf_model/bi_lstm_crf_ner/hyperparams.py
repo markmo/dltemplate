@@ -9,5 +9,6 @@ def get_constants():
         'n_epochs': 4,
         'learning_rate': 0.005,
         'learning_rate_decay': np.sqrt(2),
-        'dropout_keep_prob': 0.5
+        'dropout_keep_prob': 0.5,
+        'dataset': 'twitter'
     }

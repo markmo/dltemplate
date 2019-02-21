@@ -22,7 +22,7 @@ def convert_label(label):
     return '__label__{}'.format(label)
 
 
-# noinspection SpellCheckingInspection
+# noinspection SpellCheckingInspection,PyTypeChecker
 def preprocess_csv():
     """ Convert exported CSV file from Watson to fasttext format. """
     filename = DATA_DIR + 'text_classification/codi/intents.csv'

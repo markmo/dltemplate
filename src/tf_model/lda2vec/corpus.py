@@ -1,5 +1,12 @@
 from collections import defaultdict
 import numpy as np
+import pandas as pd
+
+try:
+    # noinspection PyUnresolvedReferences
+    from pyxdameraulevenshtein import damerau_levenshtein_distance_withNPArray
+except ImportError:
+    pass
 
 
 class Corpus(object):
@@ -234,6 +241,7 @@ class Corpus(object):
 
         return ret
 
+    # noinspection SpellCheckingInspection
     def subsample_frequent(self, words_compact, threshold=1e-5):
         """
         Subsample the most frequent words. This aggressively
@@ -274,6 +282,417 @@ class Corpus(object):
         freq = self.keys_frequency + 1e-10
         pw = 1.0 - (np.sqrt(threshold / freq) + threshold / freq)
         prob = fast_replace(words_compact, self.keys_compact, pw)
+        draw = np.random.uniform(size=prob.shape)
+        ret = words_compact.copy()
+
+        # If probability greater than draw, skip the word
+        ret[prob > draw] = self.specials_to_compact['skip']
+        return ret
+
+    # noinspection SpellCheckingInspection
+    def to_compact(self, words_loose):
+        """
+        Convert a loose word index matrix to a compact array using
+        a fixed loose to dense mapping. Out of vocabulary word indices
+        will be replaced by the out-of-vocabulary index. The most common
+        index will be mapped to 0, the next most common to 1, and so on.
+
+        Examples
+        --------
+        >>> corpus = Corpus()
+        >>> word_indices = np.random.randint(100, size=1000)
+        >>> n_words = len(np.unique(word_indices))
+        >>> corpus.update_word_count(word_indices)
+        >>> corpus.finalize()
+        >>> word_compact = corpus.to_compact(word_indices)
+        >>> # The most common word in the training set will be mapped to be
+        >>> # right after all the special tokens, so 2 in this case.
+        >>> np.argmax(np.bincount(word_compact)) == 2
+        True
+        >>> most_common = np.argmax(np.bincount(word_indices))
+        >>> corpus.loose_to_compact[most_common] == 2
+        True
+        >>> # Out of vocabulary indices will be mapped to 1
+        >>> word_indices = np.random.randint(150, size=1000)
+        >>> word_compact_oov = corpus.to_compact(word_indices)
+        >>> oov = corpus.specials_to_compact['out_of_vocabulary']
+        >>> oov
+        1
+        >>> oov in word_compact
+        False
+        >>> oov in word_compact_oov
+        True
+
+        :param words_loose: (array[int]) Input loose word array to be converted into a compact array.
+        :return:
+        """
+        self._check_finalized()
+        keys = self.keys_loose
+        reps = self.keys_compact
+        uniques = np.unique(words_loose)
+
+        # Find the out of vocab indices
+        oov = np.setdiff1d(uniques, keys, assume_unique=True)
+        oov_token = self.specials_to_compact['oov']
+        keys = np.concatenate([keys, oov])
+        reps = np.concatenate([reps, np.zeros_like(oov) + oov_token])
+        compact = fast_replace(words_loose, keys, reps)
+        assert compact.min() >= 0, 'Error: all compact indices should be non-negative'
+        return compact
+
+    def to_loose(self, words_compact):
+        """
+        Convert a compacted array back into a loose array.
+
+        Examples
+        --------
+        >>> corpus = Corpus()
+        >>> word_indices = np.random.randint(100, size=1000)
+        >>> corpus.update_word_count(word_indices)
+        >>> corpus.finalize()
+        >>> word_compact = corpus.to_compact(word_indices)
+        >>> word_loose = corpus.to_loose(word_compact)
+        >>> np.all(word_loose == word_indices)
+        True
+
+        :param words_compact: (array[int]) Input compacted word array to be converted into a loose array.
+        :return:
+        """
+        self._check_finalized()
+        uniques = np.unique(words_compact)
+
+        # Find the out of vocab indices
+        oov = np.setdiff1d(uniques, self.keys_compact, assume_unique=True)
+        assert np.all(oov < 0, ('Found keys in `word_compact` not present in the training corpus. '
+                                'Is this actually a compacted array?'))
+        loose = fast_replace(words_compact, self.keys_compact, self.keys_loose)
+        return loose
+
+    def compact_to_flat(self, words_compact, *components):
+        """
+        Ravel a 2D compact array of documents (rows) and word
+        positions (columns) into a 1D array of words. Leave out special
+        tokens and ravel the component arrays in the same fashion.
+
+        Examples
+        --------
+        >>> corpus = Corpus()
+        >>> word_indices = np.random.randint(100, size=1000)
+        >>> corpus.update_word_count(word_indices)
+        >>> corpus.finalize()
+        >>> doc_texts = np.arange(8).reshape((2, 4))
+        >>> doc_texts[:, -1] = -2  # Mark as skips
+        >>> doc_ids = np.arange(2)
+        >>> compact = corpus.to_compact(doc_texts)
+        >>> oov = corpus.specials_to_compact['out_of_vocabulary']
+        >>> compact[1, 3] = oov  # Mark the last word as OOV
+        >>> flat = corpus.compact_to_flat(compact)
+        >>> flat.shape[0] == 6  # 2 skips were dropped from 8 words
+        True
+        >>> flat[-1] == corpus.loose_to_compact[doc_texts[1, 2]]
+        True
+        >>> flat, (flat_id,) = corpus.compact_to_flat(compact, doc_ids)
+        >>> flat_id
+        array([0, 0, 0, 1, 1, 1])
+
+        :param words_compact: (array[int]) Array of word indices in documents. Has shape (n_docs, max_len)
+        :param components: (list[array]) A list of arrays detailing per-document properties. Each array
+            must n_docs long.
+        :return:
+            flat: (array[int]) An array of all words unravelled into a 1D shape
+            components: (list[array]) Each array here is also unravelled into the same shape
+        """
+        self._check_finalized()
+        n_docs = words_compact.shape[0]
+        max_len = words_compact.shape[1]
+        idx = words_compact > self.n_specials
+        components_raveled = []
+        for component in components:
+            raveled = np.tile(component[:, None], max_len)[idx]
+            components_raveled.append(raveled)
+            assert len(component) == n_docs, 'Length of each component must much `word_compact` size'
+
+        if len(components_raveled) == 0:
+            return words_compact[idx]
+        else:
+            return words_compact[idx], components_raveled
+
+    def word_list(self, vocab, max_compact_index=None, oov_token='<oov>'):
+        """
+        Translate compact keys back into string representations for a word.
+
+        Examples
+        --------
+        >>> vocab = {0: 'But', 1: 'the', 2: 'night', 3: 'was', 4: 'warm'}
+        >>> word_indices = np.zeros(50).astype('int32')
+        >>> word_indices[:25] = 0  # 'But' shows 25 times
+        >>> word_indices[25:35] = 1  # 'the' is in 10 times
+        >>> word_indices[40:46] = 2  # 'night' is in 6 times
+        >>> word_indices[46:49] = 3  # 'was' is in 3 times
+        >>> word_indices[49:] = 4  # 'warm' in in 2 times
+        >>> corpus = Corpus()
+        >>> corpus.update_word_count(word_indices)
+        >>> corpus.finalize()
+        >>> # Build a vocabulary of word indices
+        >>> corpus.word_list(vocab)
+        ['skip', 'out_of_vocabulary', 'But', 'the', 'night', 'was', 'warm']
+
+        :param vocab: (dict) The vocab object has loose indices as keys and word strings as
+            values.
+        :param max_compact_index: (int) Only return words up to this index. If None, defaults to the number
+            of compact indices available.
+        :param oov_token: (str) Returns this string if a compact index does not have a word in the
+            vocab dictionary provided.
+        :return:
+            word_list: (list) A list of strings corresponding to word indices
+            zero to `max_compact_index`
+        """
+        # Translate the compact keys into strings
+        oov = self.specials['oov']
+        words = []
+        if max_compact_index is None:
+            max_compact_index = self.keys_compact.shape[0]
+
+        index_to_special = {i: s for s, i in self.specials.items()}
+        for compact_index in range(max_compact_index):
+            loose_index = self.compact_to_loose.get(compact_index, oov)
+            special = index_to_special.get(loose_index, oov_token)
+            string = vocab.get(loose_index, special)
+            words.append(string)
+
+        return words
+
+    # noinspection PyPep8,PyUnresolvedReferences,SpellCheckingInspection
+    def compact_word_vectors(self, vocab, filename=None, array=None, top=20000):
+        """
+        Retrieve pretrained word vectors for our vocabulary.
+        The returned word array has row indices corresponding to the
+        compact index of a word, and columns corresponding to the word
+        vector.
+
+        Examples
+        --------
+        >>> import numpy.linalg as nl
+        >>> vocab = {19: 'shuttle', 5: 'astronomy', 7: 'cold', 3: 'hot'}
+        >>> word_indices = np.zeros(50).astype('int32')
+        >>> word_indices[:25] = 19  # 'Shuttle' shows 25 times
+        >>> word_indices[25:35] = 5  # 'astronomy' is in 10 times
+        >>> word_indices[40:46] = 7  # 'cold' is in 6 times
+        >>> word_indices[46:] = 3  # 'hot' is in 3 times
+        >>> corpus = Corpus()
+        >>> corpus.update_word_count(word_indices)
+        >>> corpus.finalize()
+        >>> v, s, f = corpus.compact_word_vectors(vocab)
+        >>> sim = lambda x, y: np.dot(x, y) / nl.norm(x) / nl.norm(y)
+        >>> vocab[corpus.compact_to_loose[2]]
+        'shuttle'
+        >>> vocab[corpus.compact_to_loose[3]]
+        'astronomy'
+        >>> vocab[corpus.compact_to_loose[4]]
+        'cold'
+        >>> sim_shuttle_astro = sim(v[2, :], v[3, :])
+        >>> sim_shuttle_cold = sim(v[2, :], v[4, :])
+        >>> sim_shuttle_astro > sim_shuttle_cold
+        True
+
+        :param vocab: (dict) Dictionary where keys are the loose index, and values are
+            the word string.
+        :param filename: (str) Filename for word2vec vectors via gensim.
+        :param array:
+        :param top:
+        :return:
+            data: (ndarray[float]) Array such that data[compact_index, :] = word_vector
+        """
+        n_words = len(self.compact_to_loose)
+
+        from gensim.models.word2vec import Word2Vec
+
+        model = Word2Vec.load_word2vec_format(filename, binary=True)
+        n_dim = model.syn0.shape[1]
+        data = np.random.normal(size=(n_words, n_dim)).astype('float32')
+        data -= data.mean()
+        data += model.syn0.mean()
+        data /= data.std()
+        data *= model.syn0.std()
+        if array is not None:
+            data = array
+            # n_words = data.shape[0]
+
+        keys_raw = model.vocab.keys()
+        keys = [s.encode('ascii', 'ignore') for s in keys_raw]
+        lens = [len(s) for s in model.vocab.keys()]
+        choices = np.array(keys, dtype='S')
+        lengths = np.array(lens, dtype='int32')
+        s, f = 0, 0
+        rep0 = lambda w: w
+        rep1 = lambda w: w.replace(' ', '_')
+        rep2 = lambda w: w.title().replace(' ', '_')
+        reps = [rep0, rep1, rep2]
+        for compact in np.arange(top):
+            loose = self.compact_to_loose.get(compact, None)
+            if loose is None:
+                continue
+
+            word = vocab.get(loose, None)
+            if word is None:
+                continue
+
+            word = word.strip()
+            vector = None
+            for rep in reps:
+                clean = rep(word)
+                if clean in model.vocab:
+                    vector = model[clean]
+                    break
+
+            if vector is None:
+                try:
+                    word = str(word)
+                    idx = lengths >= len(word) - 3
+                    idx &= lengths <= len(word) + 3
+                    sel = choices[idx]
+                    d = damerau_levenshtein_distance_withNPArray(word, sel)
+                    choice = np.array(keys_raw)[idx][np.argmin(d)]
+                    vector = model[choice]
+                    print(compact, word, ' --> ', choice)
+                except IndexError:
+                    pass
+
+            if vector is None:
+                f += 1
+                continue
+
+            s += 1
+            data[compact, :] = vector[:]
+
+        return data, s, f
+
+    # noinspection PyMethodMayBeStatic,SpellCheckingInspection
+    def compact_to_bow(self, word_compact, max_compact_index=None):
+        """
+        Given a 2D array of compact indices, return the bag of words
+        representation where the column is the word index, row is the document
+        index, and value is the number of times that word appears in the
+        document.
+
+        Examples
+        --------
+        >>> import numpy.linalg as nl
+        >>> vocab = {19: 'shuttle', 5: 'astronomy', 7: 'cold', 3: 'hot'}
+        >>> word_indices = np.zeros(50).astype('int32')
+        >>> word_indices[:25] = 19  # 'Shuttle' shows 25 times
+        >>> word_indices[25:35] = 5  # 'astronomy' is in 10 times
+        >>> word_indices[40:46] = 7  # 'cold' is in 6 times
+        >>> word_indices[46:] = 3  # 'hot' is in 3 times
+        >>> corpus = Corpus()
+        >>> corpus.update_word_count(word_indices)
+        >>> corpus.finalize()
+        >>> v = corpus.compact_to_bow(word_indices)
+        >>> len(v)
+        20
+        >>> v[:6]
+        array([ 5,  0,  0,  4,  0, 10])
+        >>> v[19]
+        25
+        >>> v.sum()
+        50
+        >>> words = [[0, 0, 0, 3, 4], [1, 1, 1, 4, 5]]
+        >>> words = np.array(words)
+        >>> bow = corpus.compact_to_bow(words)
+        >>> bow.shape
+        (2, 6)
+
+        :param word_compact:
+        :param max_compact_index:
+        :return:
+        """
+        if max_compact_index is None:
+            max_compact_index = word_compact.max()
+
+        def bin_count(x):
+            return np.bincount(x, minlength=max_compact_index + 1)
+
+        axis = len(word_compact.shape) - 1
+        bow = np.apply_along_axis(bin_count, axis, word_compact)
+        return bow
+
+    # noinspection PyMethodMayBeStatic,PyPep8
+    def compact_to_cooccurrence(self, words_compact, indices, window_size=10):
+        """
+        From an array of compact tokens and aligned array of document indices,
+        compute (word, word, document) co-occurrences within a moving window.
+
+        Examples
+        --------
+        >>> compact = np.array([0, 1, 1, 1, 2, 2, 3, 0])
+        >>> doc_idx = np.array([0, 0, 0, 0, 1, 1, 1, 1])
+        >>> corpus = Corpus()
+        >>> counts = corpus.compact_to_cooccurrence(compact, {'doc': doc_idx})
+        >>> counts.counts.sum()
+        24
+        >>> counts.query('doc == 0').counts.values
+        array([3, 3, 6])
+        >>> compact = np.array([0, 1, 1, 1, 2, 2, 3, 0])
+        >>> doc_idx = np.array([0, 0, 0, 1, 1, 2, 2, 2])
+        >>> corpus = Corpus()
+        >>> counts = corpus.compact_to_cooccurrence(compact, {'doc': doc_idx})
+        >>> counts.counts.sum()
+        14
+        >>> counts.query('doc == 0').word_index_x.values
+        array([0, 1, 1])
+        >>> counts.query('doc == 0').word_index_y.values
+        array([1, 0, 1])
+        >>> counts.query('doc == 0').counts.values
+        array([2, 2, 2])
+        >>> counts.query('doc == 1').counts.values
+        array([1, 1])
+
+        :param words_compact: (array[int]) Sequence of tokens.
+        :param indices: (dict of int arrays) Each array in this dictionary should represent the document index it
+            came from.
+        :param window_size: (int) Indicates the moving window size around which all co-occurrences will
+            be computed.
+        :return:
+            counts: (DataFrame) a DataFrame with two columns for word index A and B,
+            one extra column for each document index, and a final column for counts
+            in that key.
+        """
+        # noinspection PyUnresolvedReferences
+        tokens = pd.DataFrame(dict(word_index=words_compact)).reset_index()
+        for name, index in indices.items():
+            tokens[name] = index
+
+        a, b = tokens.copy(), tokens.copy()
+        mask = lambda x: np.prod([x[k + '_x'] == x[k + '_y'] for k in indices.keys()], axis=0)
+        group_keys = ['word_index_x', 'word_index_y', ]
+        group_keys += [k + '_x' for k in indices.keys()]
+        total = []
+        a['frame'] = a['index'].copy()
+        for frame in range(-window_size, window_size + 1):
+            if frame == 0:
+                continue
+
+            b['frame'] = b['index'] + frame
+            matches = (
+                a.merge(b, on='frame')
+                 .assign(same_doc=mask)
+                 .pipe(lambda df: df[df['same_doc'] == 1])
+                 .groupby(group_keys)['frame']
+                 .count()
+                 .reset_index()
+            )
+            total.append(matches)
+
+        # noinspection PyUnresolvedReferences
+        counts = (
+            pd.concat(total)
+              .groupby(group_keys)['frame']
+              .sum()
+              .reset_index()
+              .rename(columns={k + '_x': k for k in indices.keys()})
+              .rename(columns=dict(frame='counts'))
+        )
+        return counts
 
 
 def fast_replace(data, keys, values, skip_checks=False):

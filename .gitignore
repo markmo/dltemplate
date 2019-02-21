@@ -223,3 +223,4 @@ labels_crime.txt
 *checkpoint
 checkpoint.*
 fasttext_matrix.npy
+_build

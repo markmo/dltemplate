@@ -45,3 +45,27 @@ updates based on each sampled dataset.
 
 See `Deep Reinforcement Learning: Pong from Pixels <http://karpathy.github.io/2016/05/31/rl/>`_
 by Andrej Karpathy.
+
+To run
+^^^^^^
+
+1. Create a Python virtual environment.
+2. Install the dependencies in requirements.txt
+3. Run the code. Change to the `src/rl/policy_gradients_pong` directory.
+
+::
+
+    export PYTHONPATH=.
+    python __init__.py
+
+I've included the model file `model.pkl`, which the code will read and start playing
+to a winning level. To use, set the `resume` variable at the top of the file to `True`.
+Set the `render` variable to `True` to see the game in action.
+
+You can train a model from scratch by setting the `resume` variable to `False`.
+On my MacBook Pro, it took a few days of game play before the agent started to
+consistently win. Set the `render` variable to `False` to speed up training time.
+
+I'm still impressed that so little code, with a fairly simple algorithm, can win
+at Pong purely through observation of the pixels from the frame-by-frame raw pixel
+values.

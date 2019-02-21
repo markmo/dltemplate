@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from common.load_data import load_twitter_entities_dataset
+from common.load_data import load_nvd_corpus, load_twitter_entities_dataset
 from common.util import merge_dict
 import tensorflow as tf
 from tf_model.bi_lstm_crf_ner.hyperparams import get_constants
@@ -10,13 +10,23 @@ PAD_TOKEN = '<PAD>'
 
 
 def run(constant_overwrites):
-    tokens_train, tags_train, tokens_val, tags_val, tokens_test, tags_test = load_twitter_entities_dataset()
+    constants = merge_dict(get_constants(), constant_overwrites)
+    dataset = constants['dataset']
+    if dataset == 'twitter':
+        print('Loading twitter dataset')
+        tokens_train, tags_train, tokens_val, tags_val, tokens_test, tags_test = load_twitter_entities_dataset()
+    elif dataset == 'nvd':
+        print('Loading NVD dataset')
+        tokens_train, tags_train, tokens_val, tags_val, tokens_test, tags_test, _, _, _ = load_nvd_corpus()
+    else:
+        print('ERR - invalid dataset')
+        return
+
     special_tokens = ['<UNK>', '<PAD>']
     special_tags = ['O']
     tok2idx, idx2tok = build_dict(tokens_train + tokens_val, special_tokens)
     tag2idx, idx2tag = build_dict(tags_train, special_tags)
 
-    constants = merge_dict(get_constants(), constant_overwrites)
     vocab_size = len(tok2idx.keys())
     n_tags = len(tag2idx.keys())
     embedding_dim = constants['embedding_dim']
@@ -53,6 +63,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', dest='batch_size', type=int, help='batch size')
     parser.add_argument('--learning-rate', dest='learning_rate', type=float, help='learning rate')
     parser.add_argument('--hidden-layers', dest='n_hidden', type=int, help='number hidden layers')
+    parser.add_argument('--dataset', dest='dataset', type=str, help='dataset to use ["twitter", "nvd"]')
     args = parser.parse_args()
 
     run(vars(args))

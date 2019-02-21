@@ -297,6 +297,75 @@ def load_names():
         return [' ' + name for name in names]
 
 
+def load_nvd_corpus(test_split=0.8, val_split=0.15):
+    """
+    The National Vulnerability Database (NVD) corpus comprises 210 randomly selected
+    vulnerability descriptions taken from NVD as of April 2014.
+
+    Every line of a file contains a pair of a token (word/punctuation symbol) and a
+    tag, separated by whitespace.
+
+    :return:
+    """
+    def read_data(filename):
+        tokens = []
+        tags = []
+        sent_ids = []
+        sent_tokens = []
+        sent_tags = []
+        line_count = 0
+        invalid_count = 0
+        eos = True  # end-of-sentence
+        for line in open(filename, encoding='utf-8'):
+            line_count += 1
+            line = line.strip()
+            if not line:
+                if sent_tokens:
+                    tokens.append(sent_tokens)
+                    tags.append(sent_tags)
+
+                sent_tokens = []
+                sent_tags = []
+                eos = True
+            else:
+                if eos:
+                    sent_ids.append(line)
+                    eos = False
+                    continue
+
+                split = line.split()
+                if len(split) > 1:
+                    token = split[0]
+                    tag = ' '.join(split[1:])
+                    sent_tokens.append(token)
+                    sent_tags.append(tag)
+                else:
+                    # print('Invalid line {}: "{}"'.format(line_count, line))
+                    invalid_count += 1
+
+        if sent_tokens:
+            tokens.append(sent_tokens)
+            tags.append(sent_tags)
+
+        if invalid_count > 0:
+            print('Invalid count:', invalid_count)
+
+        assert len(tokens) == len(tags) == len(sent_ids), \
+            ('ERR - Tokens length: {}, Tags length: {}, '
+             'Sent. IDs length: {}').format(len(tokens), len(tags), len(sent_ids))
+        return tokens, tags, sent_ids
+
+    tokens_train, tags_train, sent_ids_train = read_data(DATA_DIR + 'cybersec_ner/nvd_corpus.txt')
+    tokens_train, tokens_test, tags_train, tags_test, sent_ids_train, sent_ids_test = \
+        train_test_split(tokens_train, tags_train, sent_ids_train, test_size=test_split, shuffle=True)
+    tokens_train, tokens_val, tags_train, tags_val, sent_ids_train, sent_ids_val = \
+        train_test_split(tokens_train, tags_train, sent_ids_train, test_size=val_split, shuffle=True)
+    return (tokens_train, tags_train,
+            tokens_val, tags_val,
+            tokens_test, tags_test,
+            sent_ids_train, sent_ids_val, sent_ids_test)
+
+
 def load_pix2pix_dataset(category):
     """
     pix2pix datasets:
