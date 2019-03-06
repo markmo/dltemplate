@@ -5,7 +5,8 @@ import pandas as pd
 from pathlib import Path
 from tf_model.lda2vec.model_setup import Lda2vecModel
 from tf_model.lda2vec.preprocessor import Preprocessor
-from tf_model.lda2vec.util import generate_ldavis_data, load_preprocessed_data, run_preprocessing
+from tf_model.lda2vec.util import generate_ldavis_data, load_preprocessed_data
+# from tf_model.lda2vec.util_deprecated import run_preprocessing
 import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
