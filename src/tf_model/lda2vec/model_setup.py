@@ -1,10 +1,10 @@
 from datetime import datetime
 import numpy as np
+from pathlib import Path
+import tensorflow as tf
 from tf_model.lda2vec.embedding_mixture import EmbeddingMixture
 from tf_model.lda2vec.util import dirichlet_likelihood
 from tf_model.lda2vec.word_embedding import WordEmbedding
-
-import tensorflow as tf
 
 
 class Lda2vecModel(object):
@@ -63,7 +63,7 @@ class Lda2vecModel(object):
         self.load_embeds = load_embeds
         self.pretrained_embeddings = pretrained_embeddings
         self.save_graph_def = save_graph_def
-        self.log_dir = log_dir
+        self.log_dir = Path(log_dir)
         self.embed_size = embed_size
         self.n_sampled = n_sampled
         self.learning_rate = learning_rate
@@ -81,7 +81,7 @@ class Lda2vecModel(object):
         self.cosine_similarity = None
         if not restore:
             self.date = datetime.now().strftime('%y%m%d_%H%M')
-            self.log_dir = '{}_{}'.format(self.log_dir, self.date)
+            self.log_dir = Path('{}_{}'.format(str(self.log_dir), self.date))
             self.w_embed = WordEmbedding(self.embed_size, self.vocab_size, self.n_sampled,
                                          load_embeds=self.load_embeds,
                                          pretrained_embeddings=self.pretrained_embeddings,
@@ -106,8 +106,8 @@ class Lda2vecModel(object):
                 self.addtl_features_list = kg[:len(kg) // 2]
                 self.feature_lookup = kg[len(kg) // 2:]
         else:
-            meta_graph = log_dir + '/model.ckpt'
-            tf.train.import_meta_graph(meta_graph + '.meta').restore(self.sess, meta_graph)
+            meta_graph = self.log_dir / 'model.ckpt'
+            tf.train.import_meta_graph(str(meta_graph) + '.meta').restore(self.sess, str(meta_graph))
             handles = self.sess.graph.get_collection(Lda2vecModel.RESTORE_KEY)
             (self.x, self.y, self.docs, self.addtl_features, self.step, self.switch_loss, self.pivot,
              self.doc, self.context, self.loss_word2vec, self.fraction, self.loss_lda, self.loss,
@@ -120,6 +120,7 @@ class Lda2vecModel(object):
     def prior(self):
         doc_prior = dirichlet_likelihood(self.mixture_doc.doc_embedding, alpha=self.alpha)
         feature_prior_created = False
+        feature_prior = None  # a tensor
         for i in range(self.n_addtl_features):
             temp_feature_prior = dirichlet_likelihood(self.addtl_features_list[i].doc_embedding, alpha=self.alpha)
             if feature_prior_created:
@@ -129,7 +130,6 @@ class Lda2vecModel(object):
                 feature_prior = temp_feature_prior
 
         if feature_prior_created:
-            # noinspection PyUnboundLocalVariable
             return doc_prior + feature_prior
         else:
             return doc_prior
@@ -163,7 +163,7 @@ class Lda2vecModel(object):
             tf.summary.scalar('nce_loss', loss_word2vec)
 
         with tf.name_scope('lda_loss'):
-            fraction = tf.Variable(1, trainable=False, dtype=tf.float32, name='fraction')
+            fraction = tf.Variable(1.0, trainable=False, dtype=tf.float32, name='fraction')
             # noinspection PyTypeChecker
             loss_lda = self.lmbda * fraction * self.prior()
             tf.summary.scalar('lda_loss', loss_lda)
@@ -174,7 +174,9 @@ class Lda2vecModel(object):
             optimizer = tf.contrib.layers.optimize_loss(loss, tf.train.get_global_step(), self.learning_rate,
                                                         'Adam', name='optimizer')
 
-        self.sess.run(tf.global_variables_initializer(), options=tf.RunOptions(report_tensor_allocations_upon_oom=True))
+        # self.sess.run(tf.global_variables_initializer(),
+        #               options=tf.RunOptions(report_tensor_allocations_upon_oom=True))
+        self.sess.run(tf.global_variables_initializer())
         merged = tf.summary.merge_all()
         to_return = [
             x, y, docs, addtl_features, step, switch_loss, word_context, doc_context, context,
@@ -191,7 +193,6 @@ class Lda2vecModel(object):
 
         return to_return
 
-    # noinspection PyUnusedLocal
     def train(self, pivot_words, target_words, doc_ids, data_size, n_epochs, context_ids=False,
               idx_to_word=None, switch_loss_epoch=0, save_every=5000, report_every=100):
         """
@@ -211,16 +212,16 @@ class Lda2vecModel(object):
         temp_fraction = self.batch_size * 1.0 / data_size
         self.sess.run(tf.assign(self.fraction, temp_fraction))
         self.n_batches = data_size // self.batch_size
-        iters_per_epoch = int(data_size / self.batch_size) + np.ceil(data_size % self.batch_size)
+        iters_per_epoch = self.n_batches + np.ceil(data_size % self.batch_size)
         switch_loss_step = iters_per_epoch * switch_loss_epoch
         self.sess.run(tf.assign(self.switch_loss, switch_loss_step))
         saver = tf.train.Saver()
-        writer = tf.summary.FileWriter(self.log_dir + '/', graph=self.sess.graph)
+        writer = tf.summary.FileWriter(str(self.log_dir) + '/', graph=self.sess.graph)
         for epoch in range(n_epochs):
             print('\nEPOCH:', epoch + 1)
             for i in range(self.n_batches + 1):
                 batch_start = i * self.batch_size
-                batch_end = i * self.batch_size + self.batch_size
+                batch_end = batch_start + self.batch_size
                 if i < self.n_batches:
                     x_batch = pivot_words[batch_start:batch_end]
                     y_batch = target_words[batch_start:batch_end]
@@ -263,14 +264,16 @@ class Lda2vecModel(object):
 
                 if step > 0 and step % save_every == 0:
                     idxs = np.arange(self.n_topics)
-                    words, sims = self.get_k_closest(idxs, in_type='topic', idx_to_word=idx_to_word, k=11)
+                    # returns words, sims
+                    self.get_k_closest(idxs, in_type='topic', idx_to_word=idx_to_word, k=11)
                     writer.add_summary(summary, step)
                     writer.flush()
                     writer.close()
-                    save_path = saver.save(self.sess, self.log_dir + '/model.ckpt')
-                    writer = tf.summary.FileWriter(self.log_dir + '/', graph=self.sess.graph)
+                    # returns save_path
+                    saver.save(self.sess, str(self.log_dir / 'model.ckpt'))
+                    writer = tf.summary.FileWriter(str(self.log_dir) + '/', graph=self.sess.graph)
 
-        save_path = saver.save(self.sess, self.log_dir + '/model.ckpt')
+        saver.save(self.sess, str(self.log_dir / 'model.ckpt'))
 
     def predict(self, pivot_words):
         return self.sess.run([self.context], feed_dict={self.x: pivot_words})

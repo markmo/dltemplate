@@ -22,6 +22,7 @@ class WordEmbedding(object):
     def __call__(self, embed, train_labels, *args, **kwargs):
         with tf.name_scope('negative_sampling'):
             train_labels = tf.reshape(train_labels, [tf.shape(train_labels)[0], 1])
+            sampler = None
             if self.freqs:
                 sampler = tf.nn.fixed_unigram_candidate_sampler(train_labels,
                                                                 num_true=1,
@@ -30,8 +31,6 @@ class WordEmbedding(object):
                                                                 range_max=self.vocab_size,
                                                                 distortion=self.power,
                                                                 unigrams=self.freqs)
-            else:
-                sampler = None
 
             # compute nce loss for the batch
             loss = tf.reduce_mean(

@@ -1,0 +1,3 @@
+n_epochs: 500
+n_topics: 20
+embed_size: 128

@@ -1,9 +1,11 @@
+from deprecated import deprecated
 from keras.preprocessing.sequence import skipgrams
 import numpy as np
 import os
 import pandas as pd
 import pickle
 import pyLDAvis
+# noinspection PyProtectedMember
 from sklearn.utils import shuffle
 import tensorflow as tf
 from tf_model.lda2vec.nlp_pipeline import NlpPipeline
@@ -75,14 +77,13 @@ def prepare_topics(weights, factors, word_vectors, vocab, temperature=1.0,
     # Collect document-to-topic distributions, e.g. theta
     doc_to_topic = _softmax_2d(weights)
     assert np.allclose(np.sum(doc_to_topic, axis=1), 1), 'Not all rows in `doc_to_topic` sum to 1'
-    data = {
+    return {
         'topic_term_dists': topic_to_word,
         'doc_topic_dists': doc_to_topic,
         'doc_lengths': doc_lengths,
         'vocab': vocab,
         'term_frequency': term_frequency
     }
-    return data
 
 
 def prob_words(context, vocab, temperature=1.0):
@@ -91,6 +92,7 @@ def prob_words(context, vocab, temperature=1.0):
     return _softmax(dot / temperature)
 
 
+@deprecated()
 def run_preprocessing(texts, data_dir, run_name, min_freq_threshold=10, max_len=100, bad=None,
                       vectors='en_core_web_lg', n_threads=2, token_type='lemma', only_keep_alpha=False,
                       write_every=10000, merge=False):
@@ -117,10 +119,10 @@ def run_preprocessing(texts, data_dir, run_name, min_freq_threshold=10, max_len=
         bad = []
 
     def clean(line):
-        return ' '.join(w for w in line.split() if not any(t in w for t in bad))
+        return ' '.join(w for w in line.split() if not any(tk in w for tk in bad))
 
     # Location for preprocessed data to be stored
-    out_path = data_dir + '/' + run_name
+    out_path = data_dir / run_name
     if not os.path.exists(out_path):
         # Make directory to save data in
         os.makedirs(out_path)
@@ -131,6 +133,7 @@ def run_preprocessing(texts, data_dir, run_name, min_freq_threshold=10, max_len=
         # Preprocess data
         # Convert to unicode (spacy only works with unicode)
         texts = [str(clean(d)) for d in texts]
+        texts = [t for t in texts if t]  # remove empty lines after cleaning
 
         # Process the text, no file because we are passing in data directly
         p = NlpPipeline(None, max_len, texts=texts, n_threads=n_threads, only_keep_alpha=only_keep_alpha,
@@ -145,7 +148,7 @@ def run_preprocessing(texts, data_dir, run_name, min_freq_threshold=10, max_len=
         print('Trim zeros')
         p.trim_zeros_from_idx_data()
 
-        # Extract the length of each document (needed for pyldaviz)
+        # Extract the length of each document (needed for pyLDAvis)
         doc_lengths = [len(x) for x in p.idx_data]
 
         # Find the cutoff index
@@ -154,10 +157,11 @@ def run_preprocessing(texts, data_dir, run_name, min_freq_threshold=10, max_len=
             if freq < min_freq_threshold:
                 cutoff = i
                 break
+
         # Then cutoff the embed matrix
         embed_matrix = p.embed_matrix[:cutoff]
 
-        # Also replace all tokens below cut off in idx_data
+        # Also replace all tokens below cutoff in `idx_data`
         for i in range(len(p.idx_data)):
             p.idx_data[i][p.idx_data[i] > cutoff - 1] = 0
 
@@ -198,7 +202,7 @@ def run_preprocessing(texts, data_dir, run_name, min_freq_threshold=10, max_len=
 
             if i // write_every:
                 temp_df = pd.DataFrame(data)
-                temp_df.to_csv(out_path + '/skipgrams.txt', sep='\t', index=False, header=None, mode='a')
+                temp_df.to_csv(out_path / 'skipgrams.txt', sep='\t', index=False, header=None, mode='a')
                 del temp_df
                 data = []
 
@@ -206,40 +210,80 @@ def run_preprocessing(texts, data_dir, run_name, min_freq_threshold=10, max_len=
                 print('step', i, 'of', n_examples)
 
         temp_df = pd.DataFrame(data)
-        temp_df.to_csv(out_path + '/skipgrams.txt', sep='\t', index=False, header=None, mode='a')
+        temp_df.to_csv(out_path / 'skipgrams.txt', sep='\t', index=False, header=None, mode='a')
         del temp_df
 
         # Save embed matrix
-        np.save(out_path + '/embed_matrix', embed_matrix)
+        np.save(out_path / 'embed_matrix', embed_matrix)
 
         # Save the doc lengths to be used later
         # Also purge those that didnt make it into skipgram function
-        np.save(out_path + '/doc_lengths', np.delete(doc_lengths, np.array(purged_docs)))
+        np.save(out_path / 'doc_lengths', np.delete(doc_lengths, np.array(purged_docs)))
 
         # Save frequencies to file
-        np.save(out_path + '/freqs', freqs)
+        np.save(out_path / 'freqs', freqs)
 
         # Save vocabulary dictionary to file
-        with open(out_path + '/idx_to_word.pkl', 'wb') as f:
+        with open(out_path / 'idx_to_word.pkl', 'wb') as f:
             pickle.dump(p.idx_to_word, f)
 
-        with open(out_path + '/word_to_idx.pkl', 'wb') as f:
+        with open(out_path / 'word_to_idx.pkl', 'wb') as f:
             pickle.dump(p.word_to_idx, f)
 
 
-def load_preprocessed_data(data_path, run_name):
-    out_path = data_path + '/' + run_name
+def load_preprocessed_data(data_path, load_embed_mat=False, shuffle_data=True):
+    """
+    Load all preprocessed data.
 
+    Also load embedding matrix if saved in `data_path`.
+
+    :param data_path: (PosixPath) where data is stored. Should be same path as passed
+           to preprocessor.
+    :param load_embed_mat: (bool, optional) if True, load `embedding_matrix.npy`
+           found in `data_path`.
+    :param shuffle_data: (bool, optional) if True, will shuffle the skipgrams
+           DataFrame when loaded. Otherwise leave it in original order.
+    :return:
+    """
     # Reload all data
-    with open(out_path + '/idx_to_word.pkl', 'rb') as f:
+    with open(data_path / 'idx_to_word.pkl', 'rb') as f:
         idx_to_word = pickle.load(f)
 
-    with open(out_path + '/word_to_idx.pkl', 'rb') as f:
+    with open(data_path / 'word_to_idx.pkl', 'rb') as f:
         word_to_idx = pickle.load(f)
 
-    freqs = np.load(out_path + '/freqs.npy').tolist()
-    embed_matrix = np.load(out_path + '/embed_matrix.npy')
-    df = pd.read_csv(out_path + '/skipgrams.txt', sep='\t', header=None)
+    freqs = np.load(data_path / 'freqs.npy').tolist()
+    df = pd.read_csv(data_path / 'skipgrams.txt', sep='\t', header=None)
+
+    # Extract data arrays from DataFrame
+    pivot_ids = df[0].values
+    target_ids = df[1].values
+    doc_ids = df[2].values
+
+    if shuffle_data:
+        pivot_ids, target_ids, doc_ids = shuffle(pivot_ids, target_ids, doc_ids, random_state=0)
+
+    if load_embed_mat:
+        embed_mat = np.load(data_path / 'embedding_matrix.npy')
+        return idx_to_word, word_to_idx, freqs, pivot_ids, target_ids, doc_ids, embed_mat
+
+    return idx_to_word, word_to_idx, freqs, pivot_ids, target_ids, doc_ids
+
+
+@deprecated()
+def load_preprocessed_data_v1(data_path, run_name):
+    out_path = data_path / run_name
+
+    # Reload all data
+    with open(out_path / 'idx_to_word.pkl', 'rb') as f:
+        idx_to_word = pickle.load(f)
+
+    with open(out_path / 'word_to_idx.pkl', 'rb') as f:
+        word_to_idx = pickle.load(f)
+
+    freqs = np.load(out_path / 'freqs.npy').tolist()
+    embed_matrix = np.load(out_path / 'embed_matrix.npy')
+    df = pd.read_csv(out_path / 'skipgrams.txt', sep='\t', header=None)
 
     # Extract arrays from dataframe
     pivot_ids = df[0].values
@@ -251,6 +295,7 @@ def load_preprocessed_data(data_path, run_name):
 
     # Hyperparameters
     n_docs = doc_ids.max() + 1
+    # noinspection PyTypeChecker
     vocab_size = len(freqs)
     embed_size = embed_matrix.shape[1]
 
@@ -258,19 +303,52 @@ def load_preprocessed_data(data_path, run_name):
             target_ids, doc_ids, n_docs, vocab_size, embed_size)
 
 
-def generate_ldavis_data(data_path, run_name, model, idx_to_word, freqs, vocab_size):
+def generate_ldavis_data(data_path, model, idx_to_word, freqs, vocab_size):
+    """
+    This function will launch a locally hosted session of pyLDAvis to visualize the results of our model.
+
+    :param data_path: (PosixPath) data location
+    :param model: TensorFlow model
+    :param idx_to_word: (dict) index-to-word mapping
+    :param freqs: (list) frequency counts of each token
+    :param vocab_size: (int) size of vocabulary
+    :return:
+    """
+    doc_embed = model.sess.run(model.doc_embedding)
+    topic_embed = model.sess.run(model.topic_embedding)
+    word_embed = model.sess.run(model.word_embedding)
+
+    # Extract all unique words in order of index: 1 - (vocab_size + 1)
+    # NOTE! Keras Tokenizer indexes from 1, 0 is reserved for PAD token
+    vocabulary = ['<PAD>']
+    for i in range(1, vocab_size):
+        vocabulary.append(idx_to_word[i])
+
+    # Read document lengths
+    doc_lengths = np.load(data_path / 'doc_lengths.npy')
+
+    # The `prepare_topics` function is a direct copy from Chris Moody
+    vis_data = prepare_topics(doc_embed, topic_embed, word_embed, np.array(vocabulary), doc_lengths=doc_lengths,
+                              term_frequency=freqs, normalize=True)
+    prepared_vis_data = pyLDAvis.prepare(**vis_data)
+    pyLDAvis.show(prepared_vis_data)
+
+
+@deprecated()
+def generate_ldavis_data_v1(data_path, run_name, model, idx_to_word, freqs, vocab_size):
     """This function will launch a locally hosted session of pyLDAvis to visualize the results of our model"""
     doc_embed = model.sess.run(model.doc_embedding)
-    topic_embed = model.sess.run(model.topic_mebedding)
+    topic_embed = model.sess.run(model.topic_embedding)
     word_embed = model.sess.run(model.word_embedding)
 
     # Extract all unique words in order of index: 0 - vocab_size
     vocabulary = []
-    for i in range(vocab_size):
+    # NOTE! Keras Tokenizer indexes from 1, 0 is reserved for PAD token
+    for i in range(1, vocab_size + 1):
         vocabulary.append(idx_to_word[i])
 
     # Read document lengths
-    doc_lengths = np.load(data_path + '/' + run_name + '/doc_lengths.npy')
+    doc_lengths = np.load(data_path / run_name / 'doc_lengths.npy')
 
     # The `prepare_topics` function is a direct copy from Chris Moody
     vis_data = prepare_topics(doc_embed, topic_embed, word_embed, np.array(vocabulary), doc_lengths=doc_lengths,

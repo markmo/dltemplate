@@ -223,7 +223,7 @@ def train(x_train, y_train, x_val, y_val, vocab_processor, model, learning_rate,
                         idx = vocab_processor.vocabulary_.get(word)
                         if idx != 0:
                             # noinspection PyTypeChecker
-                            init_w[idx] = np.fromstring(f.read(bin_length), dtype='float32')
+                            init_w[idx] = np.frombuffer(f.read(bin_length), dtype='float32')
                         else:
                             f.read(bin_length)
 

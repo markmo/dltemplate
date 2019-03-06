@@ -1,3 +1,4 @@
+from deprecated import deprecated
 import gensim
 from gensim.models import Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
@@ -12,6 +13,7 @@ import tensorflow as tf
 import time
 
 
+@deprecated('Use Preprocessor')
 class NlpPipeline(object):
 
     # noinspection PyUnusedLocal
@@ -92,6 +94,15 @@ class NlpPipeline(object):
         self.labels_desc = None
         self.doc_id = 0
         self.timer_dict = {}
+        self.unique = None
+        self.hash_ids = None
+        self.freqs = None
+        self.word_ids = None
+        self.hash_to_idx = {}
+        self.idx_to_hash = {}
+        self.vocab_size = 0
+        self.embed_matrix = None
+        self.embed_size = 0
 
         # If a spacy nlp object is not passed to init
         if self.nlp is None:
@@ -108,7 +119,9 @@ class NlpPipeline(object):
                 # If nothing is specified, load spacy model
                 self.nlp = spacy.load('en_core_web_lg')
 
+        self.timer(message='Run tokenize method')
         self.tokenize()
+        self.timer(message='Run tokenize method', end=True)
 
     def load_google_news_word2vec(self):
         """
@@ -145,10 +158,11 @@ class NlpPipeline(object):
     # noinspection PyDictCreation,PyUnboundLocalVariable
     def tokenize(self):
         if self.texts is None:
-            if self.context is False:
+            if not self.context:
                 # Read in text data from text_file path
                 self.texts = open(self.text_file).read().split('\n')
                 self.texts = [str(t) for t in self.texts]
+                print('Made texts')
             else:
                 filename, file_ext = os.path.splitext(self.text_file)
                 if file_ext == '.json':
@@ -252,7 +266,7 @@ class NlpPipeline(object):
                         delete = np.where(dat[:, 4] == 1)
                         dat = np.delete(dat, delete, 0)
 
-                    if self.only_keep_alpha is True:
+                    if self.only_keep_alpha:
                         delete = np.where(dat[:, 5] == 0)
                         dat = np.delete(dat, delete, 0)
 
@@ -338,6 +352,7 @@ class NlpPipeline(object):
                                                ent_type=_phrase[0].ent_type_)
 
                             ent_list = []
+                            # Loop over named entities
                             for ent in sent.ents:
                                 if len(ent) > 1:
                                     ent_list.append(ent)
@@ -367,7 +382,7 @@ class NlpPipeline(object):
                             else:
                                 _token = token.orth_
 
-                            # Add token to spacy string list so we can use oov as known hash tokens
+                            # Add token to Spacy string list so we can use OOV as known hash tokens
                             if token.is_oov:
                                 self.nlp.vocab.strings.add(_token)
 
@@ -388,7 +403,7 @@ class NlpPipeline(object):
                         if len(dat) > 0:
                             assert dat.min() >= 0, 'Negative indices reserved for special tokens'
                             if self.skip_oov:
-                                # Get indices of email, URL and oov tokens
+                                # Get indices of email, URL and OOV tokens
                                 idx = (dat[:, 1] > 0) | (dat[:, 2] > 0) | (dat[:, 3] > 0)
                             else:
                                 # Get indices of email and URL tokens
@@ -406,7 +421,7 @@ class NlpPipeline(object):
                             self.data[i, j, :length] = dat[:length, 0].ravel()
                     except Exception:
                         print(sent)
-                        print('Warning: document', i, 'broke! Likely due to spacy merge issues (#1547, #1474).')
+                        print('Warning: document', i, 'broke! Likely due to Spacy merge issues (#1547, #1474).')
                         self.purged_docs.append(i)
                         continue
         except Exception as e:
@@ -426,10 +441,10 @@ class NlpPipeline(object):
             for sent_j in range(self.data[doc_i].shape[0]):
                 self.uniques = np.append(self.uniques, self.data[doc_i][sent_j])
 
-        # Saved spacy vocab
+        # Saved Spacy vocab
         self.vocab = self.nlp.vocab
 
-        # Making an idx to word mapping for vocab
+        # Making an idx-to-word mapping for vocab
         self.hash_to_word = {}
 
         # Insert padding id into the hash
@@ -522,10 +537,10 @@ class NlpPipeline(object):
             # Extract vector for the given hash id
             vector = self.nlp.vocab[h].vector
 
-            # If the given vector is just zeros, it is out-of-vocabulary.
+            # If the given vector is just zeros, it is out-of-vocabulary (OOV).
             if np.array_equal(zeros, vector):
                 # TODO - get rid of this random uniform vector
-                # If oov, init a random uniform vector
+                # If OOV, init a random uniform vector
                 vector = np.random.uniform(-1, 1, 300)
 
             # Append current vector to our embed matrix
@@ -550,7 +565,7 @@ class NlpPipeline(object):
             If False, it will compute a tensorflow constant.
         :return:
         """
-        # Create tensor and variable for use in tensorflow
+        # Create tensor and variable for use in TensorFlow
         embed_matrix_tensor = tf.convert_to_tensor(self.embed_matrix)
         if variable:
             # Create embed matrix as tf variable
@@ -667,7 +682,7 @@ class NlpPipeline(object):
     def write_data_to_tf_records(self, out_file, compression='GZIP',
                                  data=np.array([]), labels=np.array([]), context=np.array([]),
                                  seq_desc='tokens', labels_desc='labels', context_desc='doc_id'):
-        if data.any() is False:
+        if not data.any():
             data = self.idx_data
 
         # Name of the feature column for context
@@ -724,7 +739,11 @@ class NlpPipeline(object):
             for doc in self.data:
                 temp_doc = []
                 for h in doc:
-                    temp_doc.append(self.hash_to_idx.get(h, self.skip_token))
+                    # noinspection PyBroadException
+                    try:
+                        temp_doc.append(self.hash_to_idx[h])
+                    except Exception:
+                        temp_doc.append(self.hash_to_idx[self.skip_token])
 
                 if idx_data.any():
                     idx_data = np.vstack([idx_data, np.array([temp_doc])])
