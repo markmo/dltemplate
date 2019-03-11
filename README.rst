@@ -70,6 +70,7 @@ Model Templates
 64. `Decomposable Attention to identify question pairs that have the same intent <src/keras_model/decomposable_attention>`_ (Keras)
 65. `LightGBM model to identify question pairs <src/entailment>`_ (sklearn / LightGBM)
 66. `lda2vec to mix the best parts of word2vec and LDA <src/tf_model/lda2vec>`_ (TensorFlow)
+67. `Summarization using LSTM <src/tf_model/summarization>`_ (TensorFlow)
 
 
 Special Topics

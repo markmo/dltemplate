@@ -1,0 +1,6 @@
+n_steps_in: 6
+n_steps_out: 3
+n_hidden: 128
+batch_size: 64
+n_epochs: 110
+n_samples: 10000

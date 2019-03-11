@@ -1,3 +1,4 @@
 n_epochs: 500
 n_topics: 20
 embed_size: 128
+max_features: 30000

@@ -43,7 +43,7 @@ def run(constant_overwrites):
     # bad = {'ax>', '`@("', '---', '===', '^^^', 'AX>', 'GIZ', '--'}
 
     if not clean_data_dir.exists():
-        p = Preprocessor(df, 'texts', max_features=30000)
+        p = Preprocessor(df, 'texts', max_features=constants['max_features'])
         p.preprocess()
         embed_matrix = p.load_glove(Path(DATA_DIR) / 'glove' / 'glove.6B.300d.txt')
         p.save_data(clean_data_dir, embed_mat=embed_matrix)
@@ -80,6 +80,7 @@ if __name__ == '__main__':
     parser = ArgumentParser(description='Run LDA2Vec model')
     parser.add_argument('--epochs', dest='n_epochs', type=int, help='number epochs')
     parser.add_argument('--topics', dest='n_topics', type=int, help='number topics')
+    parser.add_argument('--max-features', dest='max_features', type=int, help='maximum number features (words)')
     parser.add_argument('--viz', dest='viz', help='visualize results', action='store_true')
     parser.set_defaults(viz=False)
     args = parser.parse_args()

@@ -225,3 +225,5 @@ checkpoint.*
 fasttext_matrix.npy
 _build
 **/logs_*
+src/tf_model/pointer_generator/summarization
+*.pkl
