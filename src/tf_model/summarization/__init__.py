@@ -6,8 +6,8 @@ import pandas as pd
 from pathlib import Path
 import pickle
 from tf_model.summarization.model_setup import build_models
-from tf_model.summarization.util import clean_text, decode_sequence, predict_sequence, prepare_data
-from tf_model.summarization.util import one_hot_decode, train
+from tf_model.summarization.util import clean_text, decode_sequence, prepare_data
+from tf_model.summarization.util import train
 import yaml
 
 ROOT_DIR = Path(__file__).parent
@@ -109,35 +109,35 @@ def run(constant_overwrites):
             print('Decoded sentence:', decoded)
     else:
         print('Evaluating...')
-        dataset_path = ROOT_DIR / 'data' / 'reviews_test_dataset.pkl'
-        if dataset_path.exists():
-            with open(dataset_path, 'rb') as f:
-                stories = pickle.load(f)
-        else:
-            stories = load_test_data()
-
-        stories = stories[:constants['n_test_samples']]
-        with open(ROOT_DIR / 'data' / 'lengths.csv', 'r') as f:
-            n_encoder_tokens, n_decoder_tokens, _, _ = f.read().rstrip('\n').split(',')
-
-        n_encoder_tokens = int(n_encoder_tokens)
-        n_decoder_tokens = int(n_decoder_tokens)
-        model, encoder_model, decoder_model = build_models(n_encoder_tokens, n_decoder_tokens, constants['n_hidden'])
-        model.load_weights(str(model_dir / constants['model_name']))
-        total, correct = 100, 0
-        for _ in range(total):
-            x1, x2, y = get_eval_dataset(n_encoder_tokens, n_decoder_tokens, n_features, 1)
-            target = predict_sequence(x1, encoder_model, decoder_model, n_decoder_tokens, n_features)
-            if np.array_equal(one_hot_decode(y[0]), one_hot_decode(target)):
-                correct += 1
-
-        print('Accuracy: %.2f%%' % float(correct / total * 100))
-
-        # Spot check some examples
-        for _ in range(10):
-            x1, x2, y = get_eval_dataset(n_encoder_tokens, n_decoder_tokens, n_features, 1)
-            target = predict_sequence(x1, encoder_model, decoder_model, n_decoder_tokens, n_features)
-            print('X=%s y=%s, y_hat=%s' % (one_hot_decode(x1[0]), one_hot_decode(y[0]), one_hot_decode(target)))
+        # dataset_path = ROOT_DIR / 'data' / 'reviews_test_dataset.pkl'
+        # if dataset_path.exists():
+        #     with open(dataset_path, 'rb') as f:
+        #         stories = pickle.load(f)
+        # else:
+        #     stories = load_test_data()
+        #
+        # stories = stories[:constants['n_test_samples']]
+        # with open(ROOT_DIR / 'data' / 'lengths.csv', 'r') as f:
+        #     n_encoder_tokens, n_decoder_tokens, _, _ = f.read().rstrip('\n').split(',')
+        #
+        # n_encoder_tokens = int(n_encoder_tokens)
+        # n_decoder_tokens = int(n_decoder_tokens)
+        # model, encoder_model, decoder_model = build_models(n_encoder_tokens, n_decoder_tokens, constants['n_hidden'])
+        # model.load_weights(str(model_dir / constants['model_name']))
+        # total, correct = 100, 0
+        # for _ in range(total):
+        #     x1, x2, y = get_eval_dataset(n_encoder_tokens, n_decoder_tokens, n_features, 1)
+        #     target = predict_sequence(x1, encoder_model, decoder_model, n_decoder_tokens, n_features)
+        #     if np.array_equal(one_hot_decode(y[0]), one_hot_decode(target)):
+        #         correct += 1
+        #
+        # print('Accuracy: %.2f%%' % float(correct / total * 100))
+        #
+        # # Spot check some examples
+        # for _ in range(10):
+        #     x1, x2, y = get_eval_dataset(n_encoder_tokens, n_decoder_tokens, n_features, 1)
+        #     target = predict_sequence(x1, encoder_model, decoder_model, n_decoder_tokens, n_features)
+        #     print('X=%s y=%s, y_hat=%s' % (one_hot_decode(x1[0]), one_hot_decode(y[0]), one_hot_decode(target)))
 
 
 if __name__ == '__main__':

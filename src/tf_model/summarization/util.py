@@ -161,7 +161,10 @@ def train(model, encoder_input_data, decoder_input_data, decoder_target_data,
           n_epochs, batch_size, model_dir):
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     early_stop = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='min')
-    checkpoint = ModelCheckpoint(str(model_dir / 'model-{epoch:03d}-{acc:.3f}-{val_acc:.3f}.h5'),
+    # checkpoint = ModelCheckpoint(str(model_dir / 'model-{epoch:03d}-{acc:.3f}-{val_acc:.3f}.h5'),
+    #                              save_best_only=True, monitor='val_loss', mode='min')
+    # To avoid the history on disk
+    checkpoint = ModelCheckpoint(str(model_dir / 'best_model.h5'),
                                  save_best_only=True, monitor='val_loss', mode='min')
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=7, verbose=1, epsilon=1e-4, mode='min')
     model.fit([encoder_input_data, decoder_input_data], decoder_target_data,
